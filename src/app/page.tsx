@@ -13,6 +13,7 @@ import { ConceptsSection } from '@/components/ConceptsSection';
 import { ComparisonsSection } from '@/components/ComparisonsSection';
 import { ComparisonModal } from '@/components/ComparisonModal';
 import { DailyChallenge } from '@/components/DailyChallenge';
+import { FlashcardsModal } from '@/components/FlashcardsModal';
 import { ServiceModal } from '@/components/ServiceModal';
 import { ConceptModal } from '@/components/ConceptModal';
 import { QuizModalV2 } from '@/components/QuizModalV2';
@@ -30,6 +31,7 @@ export default function Home() {
   const [selectedConcept, setSelectedConcept] = useState<Concept | null>(null);
   const [selectedComparison, setSelectedComparison] = useState<Comparison | null>(null);
   const [launcherOpen, setLauncherOpen] = useState(false);
+  const [flashcardsOpen, setFlashcardsOpen] = useState(false);
   const [activeQuiz, setActiveQuiz] = useState<(QuizLaunchConfig & { sessionId: number }) | null>(null);
   /** When set, the active quiz is the Daily Challenge for this date. */
   const [dailyQuiz, setDailyQuiz] = useState<{ date: string; questions: QuizQuestion[]; sessionId: number } | null>(null);
@@ -174,7 +176,15 @@ export default function Home() {
               className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm hover:opacity-90"
             >
               <Sparkles className="h-4 w-4" />
-              Start a quiz · 145 questions
+              Start a quiz · {quizQuestions.length} questions
+            </button>
+            <button
+              type="button"
+              onClick={() => setFlashcardsOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent-soft px-4 py-2 text-sm font-medium text-accent hover:bg-accent/15"
+            >
+              <BookOpen className="h-4 w-4" />
+              Flashcards
             </button>
             <a
               href="#concepts"
@@ -241,6 +251,13 @@ export default function Home() {
           language={language}
           onClose={() => setSelectedConcept(null)}
           onConceptClick={handleConceptSelect}
+          onServiceClick={handleServiceSelect}
+        />
+      )}
+      {flashcardsOpen && (
+        <FlashcardsModal
+          language={language}
+          onClose={() => setFlashcardsOpen(false)}
           onServiceClick={handleServiceSelect}
         />
       )}
