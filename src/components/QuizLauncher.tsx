@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { X, Sparkles, Zap, Target, Trophy, Boxes, Shield, Cloud, DollarSign, Layers, ChevronRight, Check } from 'lucide-react';
+import { X, Sparkles, Zap, Target, Trophy, Boxes, Shield, Cloud, DollarSign, Layers, ChevronRight, Check, Bookmark, AlertTriangle } from 'lucide-react';
 import type { Language, ExamDomain } from '@/types';
 import type { QuizScope } from '@/data/quiz-questions';
 import { quizQuestions, getQuestionsByDomain, DOMAIN_WEIGHTS } from '@/data/quiz-questions';
 import { categories } from '@/data/categories';
+import { useProgressStore } from '@/store/progress';
 
 /** Safe i18n lookup: tries the chosen language, then English, then any first key. */
 function t(rec: Record<string, string> | undefined, lang: Language): string {
@@ -116,6 +117,8 @@ const DOMAIN_LABELS: Record<ExamDomain, { en: string; ro: string }> = {
 export function QuizLauncher({ language, onClose, onLaunch }: QuizLauncherProps) {
   const [modeId, setModeId] = useState<Mode['id']>('standard');
   const [scope, setScope] = useState<QuizScope>('all');
+  const bookmarkedCount = useProgressStore((s) => s.bookmarkedQuestions.length);
+  const mistakeCount = useProgressStore((s) => Object.keys(s.wrongAnswerCounts).length);
 
   // Lock body scroll + ESC close
   useEffect(() => {
@@ -139,14 +142,40 @@ export function QuizLauncher({ language, onClose, onLaunch }: QuizLauncherProps)
 
   // Build scope options
   const scopeOptions: ScopeOption[] = useMemo(() => {
-    const out: ScopeOption[] = [
-      {
-        id: 'all',
-        label: { en: 'Mixed (all topics)', ro: 'Mix (toate topicurile)' },
-        badge: { en: `${quizQuestions.length} questions`, ro: `${quizQuestions.length} întrebări` },
-        icon: Sparkles,
-      },
-    ];
+    const out: ScopeOption[] = [];
+
+    // Personal review modes (only if user has any)
+    if (mistakeCount > 0) {
+      out.push({
+        id: 'mistakes',
+        label: { en: 'Review my mistakes', ro: 'Review greșelile mele' },
+        badge: {
+          en: `${mistakeCount} question${mistakeCount === 1 ? '' : 's'}`,
+          ro: `${mistakeCount} întreba${mistakeCount === 1 ? 're' : 'ri'}`,
+        },
+        icon: AlertTriangle,
+        accent: 'var(--danger)',
+      });
+    }
+    if (bookmarkedCount > 0) {
+      out.push({
+        id: 'bookmarks',
+        label: { en: 'Bookmarked', ro: 'Salvate' },
+        badge: {
+          en: `${bookmarkedCount} saved`,
+          ro: `${bookmarkedCount} salvate`,
+        },
+        icon: Bookmark,
+        accent: 'var(--accent)',
+      });
+    }
+
+    out.push({
+      id: 'all',
+      label: { en: 'Mixed (all topics)', ro: 'Mix (toate topicurile)' },
+      badge: { en: `${quizQuestions.length} questions`, ro: `${quizQuestions.length} întrebări` },
+      icon: Sparkles,
+    });
 
     // Domain options
     (Object.keys(DOMAIN_WEIGHTS) as ExamDomain[]).forEach((d) => {
@@ -178,7 +207,7 @@ export function QuizLauncher({ language, onClose, onLaunch }: QuizLauncherProps)
       }
     }
     return out;
-  }, []);
+  }, [bookmarkedCount, mistakeCount]);
 
   function launch() {
     onLaunch({

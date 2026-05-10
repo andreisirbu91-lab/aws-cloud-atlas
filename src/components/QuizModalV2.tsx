@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { X, Check, ChevronRight, RefreshCw, Trophy, Target, Lightbulb, Clock } from 'lucide-react';
+import { X, Check, ChevronRight, RefreshCw, Trophy, Target, Lightbulb, Clock, Bookmark } from 'lucide-react';
 import type { QuizQuestion, Language, Service } from '@/types';
 import { buildQuiz, buildWeightedExam, type QuizScope } from '@/data/quiz-questions';
 import { getServiceById } from '@/data/services';
@@ -56,6 +56,12 @@ export function QuizModalV2({
   const recordQuizAttempt = useProgressStore((s) => s.recordQuizAttempt);
   const recentlySeen = useProgressStore((s) => s.recentlySeenQuestions);
   const markQuestionsSeen = useProgressStore((s) => s.markQuestionsSeen);
+  const bookmarks = useProgressStore((s) => s.bookmarkedQuestions);
+  const toggleBookmark = useProgressStore((s) => s.toggleBookmark);
+  const recordWrongAnswer = useProgressStore((s) => s.recordWrongAnswer);
+  const clearWrongAnswer = useProgressStore((s) => s.clearWrongAnswer);
+  const wrongCounts = useProgressStore((s) => s.wrongAnswerCounts);
+  const bookmarkedQuestions = useProgressStore((s) => s.bookmarkedQuestions);
 
   // Build the quiz once on mount (don't reshuffle on every render)
   const questions = useMemo<QuizQuestion[]>(() => {
@@ -70,6 +76,13 @@ export function QuizModalV2({
     // Legacy filterCategoryIds support
     if (filterCategoryIds && filterCategoryIds.length > 0) {
       return buildQuiz(questionCount, `category:${filterCategoryIds[0]}` as QuizScope, recentlySeen);
+    }
+    // Bookmarks / mistakes scopes need an id filter from the store
+    if (scope === 'bookmarks') {
+      return buildQuiz(questionCount, scope, recentlySeen, bookmarkedQuestions);
+    }
+    if (scope === 'mistakes') {
+      return buildQuiz(questionCount, scope, recentlySeen, Object.keys(wrongCounts));
     }
     return buildQuiz(questionCount, scope, recentlySeen);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -158,6 +171,12 @@ export function QuizModalV2({
     ]);
     const targets = q.relatedServices?.length ? q.relatedServices : ['__quiz__'];
     targets.forEach((sid) => recordQuizAttempt(sid, isCorrect));
+    // Track wrong answers globally so user can review mistakes later
+    if (isCorrect) {
+      clearWrongAnswer(q.id);
+    } else {
+      recordWrongAnswer(q.id);
+    }
 
     if (examMode) {
       // No reveal; jump to next after a tiny pause for visual feedback
@@ -301,10 +320,28 @@ export function QuizModalV2({
       </div>
 
       <div className="px-6 py-5">
-        {/* Question */}
-        <h3 className="text-base font-semibold leading-relaxed text-text-primary text-pretty">
-          {q.question[language] ?? q.question.en}
-        </h3>
+        {/* Question + bookmark */}
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="text-base font-semibold leading-relaxed text-text-primary text-pretty">
+            {q.question[language] ?? q.question.en}
+          </h3>
+          <button
+            type="button"
+            onClick={() => toggleBookmark(q.id)}
+            aria-label={bookmarks.includes(q.id) ? 'Remove bookmark' : 'Bookmark this question'}
+            title={bookmarks.includes(q.id) ? 'Remove bookmark' : 'Bookmark this question'}
+            className={`shrink-0 rounded-md p-1.5 transition-colors ${
+              bookmarks.includes(q.id)
+                ? 'bg-accent-soft text-accent'
+                : 'text-text-tertiary hover:bg-muted hover:text-text-primary'
+            }`}
+          >
+            <Bookmark
+              className="h-4 w-4"
+              fill={bookmarks.includes(q.id) ? 'currentColor' : 'none'}
+            />
+          </button>
+        </div>
 
         {/* Options */}
         <div className="mt-5 space-y-2.5">

@@ -19,6 +19,21 @@ interface ProgressState {
   dailyChallenge: { date: string; correct: number; total: number } | null;
   /** Record completion of today's daily challenge. */
   recordDailyChallenge: (date: string, correct: number, total: number) => void;
+
+  /** IDs of questions the user has bookmarked for later review. */
+  bookmarkedQuestions: string[];
+  /** Toggle bookmark on/off for a question. */
+  toggleBookmark: (questionId: string) => void;
+
+  /**
+   * Counts how many times user got each question wrong.
+   * Resets to 0 when answered correctly. Used to power "Mistakes" review mode.
+   */
+  wrongAnswerCounts: Record<string, number>;
+  /** Record one wrong answer (increments counter). */
+  recordWrongAnswer: (questionId: string) => void;
+  /** Clear wrong-answer counter (when user finally gets it right). */
+  clearWrongAnswer: (questionId: string) => void;
 }
 
 const initialProgress: UserProgress = {
@@ -130,6 +145,36 @@ export const useProgressStore = create<ProgressState>()(
         set({ dailyChallenge: { date, correct, total } });
       },
 
+      bookmarkedQuestions: [],
+      toggleBookmark: (questionId: string) => {
+        set((state) => {
+          const has = state.bookmarkedQuestions.includes(questionId);
+          return {
+            bookmarkedQuestions: has
+              ? state.bookmarkedQuestions.filter((id) => id !== questionId)
+              : [...state.bookmarkedQuestions, questionId],
+          };
+        });
+      },
+
+      wrongAnswerCounts: {},
+      recordWrongAnswer: (questionId: string) => {
+        set((state) => ({
+          wrongAnswerCounts: {
+            ...state.wrongAnswerCounts,
+            [questionId]: (state.wrongAnswerCounts[questionId] ?? 0) + 1,
+          },
+        }));
+      },
+      clearWrongAnswer: (questionId: string) => {
+        set((state) => {
+          if (!state.wrongAnswerCounts[questionId]) return {};
+          const next = { ...state.wrongAnswerCounts };
+          delete next[questionId];
+          return { wrongAnswerCounts: next };
+        });
+      },
+
       recentlySeenQuestions: [],
       markQuestionsSeen: (ids: string[]) => {
         const MAX_BUFFER = 50;
@@ -144,16 +189,17 @@ export const useProgressStore = create<ProgressState>()(
     }),
     {
       name: 'aws-learning-progress',
-      version: 3,
+      version: 4,
       migrate: (persistedState, fromVersion) => {
         let state = (persistedState ?? {}) as Partial<ProgressState>;
-        // v1 → v2: added recentlySeenQuestions ring buffer.
         if (fromVersion < 2) {
           state = { ...state, recentlySeenQuestions: [] };
         }
-        // v2 → v3: added dailyChallenge.
         if (fromVersion < 3) {
           state = { ...state, dailyChallenge: null };
+        }
+        if (fromVersion < 4) {
+          state = { ...state, bookmarkedQuestions: [], wrongAnswerCounts: {} };
         }
         return state as ProgressState;
       },

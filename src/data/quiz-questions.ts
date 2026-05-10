@@ -5,6 +5,7 @@ import { techServicesQuestions } from './questions/tech-services';
 import { billingSupportQuestions } from './questions/billing-support';
 import { extraQuestions } from './questions/extra';
 import { extraQuestions2 } from './questions/extra2';
+import { extraQuestions3 } from './questions/extra3';
 
 /**
  * AWS Certified Cloud Practitioner (CLF-C02) practice questions.
@@ -756,6 +757,7 @@ export const quizQuestions: QuizQuestion[] = [
   ...billingSupportQuestions,
   ...extraQuestions,
   ...extraQuestions2,
+  ...extraQuestions3,
 ].map((q) => ({ ...q, examDomain: inferDomain(q) }));
 
 /**
@@ -803,8 +805,15 @@ export function buildWeightedExam(total = 65): QuizQuestion[] {
  *   - 'all'        : entire bank
  *   - ExamDomain   : just one of the 4 official domains
  *   - 'category:X' : just questions tagged with category X (e.g., 'storage')
+ *   - 'bookmarks'  : only questions in the user-supplied id list (passed via `idFilter`)
+ *   - 'mistakes'   : only questions whose IDs are passed via `idFilter`
  */
-export type QuizScope = 'all' | ExamDomain | `category:${string}`;
+export type QuizScope =
+  | 'all'
+  | ExamDomain
+  | `category:${string}`
+  | 'bookmarks'
+  | 'mistakes';
 
 /**
  * Smart sampler: prefers questions NOT in the user's recently-seen ring buffer
@@ -815,11 +824,16 @@ export function buildQuiz(
   count: number,
   scope: QuizScope = 'all',
   recentlySeen: string[] = [],
+  /** Required when scope is 'bookmarks' or 'mistakes': list of qualifying question IDs. */
+  idFilter?: string[],
 ): QuizQuestion[] {
   // 1. filter by scope
   let pool: QuizQuestion[];
   if (scope === 'all') {
     pool = quizQuestions;
+  } else if (scope === 'bookmarks' || scope === 'mistakes') {
+    const allowed = new Set(idFilter ?? []);
+    pool = quizQuestions.filter((q) => allowed.has(q.id));
   } else if (scope.startsWith('category:')) {
     const cat = scope.slice('category:'.length);
     pool = quizQuestions.filter((q) => q.categories.includes(cat));
