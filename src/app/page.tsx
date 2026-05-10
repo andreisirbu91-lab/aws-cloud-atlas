@@ -26,7 +26,7 @@ export default function Home() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedConcept, setSelectedConcept] = useState<Concept | null>(null);
   const [launcherOpen, setLauncherOpen] = useState(false);
-  const [activeQuiz, setActiveQuiz] = useState<QuizLaunchConfig | null>(null);
+  const [activeQuiz, setActiveQuiz] = useState<(QuizLaunchConfig & { sessionId: number }) | null>(null);
   const [language, setLanguage] = useState<Language>('en');
 
   const { progress, getTotalLearned, getStreak } = useProgressStore();
@@ -231,13 +231,14 @@ export default function Home() {
           onClose={() => setLauncherOpen(false)}
           onLaunch={(cfg) => {
             setLauncherOpen(false);
-            setActiveQuiz(cfg);
+            // sessionId is generated ONCE per launch; stays stable across re-renders
+            setActiveQuiz({ ...cfg, sessionId: Date.now() });
           }}
         />
       )}
       {activeQuiz && (
         <QuizModalV2
-          key={`${activeQuiz.scope}-${activeQuiz.count}-${Date.now()}`}
+          key={activeQuiz.sessionId}
           language={language}
           onClose={() => setActiveQuiz(null)}
           onServiceClick={handleServiceSelect}
