@@ -14,6 +14,11 @@ interface ProgressState {
   recentlySeenQuestions: string[];
   /** Mark a list of question IDs as seen, trimming buffer to MAX. */
   markQuestionsSeen: (ids: string[]) => void;
+
+  /** The most recent daily challenge result, if any. */
+  dailyChallenge: { date: string; correct: number; total: number } | null;
+  /** Record completion of today's daily challenge. */
+  recordDailyChallenge: (date: string, correct: number, total: number) => void;
 }
 
 const initialProgress: UserProgress = {
@@ -120,6 +125,11 @@ export const useProgressStore = create<ProgressState>()(
         return Math.round((mastered / totalServices) * 100);
       },
 
+      dailyChallenge: null,
+      recordDailyChallenge: (date: string, correct: number, total: number) => {
+        set({ dailyChallenge: { date, correct, total } });
+      },
+
       recentlySeenQuestions: [],
       markQuestionsSeen: (ids: string[]) => {
         const MAX_BUFFER = 50;
@@ -134,12 +144,16 @@ export const useProgressStore = create<ProgressState>()(
     }),
     {
       name: 'aws-learning-progress',
-      version: 2,
+      version: 3,
       migrate: (persistedState, fromVersion) => {
-        // v1 → v2 added recentlySeenQuestions ring buffer.
-        const state = (persistedState ?? {}) as Partial<ProgressState>;
+        let state = (persistedState ?? {}) as Partial<ProgressState>;
+        // v1 → v2: added recentlySeenQuestions ring buffer.
         if (fromVersion < 2) {
-          return { ...state, recentlySeenQuestions: [] } as ProgressState;
+          state = { ...state, recentlySeenQuestions: [] };
+        }
+        // v2 → v3: added dailyChallenge.
+        if (fromVersion < 3) {
+          state = { ...state, dailyChallenge: null };
         }
         return state as ProgressState;
       },

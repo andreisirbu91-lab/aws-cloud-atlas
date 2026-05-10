@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { Flame, Trophy, Target, BookOpen, Sparkles } from 'lucide-react';
-import type { Service, Concept, Language, Comparison } from '@/types';
+import type { Service, Concept, Language, Comparison, QuizQuestion } from '@/types';
 import { services } from '@/data/services';
 import { categories } from '@/data/categories';
 import { concepts } from '@/data/concepts';
@@ -12,6 +12,7 @@ import { CategorySection } from '@/components/CategorySection';
 import { ConceptsSection } from '@/components/ConceptsSection';
 import { ComparisonsSection } from '@/components/ComparisonsSection';
 import { ComparisonModal } from '@/components/ComparisonModal';
+import { DailyChallenge } from '@/components/DailyChallenge';
 import { ServiceModal } from '@/components/ServiceModal';
 import { ConceptModal } from '@/components/ConceptModal';
 import { QuizModalV2 } from '@/components/QuizModalV2';
@@ -30,9 +31,12 @@ export default function Home() {
   const [selectedComparison, setSelectedComparison] = useState<Comparison | null>(null);
   const [launcherOpen, setLauncherOpen] = useState(false);
   const [activeQuiz, setActiveQuiz] = useState<(QuizLaunchConfig & { sessionId: number }) | null>(null);
+  /** When set, the active quiz is the Daily Challenge for this date. */
+  const [dailyQuiz, setDailyQuiz] = useState<{ date: string; questions: QuizQuestion[]; sessionId: number } | null>(null);
   const [language, setLanguage] = useState<Language>('en');
 
   const { progress, getTotalLearned, getStreak } = useProgressStore();
+  const recordDailyChallenge = useProgressStore((s) => s.recordDailyChallenge);
 
   const handleServiceSelect = useCallback((s: Service) => {
     setSelectedConcept(null);
@@ -185,6 +189,13 @@ export default function Home() {
 
       {/* ===== Body ===== */}
       <div className="mx-auto max-w-7xl space-y-12 px-4 py-10 sm:px-6 sm:py-14">
+        <DailyChallenge
+          language={language}
+          onLaunch={(qs, date) =>
+            setDailyQuiz({ date, questions: qs, sessionId: Date.now() })
+          }
+        />
+
         <div id="concepts">
           <ConceptsSection language={language} onConceptClick={handleConceptSelect} />
         </div>
@@ -266,6 +277,19 @@ export default function Home() {
           label={activeQuiz.label}
           examMode={activeQuiz.examMode}
           timerSeconds={activeQuiz.timerSeconds}
+        />
+      )}
+      {dailyQuiz && (
+        <QuizModalV2
+          key={`daily-${dailyQuiz.sessionId}`}
+          language={language}
+          onClose={() => setDailyQuiz(null)}
+          onServiceClick={handleServiceSelect}
+          presetQuestions={dailyQuiz.questions}
+          label={language === 'ro' ? 'Provocarea zilei' : 'Daily Challenge'}
+          onComplete={(correct, total) => {
+            recordDailyChallenge(dailyQuiz.date, correct, total);
+          }}
         />
       )}
     </main>

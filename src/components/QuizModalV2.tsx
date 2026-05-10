@@ -21,6 +21,13 @@ interface QuizModalV2Props {
   examMode?: boolean;
   /** Optional countdown in seconds. When 0, auto-submits. */
   timerSeconds?: number;
+  /**
+   * If provided, use these EXACT questions instead of sampling from the bank.
+   * Used by Daily Challenge to guarantee everyone gets the same set per day.
+   */
+  presetQuestions?: QuizQuestion[];
+  /** Called once when the user finishes (correct count, total). */
+  onComplete?: (correct: number, total: number) => void;
 
   /** @deprecated Use `scope` instead. Kept for backwards-compat with old callers. */
   filterCategoryIds?: string[];
@@ -42,6 +49,8 @@ export function QuizModalV2({
   label,
   examMode = false,
   timerSeconds,
+  presetQuestions,
+  onComplete,
   filterCategoryIds,
 }: QuizModalV2Props) {
   const recordQuizAttempt = useProgressStore((s) => s.recordQuizAttempt);
@@ -50,6 +59,10 @@ export function QuizModalV2({
 
   // Build the quiz once on mount (don't reshuffle on every render)
   const questions = useMemo<QuizQuestion[]>(() => {
+    // Preset (e.g., Daily Challenge) wins
+    if (presetQuestions && presetQuestions.length > 0) {
+      return presetQuestions;
+    }
     // Practice Exam: domain-weighted pool
     if (examMode && questionCount >= 50) {
       return buildWeightedExam(questionCount);
@@ -107,9 +120,14 @@ export function QuizModalV2({
   }, [timerSeconds, done]);
 
   // When `done` flips true, mark all seen question IDs in the ring buffer
+  // and notify external listeners (e.g., Daily Challenge tracker).
   useEffect(() => {
     if (done && questions.length > 0) {
       markQuestionsSeen(questions.map((qq) => qq.id));
+      if (onComplete) {
+        const correct = answers.filter((a) => a.correct).length;
+        onComplete(correct, questions.length);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [done]);

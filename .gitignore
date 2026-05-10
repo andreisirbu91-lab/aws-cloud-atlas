@@ -40,3 +40,6 @@ next-env.d.ts
 amplify/team-provider-info.json
 amplify/.config/local-aws-info.json
 amplify/.config/local-env-info.json
+
+# next-on-pages build artifacts
+dist/
