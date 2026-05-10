@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { X, Check, ChevronRight, RefreshCw, Trophy, Target, Lightbulb } from 'lucide-react';
+import { X, Check, ChevronRight, RefreshCw, Trophy, Target, Lightbulb, Clock } from 'lucide-react';
 import type { QuizQuestion, Language, Service } from '@/types';
-import { quizQuestions } from '@/data/quiz-questions';
+import { buildQuiz, buildWeightedExam, type QuizScope } from '@/data/quiz-questions';
 import { getServiceById } from '@/data/services';
 import { useProgressStore } from '@/store/progress';
 
@@ -11,36 +11,63 @@ interface QuizModalV2Props {
   language: Language;
   onClose: () => void;
   onServiceClick: (s: Service) => void;
-  /** If null/undefined, run a random 10-question quiz across all topics. */
-  filterCategoryIds?: string[];
+  /** Pool to draw from. Defaults to 'all'. */
+  scope?: QuizScope;
   /** How many questions to ask. Default 10. */
   questionCount?: number;
+  /** Display label (e.g., "Practice Exam", "Quick Drill"). */
+  label?: string;
+  /** If true, hide explanations until the end (real-exam feel). */
+  examMode?: boolean;
+  /** Optional countdown in seconds. When 0, auto-submits. */
+  timerSeconds?: number;
+
+  /** @deprecated Use `scope` instead. Kept for backwards-compat with old callers. */
+  filterCategoryIds?: string[];
+}
+
+function fmtTime(sec: number): string {
+  if (sec < 0) sec = 0;
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
 export function QuizModalV2({
   language,
   onClose,
   onServiceClick,
-  filterCategoryIds,
+  scope = 'all',
   questionCount = 10,
+  label,
+  examMode = false,
+  timerSeconds,
+  filterCategoryIds,
 }: QuizModalV2Props) {
   const recordQuizAttempt = useProgressStore((s) => s.recordQuizAttempt);
+  const recentlySeen = useProgressStore((s) => s.recentlySeenQuestions);
+  const markQuestionsSeen = useProgressStore((s) => s.markQuestionsSeen);
 
   // Build the quiz once on mount (don't reshuffle on every render)
   const questions = useMemo<QuizQuestion[]>(() => {
-    const pool = filterCategoryIds && filterCategoryIds.length > 0
-      ? quizQuestions.filter((q) => q.categories.some((c) => filterCategoryIds.includes(c)))
-      : quizQuestions;
-    const shuffled = [...pool].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, Math.min(questionCount, pool.length));
+    // Practice Exam: domain-weighted pool
+    if (examMode && questionCount >= 50) {
+      return buildWeightedExam(questionCount);
+    }
+    // Legacy filterCategoryIds support
+    if (filterCategoryIds && filterCategoryIds.length > 0) {
+      return buildQuiz(questionCount, `category:${filterCategoryIds[0]}` as QuizScope, recentlySeen);
+    }
+    return buildQuiz(questionCount, scope, recentlySeen);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const [idx, setIdx] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
   const [reveal, setReveal] = useState(false);
-  const [answers, setAnswers] = useState<{ correct: boolean; questionId: string }[]>([]);
+  const [answers, setAnswers] = useState<{ correct: boolean; questionId: string; selected: number | null }[]>([]);
   const [done, setDone] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState<number>(timerSeconds ?? 0);
 
   const q = questions[idx];
 
@@ -63,6 +90,30 @@ export function QuizModalV2({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reveal, idx]);
 
+  // Countdown timer for exam mode
+  useEffect(() => {
+    if (!timerSeconds || done) return;
+    const id = setInterval(() => {
+      setSecondsLeft((s) => {
+        if (s <= 1) {
+          clearInterval(id);
+          setDone(true);
+          return 0;
+        }
+        return s - 1;
+      });
+    }, 1000);
+    return () => clearInterval(id);
+  }, [timerSeconds, done]);
+
+  // When `done` flips true, mark all seen question IDs in the ring buffer
+  useEffect(() => {
+    if (done && questions.length > 0) {
+      markQuestionsSeen(questions.map((qq) => qq.id));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done]);
+
   if (questions.length === 0) {
     return (
       <Shell onClose={onClose}>
@@ -79,15 +130,30 @@ export function QuizModalV2({
   const progress = ((idx + (reveal ? 1 : 0)) / questions.length) * 100;
 
   function pick(optionIdx: number) {
-    if (reveal) return;
+    if (reveal && !examMode) return;
+    if (examMode && answers.find((a) => a.questionId === q.id)) return; // already answered this question
     setSelected(optionIdx);
-    setReveal(true);
     const isCorrect = optionIdx === q.correct;
-    setAnswers((prev) => [...prev, { correct: isCorrect, questionId: q.id }]);
-    // Record attempt for each related service (XP + confidence boost handled in store).
-    // For questions without related services, attribute to a placeholder so we still gain XP.
+    setAnswers((prev) => [
+      ...prev.filter((a) => a.questionId !== q.id),
+      { correct: isCorrect, questionId: q.id, selected: optionIdx },
+    ]);
     const targets = q.relatedServices?.length ? q.relatedServices : ['__quiz__'];
     targets.forEach((sid) => recordQuizAttempt(sid, isCorrect));
+
+    if (examMode) {
+      // No reveal; jump to next after a tiny pause for visual feedback
+      setTimeout(() => {
+        if (idx < questions.length - 1) {
+          setIdx(idx + 1);
+          setSelected(null);
+        } else {
+          setDone(true);
+        }
+      }, 120);
+    } else {
+      setReveal(true);
+    }
   }
 
   function next() {
@@ -173,19 +239,39 @@ export function QuizModalV2({
     <Shell onClose={onClose}>
       {/* Progress */}
       <div className="border-b border-border px-6 py-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-2">
+            {label && (
+              <span className="truncate rounded bg-accent-soft px-2 py-0.5 font-mono text-2xs font-semibold uppercase tracking-wider text-accent">
+                {label}
+              </span>
+            )}
             <span className="font-mono text-2xs uppercase tracking-wider text-text-tertiary">
-              Question {idx + 1} / {questions.length}
+              Q {idx + 1} / {questions.length}
             </span>
-            <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-2xs text-text-secondary">
-              {q.categories[0]}
+            <span className="hidden rounded bg-muted px-1.5 py-0.5 font-mono text-2xs text-text-secondary sm:inline">
+              {q.examDomain ?? q.categories[0]}
             </span>
           </div>
-          <div className="flex items-center gap-1.5 text-xs text-text-secondary">
-            <Target className="h-3.5 w-3.5" />
-            <span className="font-mono font-semibold tabular-nums">{correctCount}</span>
-            correct
+          <div className="flex shrink-0 items-center gap-3">
+            {timerSeconds ? (
+              <div
+                className={`flex items-center gap-1 font-mono text-xs font-semibold tabular-nums ${
+                  secondsLeft <= 60 ? 'text-danger' : secondsLeft <= 5 * 60 ? 'text-warning' : 'text-text-secondary'
+                }`}
+                aria-live={secondsLeft <= 60 ? 'polite' : 'off'}
+              >
+                <Clock className="h-3.5 w-3.5" />
+                {fmtTime(secondsLeft)}
+              </div>
+            ) : null}
+            {!examMode && (
+              <div className="flex items-center gap-1.5 text-xs text-text-secondary">
+                <Target className="h-3.5 w-3.5" />
+                <span className="font-mono font-semibold tabular-nums">{correctCount}</span>
+                <span className="hidden sm:inline">correct</span>
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-2 h-1 overflow-hidden rounded-full bg-muted">

@@ -10,6 +10,10 @@ interface ProgressState {
   getStreak: () => number;
   getTotalLearned: () => number;
   getMasteryPercentage: (totalServices: number) => number;
+  /** Last N quiz question IDs the user has seen (ring buffer, ~50 entries). */
+  recentlySeenQuestions: string[];
+  /** Mark a list of question IDs as seen, trimming buffer to MAX. */
+  markQuestionsSeen: (ids: string[]) => void;
 }
 
 const initialProgress: UserProgress = {
@@ -114,13 +118,33 @@ export const useProgressStore = create<ProgressState>()(
       getMasteryPercentage: (totalServices: number) => {
         const mastered = Object.values(get().progress.serviceProgress).filter(p => p.status === 'mastered').length;
         return Math.round((mastered / totalServices) * 100);
-      }
+      },
+
+      recentlySeenQuestions: [],
+      markQuestionsSeen: (ids: string[]) => {
+        const MAX_BUFFER = 50;
+        set((state) => {
+          // Newest first; dedupe; cap at MAX
+          const merged = [...ids, ...state.recentlySeenQuestions].filter(
+            (id, idx, arr) => arr.indexOf(id) === idx,
+          );
+          return { recentlySeenQuestions: merged.slice(0, MAX_BUFFER) };
+        });
+      },
     }),
     {
       name: 'aws-learning-progress',
-      version: 1
-    }
-  )
+      version: 2,
+      migrate: (persistedState, fromVersion) => {
+        // v1 → v2 added recentlySeenQuestions ring buffer.
+        const state = (persistedState ?? {}) as Partial<ProgressState>;
+        if (fromVersion < 2) {
+          return { ...state, recentlySeenQuestions: [] } as ProgressState;
+        }
+        return state as ProgressState;
+      },
+    },
+  ),
 );
 
 function updateStreak(streak: UserProgress['streak']): UserProgress['streak'] {

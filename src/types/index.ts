@@ -1,3 +1,21 @@
+/**
+ * CLF-C02 official exam domains with their published weights.
+ * Used to weight question pools and report per-domain scores.
+ */
+export type ExamDomain =
+  | 'cloud-concepts'      // 24%
+  | 'security'            // 30%
+  | 'tech-services'       // 34%
+  | 'billing-support';    // 12%
+
+/** Where a piece of content was sourced from (for transparency). */
+export type ContentSource =
+  | 'maarek'              // Stephane Maarek course
+  | 'aws-docs'            // Official AWS docs
+  | 'exam-guide'          // Official CLF-C02 Exam Guide PDF
+  | 'tutorials-dojo'      // Tutorials Dojo practice exams
+  | 'aws-skill-builder';  // AWS Skill Builder free questions
+
 export interface Service {
   id: string;
   abbreviation: string;
@@ -23,6 +41,10 @@ export interface Service {
     color: string;
     icon?: string;
   };
+  /** Optional memory hook to help recall the service (e.g., "S3 = Simple Storage Service, like Dropbox for buckets"). */
+  mnemonic?: Record<string, string>;
+  /** Which CLF-C02 exam domain(s) this service is tested under. */
+  examDomains?: ExamDomain[];
   learned?: boolean;
   confidenceLevel?: number;
   nextReview?: string;
@@ -80,13 +102,20 @@ export interface QuizQuestion {
   id: string;
   type: 'multiple_choice' | 'true_false' | 'matching' | 'fill_blank';
   difficulty: 1 | 2 | 3 | 4 | 5;
+  /** Topical categories for filtering (e.g., 'storage', 'compute'). */
   categories: string[];
+  /** Official CLF-C02 exam domain(s) this question maps to. */
+  examDomain?: ExamDomain;
   question: Record<string, string>;
   options?: Array<Record<string, string>>;
   correct: number | boolean;
   explanation: Record<string, string>;
   hint?: Record<string, string>;
   relatedServices: string[];
+  /** Concept IDs (from concepts.ts) that this question tests. */
+  relatedConcepts?: string[];
+  /** Where the question pattern is sourced from. */
+  source?: ContentSource;
 }
 
 export interface QuizSession {
@@ -123,6 +152,90 @@ export interface UserProgress {
     totalAttempts: number;
     correctAttempts: number;
   }>;
+  /** Spaced-repetition queue (simplified SM-2). Each entry surfaces when dueAt <= now. */
+  reviewQueue?: Array<{
+    serviceId: string;
+    /** ISO timestamp when this item should next surface. */
+    dueAt: string;
+    /** Current interval in days (0 = same day, 1, 3, 7, 14, 30). */
+    interval: number;
+    /** Number of correct reps in a row — drives interval growth. */
+    streak: number;
+  }>;
+  /** Per-day record of Daily Challenge completion (key = YYYY-MM-DD). */
+  dailyChallenge?: Record<string, {
+    completed: boolean;
+    score: number; // 0-5
+    totalQuestions: number;
+  }>;
+  /** Practice exam attempts (full 65q simulations). */
+  examAttempts?: Array<{
+    id: string;
+    startedAt: string;
+    completedAt?: string;
+    score: number;       // 0-100
+    passed: boolean;     // score >= 70
+    domainScores: Record<ExamDomain, { correct: number; total: number }>;
+    timeSpent: number;   // seconds
+  }>;
 }
 
 export type Language = 'en' | 'ro' | 'es' | 'de';
+
+/**
+ * Side-by-side comparison of multiple services on the same set of features.
+ * Rendered as a feature × service grid; each cell color-coded.
+ */
+export interface Comparison {
+  id: string;
+  title: Record<string, string>;
+  /** One-line summary shown above the table. */
+  tagline: Record<string, string>;
+  /**
+   * Column keys for the table.
+   * If a key matches an entry in `services.ts`, it becomes a clickable service link.
+   * Otherwise, render the label from `columnLabels[key]`.
+   */
+  serviceIds: string[];
+  /** Optional labels for columns that are NOT services (e.g., "SG", "NACL", "User", "Role"). */
+  columnLabels?: Record<string, Record<string, string>>;
+  /** Each row = a feature being compared across services. */
+  rows: Array<{
+    /** Feature label shown in the leftmost column. */
+    feature: Record<string, string>;
+    /** Cell value for each serviceId (keyed by serviceId). */
+    cells: Record<string, {
+      /** Short text shown in the cell. */
+      value: Record<string, string>;
+      /** Color hint: 'pass' (green), 'fail' (red), 'partial' (amber), 'na' (gray), 'neutral' (default). */
+      hint?: 'pass' | 'fail' | 'partial' | 'na' | 'neutral';
+    }>;
+  }>;
+  /** Memorable rule-of-thumb shown at bottom of the table. */
+  rulesOfThumb?: Array<Record<string, string>>;
+  examFrequency: 'high' | 'medium' | 'low';
+}
+
+/**
+ * Curated, ordered sequence of services to study together.
+ * E.g., "Foundations" = the 10 most-tested services beginners must know.
+ */
+export interface LearningPath {
+  id: string;
+  title: Record<string, string>;
+  tagline: Record<string, string>;
+  /** Estimated time to complete in minutes (study + quiz). */
+  estimatedMinutes: number;
+  /** Difficulty signal shown on the path card. */
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  /** Ordered list of step IDs (services or concepts). */
+  steps: Array<{
+    kind: 'service' | 'concept' | 'comparison';
+    /** ID of the underlying entity. */
+    refId: string;
+    /** Optional tip explaining why this step is here. */
+    note?: Record<string, string>;
+  }>;
+  /** Prerequisite path IDs (e.g., must complete "Foundations" before "Storage Deep Dive"). */
+  prerequisites?: string[];
+}

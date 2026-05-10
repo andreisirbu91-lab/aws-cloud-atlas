@@ -13,6 +13,7 @@ import { ConceptsSection } from '@/components/ConceptsSection';
 import { ServiceModal } from '@/components/ServiceModal';
 import { ConceptModal } from '@/components/ConceptModal';
 import { QuizModalV2 } from '@/components/QuizModalV2';
+import { QuizLauncher, type QuizLaunchConfig } from '@/components/QuizLauncher';
 import { GlobalSearch } from '@/components/GlobalSearch';
 import { ThemeToggle } from '@/components/ThemeToggle';
 
@@ -24,7 +25,8 @@ const LANGUAGES: { code: Language; label: string }[] = [
 export default function Home() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedConcept, setSelectedConcept] = useState<Concept | null>(null);
-  const [quizOpen, setQuizOpen] = useState(false);
+  const [launcherOpen, setLauncherOpen] = useState(false);
+  const [activeQuiz, setActiveQuiz] = useState<QuizLaunchConfig | null>(null);
   const [language, setLanguage] = useState<Language>('en');
 
   const { progress, getTotalLearned, getStreak } = useProgressStore();
@@ -95,7 +97,7 @@ export default function Home() {
           {/* Quiz button */}
           <button
             type="button"
-            onClick={() => setQuizOpen(true)}
+            onClick={() => setLauncherOpen(true)}
             className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-3 py-1.5 text-xs font-semibold text-accent-foreground shadow-sm hover:opacity-90"
           >
             <Sparkles className="h-3.5 w-3.5" />
@@ -161,11 +163,11 @@ export default function Home() {
           <div className="mt-6 flex flex-wrap gap-2">
             <button
               type="button"
-              onClick={() => setQuizOpen(true)}
+              onClick={() => setLauncherOpen(true)}
               className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm hover:opacity-90"
             >
               <Sparkles className="h-4 w-4" />
-              Take a 10-question quiz
+              Start a quiz · 145 questions
             </button>
             <a
               href="#concepts"
@@ -223,11 +225,27 @@ export default function Home() {
           onServiceClick={handleServiceSelect}
         />
       )}
-      {quizOpen && (
-        <QuizModalV2
+      {launcherOpen && (
+        <QuizLauncher
           language={language}
-          onClose={() => setQuizOpen(false)}
+          onClose={() => setLauncherOpen(false)}
+          onLaunch={(cfg) => {
+            setLauncherOpen(false);
+            setActiveQuiz(cfg);
+          }}
+        />
+      )}
+      {activeQuiz && (
+        <QuizModalV2
+          key={`${activeQuiz.scope}-${activeQuiz.count}-${Date.now()}`}
+          language={language}
+          onClose={() => setActiveQuiz(null)}
           onServiceClick={handleServiceSelect}
+          scope={activeQuiz.scope}
+          questionCount={activeQuiz.count}
+          label={activeQuiz.label}
+          examMode={activeQuiz.examMode}
+          timerSeconds={activeQuiz.timerSeconds}
         />
       )}
     </main>

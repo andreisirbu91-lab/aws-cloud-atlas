@@ -1,0 +1,255 @@
+import type { QuizQuestion } from '@/types';
+
+/**
+ * CLF-C02 Domain 4: Billing, Pricing, and Support (12% of exam, ~8 questions of 65).
+ * Topics: pricing models, free tier, billing tools, support plans.
+ *
+ * Style note: explanations include analogies wherever they help recall.
+ */
+export const billingSupportQuestions: QuizQuestion[] = [
+  {
+    id: 'bill-1',
+    type: 'multiple_choice',
+    difficulty: 1,
+    categories: ['billing'],
+    examDomain: 'billing-support',
+    source: 'maarek',
+    question: {
+      en: 'Which tool helps you ESTIMATE your monthly AWS costs BEFORE deploying?',
+      ro: 'Care tool te ajută să ESTIMEZI costurile lunare AWS ÎNAINTE să deployezi?',
+    },
+    options: [
+      { en: 'AWS Cost Explorer', ro: 'AWS Cost Explorer' },
+      { en: 'AWS Budgets', ro: 'AWS Budgets' },
+      { en: 'AWS Pricing Calculator', ro: 'AWS Pricing Calculator' },
+      { en: 'AWS Trusted Advisor', ro: 'AWS Trusted Advisor' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Think of it as a restaurant menu: **Pricing Calculator** = the menu (estimate before ordering). **Cost Explorer** = the receipt (what you already spent). **Budgets** = the waiter tapping you on the shoulder ("you crossed your limit"). **Trusted Advisor** = the friend whispering "the soup is overpriced".',
+      ro: 'Gândește-l ca un meniu de restaurant: **Pricing Calculator** = meniul (estimezi înainte). **Cost Explorer** = bonul (ce ai cheltuit deja). **Budgets** = ospătarul care te bate pe umăr ("ai depășit limita"). **Trusted Advisor** = prietenul care îți șoptește "supa e prea scumpă".',
+    },
+    relatedServices: ['calculator', 'costexplorer', 'budgets', 'trustedadvisor'],
+  },
+  {
+    id: 'bill-2',
+    type: 'multiple_choice',
+    difficulty: 1,
+    categories: ['billing'],
+    examDomain: 'billing-support',
+    source: 'maarek',
+    question: {
+      en: 'Which AWS Free Tier offering is "always free" (does NOT expire after 12 months)?',
+      ro: 'Care ofertă Free Tier e "always free" (NU expiră după 12 luni)?',
+    },
+    options: [
+      { en: 'EC2 t2.micro 750 hours/month', ro: 'EC2 t2.micro 750 ore/lună' },
+      { en: 'AWS Lambda 1M requests/month', ro: 'AWS Lambda 1M cereri/lună' },
+      { en: 'S3 5 GB Standard storage', ro: 'S3 5 GB Standard storage' },
+      { en: 'RDS db.t2.micro 750 hours/month', ro: 'RDS db.t2.micro 750 ore/lună' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Memory hook: **"Servers expire, serverless is forever"**. Anything that runs servers (EC2, RDS, S3 storage) is 12-month free. True serverless (Lambda, DynamoDB 25 GB, CloudWatch 10 metrics) is always free.',
+      ro: 'Memo: **"Serverele expiră, serverless-ul e veșnic"**. Tot ce ține servere (EC2, RDS, S3) e gratuit 12 luni. Serverless real (Lambda, DynamoDB 25 GB, CloudWatch 10 metrici) e mereu gratuit.',
+    },
+    relatedServices: ['lambda', 'ec2', 's3', 'rds'],
+    relatedConcepts: ['pricing-fundamentals'],
+  },
+  {
+    id: 'bill-3',
+    type: 'multiple_choice',
+    difficulty: 2,
+    categories: ['billing'],
+    examDomain: 'billing-support',
+    source: 'aws-docs',
+    question: {
+      en: 'Which billing benefit comes with using AWS Organizations Consolidated Billing?',
+      ro: 'Care beneficiu de billing vine din AWS Organizations Consolidated Billing?',
+    },
+    options: [
+      { en: 'Free EC2 instances', ro: 'Instanțe EC2 gratuite' },
+      { en: 'Volume discounts pooled across all member accounts', ro: 'Volume discounts pooled peste toate conturile membre' },
+      { en: 'Auto-scaling included free', ro: 'Auto-scaling gratuit' },
+      { en: 'Free Enterprise Support', ro: 'Enterprise Support gratuit' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Analogy: family phone plan vs individual lines. Each kid has their own number, but you pay one bill — and minutes pool together for tier discounts. Same for AWS: usage from all accounts combines for tiered pricing (S3, data transfer) and Reserved Instance sharing.',
+      ro: 'Analogie: plan de familie de telefon vs linii individuale. Fiecare are numărul lui, dar plătești o factură — iar minutele se cumulează pentru reduceri pe pachet. La fel AWS: usage-ul tuturor conturilor se combină pentru tiered pricing (S3, transfer date) și share Reserved Instances.',
+    },
+    relatedServices: ['organizations'],
+  },
+  {
+    id: 'bill-4',
+    type: 'multiple_choice',
+    difficulty: 2,
+    categories: ['billing'],
+    examDomain: 'billing-support',
+    source: 'maarek',
+    question: {
+      en: 'A team needs predictable cost AND flexibility to change instance types within a 1-year commitment. Which option?',
+      ro: 'O echipă vrea cost predictibil ȘI flexibilitate de a schimba tipul instanței într-un angajament de 1 an. Ce opțiune?',
+    },
+    options: [
+      { en: 'Standard Reserved Instances', ro: 'Standard Reserved Instances' },
+      { en: 'Compute Savings Plans', ro: 'Compute Savings Plans' },
+      { en: 'Spot Instances', ro: 'Spot Instances' },
+      { en: 'Dedicated Hosts', ro: 'Dedicated Hosts' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Analogy: Standard RI = monthly gym membership at one specific branch. Compute Savings Plan = same monthly fee but ANY gym in the chain (any region, any instance family, even Lambda/Fargate). Both ~66% off; SP is more flexible.',
+      ro: 'Analogie: Standard RI = abonament la o sală anume. Compute Savings Plan = aceeași taxă, dar ORICE sală din lanț (orice regiune, orice familie de instanță, chiar Lambda/Fargate). Ambele ~66% reducere; SP e mai flexibil.',
+    },
+    relatedServices: ['ec2'],
+  },
+  {
+    id: 'bill-5',
+    type: 'multiple_choice',
+    difficulty: 1,
+    categories: ['support'],
+    examDomain: 'billing-support',
+    source: 'maarek',
+    question: {
+      en: 'A customer wants 24/7 phone support and 1-hour response time on production-down issues. Which is the MINIMUM AWS Support plan?',
+      ro: 'Un client vrea suport telefonic 24/7 și răspuns în 1 oră la probleme prod-down. Care e planul de support MINIM?',
+    },
+    options: [
+      { en: 'Basic', ro: 'Basic' },
+      { en: 'Developer', ro: 'Developer' },
+      { en: 'Business', ro: 'Business' },
+      { en: 'Enterprise', ro: 'Enterprise' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Quick ladder to remember: **Basic** (free, no human help) → **Developer** ($29, business hours email) → **Business** ($100, 24/7 phone, 1h prod-down) → **Enterprise On-Ramp** ($5.5K, pool TAM) → **Enterprise** ($15K, dedicated TAM, 15-min response).',
+      ro: 'Scara: **Basic** (gratuit, fără om) → **Developer** ($29, email business hours) → **Business** ($100, telefon 24/7, 1h prod-down) → **Enterprise On-Ramp** ($5.5K, TAM pool) → **Enterprise** ($15K, TAM dedicat, răspuns 15min).',
+    },
+    relatedServices: ['supportplans'],
+    relatedConcepts: ['support-plans'],
+  },
+  {
+    id: 'bill-6',
+    type: 'multiple_choice',
+    difficulty: 2,
+    categories: ['support'],
+    examDomain: 'billing-support',
+    source: 'aws-docs',
+    question: {
+      en: 'Which support plan includes a dedicated Technical Account Manager (TAM) AND access to AWS Concierge billing assistance?',
+      ro: 'Care plan de support include un Technical Account Manager (TAM) DEDICAT și acces la AWS Concierge pentru facturare?',
+    },
+    options: [
+      { en: 'Developer', ro: 'Developer' },
+      { en: 'Business', ro: 'Business' },
+      { en: 'Enterprise On-Ramp', ro: 'Enterprise On-Ramp' },
+      { en: 'Enterprise', ro: 'Enterprise' },
+    ],
+    correct: 3,
+    explanation: {
+      en: 'Analogy: TAM = your personal AWS doctor who already knows your health history. **Enterprise** = dedicated doctor on speed dial. **Enterprise On-Ramp** = clinic doctors on rotation (a TAM pool). Concierge for billing is Enterprise-only.',
+      ro: 'Analogie: TAM = medicul personal AWS care îți știe deja istoricul. **Enterprise** = medic dedicat pe apel rapid. **Enterprise On-Ramp** = medici de policlinică prin rotație. Concierge pentru facturare e exclusiv Enterprise.',
+    },
+    relatedServices: ['supportplans'],
+    relatedConcepts: ['support-plans'],
+  },
+  {
+    id: 'bill-7',
+    type: 'multiple_choice',
+    difficulty: 2,
+    categories: ['billing'],
+    examDomain: 'billing-support',
+    source: 'tutorials-dojo',
+    question: {
+      en: 'Which AWS pricing principle BEST describes paying nothing upfront and only for resources used?',
+      ro: 'Care principiu AWS descrie cel mai bine "nimic upfront, doar resursele folosite"?',
+    },
+    options: [
+      { en: 'Capital expenditure (CapEx)', ro: 'Capital expenditure (CapEx)' },
+      { en: 'Pay-as-you-go (OpEx)', ro: 'Pay-as-you-go (OpEx)' },
+      { en: 'Volume discounts', ro: 'Volume discounts' },
+      { en: 'Reserved capacity', ro: 'Reserved capacity' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Analogy: CapEx = buying a house. OpEx (pay-as-you-go) = renting an Airbnb — pay only for nights you stay, no maintenance, leave anytime. Cloud trades CapEx for OpEx, freeing cash for product work.',
+      ro: 'Analogie: CapEx = cumperi casă. OpEx (pay-as-you-go) = închiriezi Airbnb — plătești doar nopțile, fără mentenanță, pleci oricând. Cloud-ul schimbă CapEx în OpEx, eliberând bani pentru produs.',
+    },
+    relatedServices: [],
+    relatedConcepts: ['cloud-advantages', 'pricing-fundamentals'],
+  },
+  {
+    id: 'bill-8',
+    type: 'multiple_choice',
+    difficulty: 1,
+    categories: ['billing'],
+    examDomain: 'billing-support',
+    source: 'maarek',
+    question: {
+      en: 'Which is generally FREE in AWS?',
+      ro: 'Care e GRATUIT în general în AWS?',
+    },
+    options: [
+      { en: 'Outbound data transfer to the internet', ro: 'Trafic outbound spre internet' },
+      { en: 'Inbound data transfer from the internet', ro: 'Trafic inbound de pe internet' },
+      { en: 'EC2 instance hours', ro: 'Ore EC2' },
+      { en: 'NAT Gateway data processing', ro: 'NAT Gateway data processing' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Memory hook: **"AWS lets you in for free, charges to leave"**. Inbound (uploads, API requests TO AWS) is free. Outbound (downloads, API responses FROM AWS) is paid. Same-Region inter-AZ traffic is cheap; cross-Region is expensive.',
+      ro: 'Memo: **"AWS te lasă să intri gratis, taxează ieșirea"**. Inbound (upload-uri, cereri API SPRE AWS) e gratuit. Outbound (download-uri, răspunsuri DE LA AWS) e plătit. Trafic inter-AZ în aceeași Regiune e ieftin; cross-Region e scump.',
+    },
+    relatedServices: [],
+    relatedConcepts: ['pricing-fundamentals'],
+  },
+  {
+    id: 'bill-9',
+    type: 'multiple_choice',
+    difficulty: 2,
+    categories: ['billing'],
+    examDomain: 'billing-support',
+    source: 'aws-docs',
+    question: {
+      en: 'A finance team wants to allocate AWS costs to specific projects (e.g., "Project Apollo" vs "Project Bravo"). Which feature?',
+      ro: 'O echipă de finanțe vrea să aloce costurile AWS pe proiecte specifice (ex: "Proiect Apollo" vs "Proiect Bravo"). Care feature?',
+    },
+    options: [
+      { en: 'AWS Service Catalog', ro: 'AWS Service Catalog' },
+      { en: 'Cost Allocation Tags', ro: 'Cost Allocation Tags' },
+      { en: 'Reserved Instances', ro: 'Reserved Instances' },
+      { en: 'AWS Config Rules', ro: 'AWS Config Rules' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Analogy: like coloring expense receipts by project. You add tags (e.g., `Project=Apollo`) to resources; once activated as Cost Allocation Tags, they appear in Cost Explorer and Cost & Usage Reports for filtering.',
+      ro: 'Analogie: ca și cum colorezi bonurile pe proiect. Adaugi tag-uri (ex: `Project=Apollo`) pe resurse; activate ca Cost Allocation Tags, apar în Cost Explorer și Cost & Usage Reports pentru filtrare.',
+    },
+    relatedServices: ['costexplorer'],
+  },
+  {
+    id: 'bill-10',
+    type: 'multiple_choice',
+    difficulty: 2,
+    categories: ['support'],
+    examDomain: 'billing-support',
+    source: 'tutorials-dojo',
+    question: {
+      en: 'AWS Trusted Advisor performs checks across 5 categories. Which category is NOT one of them?',
+      ro: 'AWS Trusted Advisor face checks pe 5 categorii. Care NU e una din ele?',
+    },
+    options: [
+      { en: 'Cost Optimization', ro: 'Cost Optimization' },
+      { en: 'Performance', ro: 'Performance' },
+      { en: 'Marketing Reach', ro: 'Marketing Reach' },
+      { en: 'Service Limits', ro: 'Service Limits' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Mnemonic: **"COPSS"** — **C**ost, **O**perational performance, **P**erformance, **S**ecurity, **S**ervice limits. Trusted Advisor is your free AWS auditor; Business+ plans get all checks, Basic/Developer get only 7 security checks.',
+      ro: 'Mnemonic: **"COPSS"** — **C**ost, **O**perational performance, **P**erformance, **S**ecurity, **S**ervice limits. Trusted Advisor e auditorul tău AWS gratuit; planurile Business+ primesc toate checks, Basic/Developer doar 7 de securitate.',
+    },
+    relatedServices: ['trustedadvisor'],
+  },
+];

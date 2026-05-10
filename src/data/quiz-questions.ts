@@ -1,12 +1,24 @@
-import type { QuizQuestion } from '@/types';
+import type { QuizQuestion, ExamDomain } from '@/types';
+import { cloudConceptsQuestions } from './questions/cloud-concepts';
+import { securityQuestions } from './questions/security';
+import { techServicesQuestions } from './questions/tech-services';
+import { billingSupportQuestions } from './questions/billing-support';
+import { extraQuestions } from './questions/extra';
 
 /**
  * AWS Certified Cloud Practitioner (CLF-C02) practice questions.
- * Curated from official AWS exam guide topics + Stephane Maarek course.
- * Each question has 4 options (1 correct), explanation, and links to services/concepts.
+ * Curated from Stephane Maarek's CLF-C02 course (primary) + official AWS exam guide
+ * + Tutorials Dojo + AWS Skill Builder cross-reference.
+ *
+ * Each question is tagged with `examDomain` for the 4 official CLF-C02 domains:
+ *   - cloud-concepts (24%)
+ *   - security (30%)
+ *   - tech-services (34%)
+ *   - billing-support (12%)
  */
 
-export const quizQuestions: QuizQuestion[] = [
+/** Legacy (v0.2) bank — domain tags inferred at runtime in `quizQuestions`. */
+const legacyQuestions: QuizQuestion[] = [
   // ========================================================================
   // GLOBAL INFRASTRUCTURE
   // ========================================================================
@@ -716,11 +728,137 @@ export const quizQuestions: QuizQuestion[] = [
   },
 ];
 
+/**
+ * Heuristic to map legacy questions (no `examDomain` field) to a domain
+ * based on their existing `categories` tags. Keeps backwards-compat without
+ * editing the 30 v0.2 questions.
+ */
+function inferDomain(q: QuizQuestion): ExamDomain {
+  if (q.examDomain) return q.examDomain;
+  const cats = q.categories;
+  if (cats.some((c) => ['security', 'compliance'].includes(c))) return 'security';
+  if (cats.some((c) => ['billing', 'pricing', 'support'].includes(c))) return 'billing-support';
+  if (cats.some((c) => ['cloud-fundamentals', 'well-architected', 'caf', 'global-infrastructure'].includes(c)))
+    return 'cloud-concepts';
+  return 'tech-services';
+}
+
+/**
+ * The full quiz bank: 30 legacy + ~67 domain-tagged questions = ~97 total.
+ * Every question gets a guaranteed `examDomain` (inferred for legacy ones).
+ */
+export const quizQuestions: QuizQuestion[] = [
+  ...legacyQuestions,
+  ...cloudConceptsQuestions,
+  ...securityQuestions,
+  ...techServicesQuestions,
+  ...billingSupportQuestions,
+  ...extraQuestions,
+].map((q) => ({ ...q, examDomain: inferDomain(q) }));
+
+/**
+ * Official CLF-C02 domain weights (percentages of the 65-question exam).
+ * Used to build a properly-weighted Practice Exam.
+ */
+export const DOMAIN_WEIGHTS: Record<ExamDomain, number> = {
+  'cloud-concepts': 0.24,
+  security: 0.30,
+  'tech-services': 0.34,
+  'billing-support': 0.12,
+};
+
 export function getQuestionsByCategory(categoryIds: string[]): QuizQuestion[] {
   return quizQuestions.filter((q) => q.categories.some((c) => categoryIds.includes(c)));
+}
+
+export function getQuestionsByDomain(domain: ExamDomain): QuizQuestion[] {
+  return quizQuestions.filter((q) => q.examDomain === domain);
 }
 
 export function getRandomQuestions(count: number): QuizQuestion[] {
   const shuffled = [...quizQuestions].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
+}
+
+/**
+ * Build a domain-weighted random sample (e.g., for the 65-question Practice Exam).
+ * Picks ceil(weight * total) per domain, shuffles the union, trims to `total`.
+ */
+export function buildWeightedExam(total = 65): QuizQuestion[] {
+  const out: QuizQuestion[] = [];
+  (Object.keys(DOMAIN_WEIGHTS) as ExamDomain[]).forEach((d) => {
+    const target = Math.ceil(DOMAIN_WEIGHTS[d] * total);
+    const pool = getQuestionsByDomain(d);
+    const shuffled = [...pool].sort(() => Math.random() - 0.5);
+    out.push(...shuffled.slice(0, Math.min(target, shuffled.length)));
+  });
+  // Final shuffle so domains don't appear in clusters
+  return out.sort(() => Math.random() - 0.5).slice(0, total);
+}
+
+/**
+ * Quiz scope determines which question pool to draw from.
+ *   - 'all'        : entire bank
+ *   - ExamDomain   : just one of the 4 official domains
+ *   - 'category:X' : just questions tagged with category X (e.g., 'storage')
+ */
+export type QuizScope = 'all' | ExamDomain | `category:${string}`;
+
+/**
+ * Smart sampler: prefers questions NOT in the user's recently-seen ring buffer
+ * so consecutive sessions feel fresh. Falls back to seen questions if the
+ * fresh pool is too small.
+ */
+export function buildQuiz(
+  count: number,
+  scope: QuizScope = 'all',
+  recentlySeen: string[] = [],
+): QuizQuestion[] {
+  // 1. filter by scope
+  let pool: QuizQuestion[];
+  if (scope === 'all') {
+    pool = quizQuestions;
+  } else if (scope.startsWith('category:')) {
+    const cat = scope.slice('category:'.length);
+    pool = quizQuestions.filter((q) => q.categories.includes(cat));
+  } else {
+    pool = getQuestionsByDomain(scope as ExamDomain);
+  }
+
+  if (pool.length === 0) return [];
+
+  // 2. Split into "fresh" (not recently seen) and "stale" (seen)
+  const seenSet = new Set(recentlySeen);
+  const fresh = pool.filter((q) => !seenSet.has(q.id));
+  const stale = pool.filter((q) => seenSet.has(q.id));
+
+  // 3. Shuffle each, then concat (fresh first) and take `count`
+  const shuf = (arr: QuizQuestion[]) => [...arr].sort(() => Math.random() - 0.5);
+  const ordered = [...shuf(fresh), ...shuf(stale)];
+  return ordered.slice(0, Math.min(count, ordered.length));
+}
+
+/**
+ * For the home Daily Challenge: deterministic-ish random based on date,
+ * so all visits today see the same 5 questions. Different each day.
+ */
+export function getDailyChallengeQuestions(date: string, count = 5): QuizQuestion[] {
+  // Cheap hash of the date string → seed
+  let seed = 0;
+  for (let i = 0; i < date.length; i++) seed = (seed * 31 + date.charCodeAt(i)) >>> 0;
+  // Mulberry32 PRNG seeded with the date
+  const rand = () => {
+    seed = (seed + 0x6d2b79f5) >>> 0;
+    let t = seed;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const pool = [...quizQuestions];
+  // Fisher-Yates with seeded rand
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, count);
 }

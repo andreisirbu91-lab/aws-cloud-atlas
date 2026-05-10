@@ -1,0 +1,848 @@
+import type { QuizQuestion } from '@/types';
+
+/**
+ * Extra question bank for variety. ~50 questions across all 4 CLF-C02 domains
+ * with diverse scenarios, edge cases, and "which service?" patterns common
+ * in the real exam.
+ */
+export const extraQuestions: QuizQuestion[] = [
+  // ========================================================================
+  // CLOUD CONCEPTS — extra
+  // ========================================================================
+  {
+    id: 'x-cc-1', type: 'multiple_choice', difficulty: 1,
+    categories: ['global-infrastructure'], examDomain: 'cloud-concepts', source: 'maarek',
+    question: { en: 'Which AWS service is GLOBAL (not tied to a Region)?', ro: 'Care serviciu AWS e GLOBAL (nu e legat de o Regiune)?' },
+    options: [
+      { en: 'Amazon EC2', ro: 'Amazon EC2' },
+      { en: 'Amazon RDS', ro: 'Amazon RDS' },
+      { en: 'Amazon IAM', ro: 'Amazon IAM' },
+      { en: 'Amazon EBS', ro: 'Amazon EBS' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Global services: IAM, Route 53, CloudFront, WAF, Organizations. They appear once across your account. Most others (EC2, RDS, S3, Lambda) are Regional.',
+      ro: 'Servicii globale: IAM, Route 53, CloudFront, WAF, Organizations. Apar o dată în cont. Majoritatea (EC2, RDS, S3, Lambda) sunt regionale.',
+    },
+    relatedServices: ['iam', 'route53', 'cloudfront'],
+  },
+  {
+    id: 'x-cc-2', type: 'multiple_choice', difficulty: 2,
+    categories: ['cloud-fundamentals'], examDomain: 'cloud-concepts', source: 'tutorials-dojo',
+    question: { en: 'A startup needs to deploy a quick MVP without managing infrastructure. Which is BEST?', ro: 'Un startup vrea MVP rapid fără infrastructură. Care e CEL MAI BUN?' },
+    options: [
+      { en: 'IaaS — provisioning own EC2 cluster', ro: 'IaaS — propriu cluster EC2' },
+      { en: 'SaaS — buying competitor product', ro: 'SaaS — cumpărare produs competitor' },
+      { en: 'PaaS — Elastic Beanstalk or App Runner', ro: 'PaaS — Elastic Beanstalk sau App Runner' },
+      { en: 'On-premises hardware', ro: 'Hardware on-premises' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'PaaS = sweet spot for MVPs. Beanstalk/App Runner take your code and handle infra automatically. IaaS is too much work; SaaS does not let you build a product.',
+      ro: 'PaaS = punctul dulce pentru MVP. Beanstalk/App Runner iau codul, gestionează infra automat. IaaS e prea mult; SaaS nu îți permite să construiești.',
+    },
+    relatedServices: ['beanstalk'],
+  },
+  {
+    id: 'x-cc-3', type: 'multiple_choice', difficulty: 2,
+    categories: ['well-architected'], examDomain: 'cloud-concepts', source: 'maarek',
+    question: { en: 'Right-sizing EC2 instances primarily improves which Well-Architected pillar?', ro: 'Right-sizing-ul EC2 îmbunătățește în primul rând care pilon Well-Architected?' },
+    options: [
+      { en: 'Reliability', ro: 'Reliability' },
+      { en: 'Cost Optimization', ro: 'Cost Optimization' },
+      { en: 'Security', ro: 'Security' },
+      { en: 'Operational Excellence', ro: 'Operational Excellence' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Right-sizing = matching instance type to actual workload. Reduces waste, drops bill. Compute Optimizer is the AWS tool that recommends right-sizes from CloudWatch metrics.',
+      ro: 'Right-sizing = potrivești tipul instanței la workload-ul real. Reduce risipa, scade factura. Compute Optimizer e tool-ul AWS care recomandă right-size din metricile CloudWatch.',
+    },
+    relatedServices: ['ec2'],
+  },
+  {
+    id: 'x-cc-4', type: 'multiple_choice', difficulty: 2,
+    categories: ['caf'], examDomain: 'cloud-concepts', source: 'aws-docs',
+    question: { en: 'Which CAF perspective is responsible for risk management and audit?', ro: 'Care perspectivă CAF e responsabilă cu managementul riscului și audit?' },
+    options: [
+      { en: 'People', ro: 'People' },
+      { en: 'Governance', ro: 'Governance' },
+      { en: 'Operations', ro: 'Operations' },
+      { en: 'Platform', ro: 'Platform' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Governance perspective = risk, compliance, audit, financial controls. The 3 business perspectives: Business, People, Governance. The 3 technical: Platform, Security, Operations.',
+      ro: 'Perspectiva Governance = risc, compliance, audit, controale financiare. Cele 3 business: Business, People, Governance. Cele 3 tehnice: Platform, Security, Operations.',
+    },
+    relatedServices: [],
+    relatedConcepts: ['caf'],
+  },
+  {
+    id: 'x-cc-5', type: 'multiple_choice', difficulty: 1,
+    categories: ['global-infrastructure'], examDomain: 'cloud-concepts', source: 'maarek',
+    question: { en: 'AWS Outposts is BEST described as:', ro: 'AWS Outposts e descris cel mai bine ca:' },
+    options: [
+      { en: 'A managed CDN service', ro: 'Un CDN managed' },
+      { en: 'A physical AWS rack delivered to your data center', ro: 'Un rack AWS fizic livrat în data center-ul tău' },
+      { en: 'A migration tool for VMs', ro: 'Un tool de migrare VM-uri' },
+      { en: 'An EC2 instance type', ro: 'Un tip de EC2' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Outposts = AWS hardware physically installed at YOUR data center. Same APIs as regular AWS. Use cases: low latency local processing, data residency, hybrid migration.',
+      ro: 'Outposts = hardware AWS instalat fizic LA TINE. Aceleași API-uri ca AWS regular. Cazuri: latență locală, data residency, migrare hibridă.',
+    },
+    relatedServices: ['outposts'],
+  },
+  {
+    id: 'x-cc-6', type: 'multiple_choice', difficulty: 2,
+    categories: ['cloud-fundamentals'], examDomain: 'cloud-concepts', source: 'tutorials-dojo',
+    question: { en: 'A company wants to retire a legacy on-prem app and use Salesforce instead. This migration strategy is:', ro: 'O companie vrea să retragă o aplicație legacy și să folosească Salesforce. Strategia de migrare e:' },
+    options: [
+      { en: 'Rehost', ro: 'Rehost' },
+      { en: 'Replatform', ro: 'Replatform' },
+      { en: 'Repurchase', ro: 'Repurchase' },
+      { en: 'Refactor', ro: 'Refactor' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Repurchase (drop-and-shop) = replace with SaaS. Rehost = lift-and-shift to EC2. Replatform = small cloud tweaks. Refactor = full rewrite.',
+      ro: 'Repurchase (drop-and-shop) = înlocuiești cu SaaS. Rehost = lift-and-shift pe EC2. Replatform = modificări mici. Refactor = rescriere completă.',
+    },
+    relatedServices: [],
+    relatedConcepts: ['caf'],
+  },
+  {
+    id: 'x-cc-7', type: 'multiple_choice', difficulty: 2,
+    categories: ['well-architected'], examDomain: 'cloud-concepts', source: 'aws-docs',
+    question: { en: 'Performing chaos engineering experiments (e.g., Game Days) supports which Well-Architected pillar?', ro: 'Experimentele de chaos engineering (Game Days) susțin care pilon Well-Architected?' },
+    options: [
+      { en: 'Cost Optimization', ro: 'Cost Optimization' },
+      { en: 'Reliability', ro: 'Reliability' },
+      { en: 'Performance Efficiency', ro: 'Performance Efficiency' },
+      { en: 'Sustainability', ro: 'Sustainability' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Reliability pillar promotes intentionally injecting failures (chaos engineering, Game Days) to validate that systems recover. AWS FIS (Fault Injection Simulator) is the managed tool.',
+      ro: 'Pilonul Reliability promovează injectarea intenționată de defecte (chaos engineering, Game Days) pentru a valida recuperarea. AWS FIS (Fault Injection Simulator) e tool-ul managed.',
+    },
+    relatedServices: [],
+    relatedConcepts: ['well-architected'],
+  },
+  {
+    id: 'x-cc-8', type: 'multiple_choice', difficulty: 1,
+    categories: ['cloud-fundamentals'], examDomain: 'cloud-concepts', source: 'maarek',
+    question: { en: 'What does "agility" mean in the context of cloud computing?', ro: 'Ce înseamnă "agility" în contextul cloud?' },
+    options: [
+      { en: 'Speed of running marathons', ro: 'Viteza alergării' },
+      { en: 'Speed at which new resources can be provisioned and ideas tested', ro: 'Viteza la care se provisioneaza resurse noi și se testează idei' },
+      { en: 'How fast you can downsize', ro: 'Cât de repede poți face downsize' },
+      { en: 'Fast checkout', ro: 'Checkout rapid' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Agility in cloud = minutes, not weeks, to provision and experiment. One of the 6 advantages of cloud computing per AWS.',
+      ro: 'Agility în cloud = minute, nu săptămâni, ca să provisioneze și să experimentezi. Unul din cele 6 avantaje cloud după AWS.',
+    },
+    relatedServices: [],
+    relatedConcepts: ['cloud-advantages'],
+  },
+  {
+    id: 'x-cc-9', type: 'multiple_choice', difficulty: 3,
+    categories: ['well-architected'], examDomain: 'cloud-concepts', source: 'tutorials-dojo',
+    question: { en: 'Which is NOT a Sustainability pillar best practice?', ro: 'Care NU e best practice al pilonului Sustainability?' },
+    options: [
+      { en: 'Right-size workloads', ro: 'Right-size la workload-uri' },
+      { en: 'Use managed services that share infrastructure', ro: 'Folosește servicii managed care partajează infra' },
+      { en: 'Always provision maximum capacity 24/7', ro: 'Provisione mereu capacitate maximă 24/7' },
+      { en: 'Choose Regions powered by renewable energy', ro: 'Alege Regiuni alimentate cu energie regenerabilă' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Always provisioning max capacity wastes resources — opposite of Sustainability. The pillar pushes for efficient utilization, managed services, regional choice, lifecycle automation.',
+      ro: 'Provisionarea capacității max e risipă — opusul Sustainability. Pilonul împinge pentru utilizare eficientă, servicii managed, alegere regiuni, automation lifecycle.',
+    },
+    relatedServices: [],
+    relatedConcepts: ['well-architected'],
+  },
+  {
+    id: 'x-cc-10', type: 'multiple_choice', difficulty: 2,
+    categories: ['cloud-fundamentals'], examDomain: 'cloud-concepts', source: 'maarek',
+    question: { en: 'Which deployment model gives the LEAST flexibility but the MOST control over hardware?', ro: 'Care model de deployment dă cel mai puțină flexibilitate dar cel mai mult control hardware?' },
+    options: [
+      { en: 'Public cloud', ro: 'Cloud public' },
+      { en: 'Hybrid cloud', ro: 'Cloud hibrid' },
+      { en: 'On-premises (private data center)', ro: 'On-premises (data center privat)' },
+      { en: 'Multi-region cloud', ro: 'Cloud multi-region' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'On-premises = full control of hardware (you own it) but slow to scale, capital-heavy. Public cloud = elastic, OpEx, less control over physical layer. Hybrid combines.',
+      ro: 'On-premises = control deplin hardware (deții) dar scalare lentă, CapEx-greu. Cloud public = elastic, OpEx, mai puțin control fizic. Hybrid combină.',
+    },
+    relatedServices: [],
+    relatedConcepts: ['cloud-types'],
+  },
+
+  // ========================================================================
+  // SECURITY — extra
+  // ========================================================================
+  {
+    id: 'x-sec-1', type: 'multiple_choice', difficulty: 2,
+    categories: ['security'], examDomain: 'security', source: 'maarek',
+    question: { en: 'Where can you find a list of security checks (e.g., MFA enabled on root) recommended by AWS?', ro: 'Unde găsești o listă de checks de securitate (ex: MFA pe root) recomandate de AWS?' },
+    options: [
+      { en: 'AWS Trusted Advisor', ro: 'AWS Trusted Advisor' },
+      { en: 'AWS WAF', ro: 'AWS WAF' },
+      { en: 'AWS Cost Explorer', ro: 'AWS Cost Explorer' },
+      { en: 'Amazon Comprehend', ro: 'Amazon Comprehend' },
+    ],
+    correct: 0,
+    explanation: {
+      en: 'Trusted Advisor includes 7 free security checks (MFA on root, public S3 buckets, security group ports open to 0.0.0.0, etc.). Business+ plans unlock the full set.',
+      ro: 'Trusted Advisor include 7 checks gratuite de securitate (MFA pe root, bucket-uri S3 publice, porturi SG deschise la 0.0.0.0 etc.). Planurile Business+ deblochează tot.',
+    },
+    relatedServices: ['trustedadvisor'],
+  },
+  {
+    id: 'x-sec-2', type: 'multiple_choice', difficulty: 2,
+    categories: ['security'], examDomain: 'security', source: 'tutorials-dojo',
+    question: { en: 'A user accidentally committed AWS access keys to a public GitHub repo. What is the IMMEDIATE first action?', ro: 'Un utilizator a comis access keys AWS într-un repo public GitHub. Care e acțiunea IMEDIATĂ primă?' },
+    options: [
+      { en: 'Email AWS support', ro: 'Trimite email la AWS support' },
+      { en: 'Wait and see if anything happens', ro: 'Aștepți să vezi ce se întâmplă' },
+      { en: 'Deactivate and rotate the access keys immediately', ro: 'Dezactivezi și rotești access keys imediat' },
+      { en: 'Delete the repo', ro: 'Ștergi repo-ul' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Speed matters: bots scan GitHub in seconds for keys. Step 1: deactivate the key in IAM. Step 2: rotate it. Step 3: review CloudTrail for misuse. Deleting the repo is not enough — Git history persists.',
+      ro: 'Viteza contează: bot-urile scanează GitHub în secunde. Pasul 1: dezactivează cheia în IAM. Pasul 2: rotește. Pasul 3: verifică CloudTrail pentru utilizare nelegitimă. Ștergerea repo-ului nu e suficientă — istoria Git persistă.',
+    },
+    relatedServices: ['iam', 'cloudtrail'],
+  },
+  {
+    id: 'x-sec-3', type: 'multiple_choice', difficulty: 1,
+    categories: ['security'], examDomain: 'security', source: 'maarek',
+    question: { en: 'Which is FALSE about AWS root account?', ro: 'Care e FALS despre contul AWS root?' },
+    options: [
+      { en: 'It has full administrative privileges', ro: 'Are privilegii admin complete' },
+      { en: 'Should have MFA enabled', ro: 'Trebuie să aibă MFA' },
+      { en: 'Should be used for daily tasks', ro: 'Trebuie folosit zilnic' },
+      { en: 'Cannot be deleted unless the AWS account is closed', ro: 'Nu poate fi șters decât dacă contul AWS se închide' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Root should NEVER be used for daily tasks — only initial setup, billing, account closure. Create IAM users/roles for daily work. Always enable MFA on root.',
+      ro: 'Root NU trebuie folosit pentru sarcini zilnice — doar setup inițial, facturare, închidere cont. Creează useri/roluri IAM pentru zilnic. Mereu MFA pe root.',
+    },
+    relatedServices: ['iam'],
+  },
+  {
+    id: 'x-sec-4', type: 'multiple_choice', difficulty: 2,
+    categories: ['security'], examDomain: 'security', source: 'aws-docs',
+    question: { en: 'Which is the MOST cost-effective way to store database passwords used by an application?', ro: 'Care e modul cel mai eficient cost de a stoca parole DB folosite de aplicație?' },
+    options: [
+      { en: 'Hardcoded in environment variables', ro: 'Hardcoded în variabile de mediu' },
+      { en: 'AWS Secrets Manager', ro: 'AWS Secrets Manager' },
+      { en: 'Systems Manager Parameter Store (SecureString)', ro: 'Systems Manager Parameter Store (SecureString)' },
+      { en: 'In a public S3 bucket', ro: 'Într-un bucket S3 public' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Parameter Store SecureString = FREE, KMS-encrypted, IAM-controlled. Secrets Manager ($0.40/secret/month) adds auto-rotation. Both are valid; Parameter Store wins on cost when no rotation needed.',
+      ro: 'Parameter Store SecureString = GRATUIT, criptat KMS, controlat IAM. Secrets Manager ($0.40/secret/lună) adaugă rotire automată. Ambele valide; Parameter Store câștigă pe cost când rotirea nu e necesară.',
+    },
+    relatedServices: ['systemsmanager', 'secretsmanager'],
+  },
+  {
+    id: 'x-sec-5', type: 'multiple_choice', difficulty: 2,
+    categories: ['security'], examDomain: 'security', source: 'tutorials-dojo',
+    question: { en: 'A company\'s S3 bucket is being scraped by competitors. Which feature should they enable?', ro: 'Bucket-ul S3 al unei companii e scraped de competitori. Ce feature să activeze?' },
+    options: [
+      { en: 'S3 Versioning', ro: 'S3 Versioning' },
+      { en: 'S3 Block Public Access + bucket policies', ro: 'S3 Block Public Access + politici bucket' },
+      { en: 'CloudFront caching', ro: 'CloudFront caching' },
+      { en: 'AWS Inspector', ro: 'AWS Inspector' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Block Public Access prevents accidental public exposure. Combine with bucket policies/IAM for fine-grained access. Versioning protects deletion, not access. Inspector scans EC2/ECR.',
+      ro: 'Block Public Access previne expunerea publică accidentală. Combini cu politici bucket/IAM pentru acces fin. Versioning protejează ștergerea, nu accesul. Inspector scanează EC2/ECR.',
+    },
+    relatedServices: ['s3'],
+  },
+  {
+    id: 'x-sec-6', type: 'multiple_choice', difficulty: 1,
+    categories: ['security'], examDomain: 'security', source: 'maarek',
+    question: { en: 'AWS Customer is responsible for which of the following on a managed RDS instance?', ro: 'Clientul AWS răspunde de ce din următoarele pe o instanță RDS managed?' },
+    options: [
+      { en: 'Patching the database engine', ro: 'Patching la motor DB' },
+      { en: 'Managing physical hardware', ro: 'Hardware fizic' },
+      { en: 'Setting database user permissions and the data inside', ro: 'Setarea permisiunilor utilizatorilor DB și datele' },
+      { en: 'Patching the OS', ro: 'Patching OS' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'For managed services like RDS: AWS patches OS and DB engine. CUSTOMER manages user permissions inside the DB and the data. Always remember: "AWS = the building; customer = what is inside the apartment".',
+      ro: 'Pentru servicii managed ca RDS: AWS face patching OS și motor DB. CLIENTUL gestionează permisiuni utilizatori în DB și datele. Memorează: "AWS = clădirea; clientul = ce e în apartament".',
+    },
+    relatedServices: ['rds'],
+    relatedConcepts: ['shared-responsibility'],
+  },
+  {
+    id: 'x-sec-7', type: 'multiple_choice', difficulty: 3,
+    categories: ['security'], examDomain: 'security', source: 'tutorials-dojo',
+    question: { en: 'Which AWS service centralizes management of IAM permissions across multiple accounts in an organization?', ro: 'Care serviciu AWS centralizează gestionarea permisiunilor IAM peste mai multe conturi într-o organizație?' },
+    options: [
+      { en: 'IAM groups', ro: 'IAM groups' },
+      { en: 'AWS Organizations with SCPs + IAM Identity Center', ro: 'AWS Organizations cu SCPs + IAM Identity Center' },
+      { en: 'Amazon Cognito', ro: 'Amazon Cognito' },
+      { en: 'AWS Secrets Manager', ro: 'AWS Secrets Manager' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Organizations + SCPs = guardrails (max permissions). IAM Identity Center = SSO across accounts with permission sets. Together they give central control. Cognito is for end-user auth in your apps.',
+      ro: 'Organizations + SCPs = guardrails (permisiuni max). IAM Identity Center = SSO peste conturi cu seturi de permisiuni. Împreună dau control central. Cognito e pentru auth utilizatori finali în aplicațiile tale.',
+    },
+    relatedServices: ['organizations', 'iamic'],
+  },
+  {
+    id: 'x-sec-8', type: 'multiple_choice', difficulty: 2,
+    categories: ['security'], examDomain: 'security', source: 'maarek',
+    question: { en: 'KMS supports 3 types of keys. Which key gives the customer the MOST control over rotation and policies?', ro: 'KMS suportă 3 tipuri de chei. Care îi dă clientului cel mai mult control asupra rotirii și politicilor?' },
+    options: [
+      { en: 'AWS-owned key', ro: 'AWS-owned key' },
+      { en: 'AWS-managed key (aws/service)', ro: 'AWS-managed key (aws/service)' },
+      { en: 'Customer-managed key (CMK)', ro: 'Customer-managed key (CMK)' },
+      { en: 'Anonymous key', ro: 'Anonymous key' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Customer-managed keys = full control: you set policies, schedule rotation, can disable/delete. AWS-managed keys are auto-rotated yearly. AWS-owned keys are invisible to customers.',
+      ro: 'Customer-managed keys = control deplin: setezi politici, programezi rotirea, dezactivezi/ștergi. AWS-managed se rotesc automat anual. AWS-owned sunt invizibile clienților.',
+    },
+    relatedServices: ['kms'],
+  },
+  {
+    id: 'x-sec-9', type: 'multiple_choice', difficulty: 1,
+    categories: ['security'], examDomain: 'security', source: 'aws-docs',
+    question: { en: 'AWS Cognito is used for:', ro: 'AWS Cognito e folosit pentru:' },
+    options: [
+      { en: 'Patching EC2 instances', ro: 'Patching EC2' },
+      { en: 'User sign-up, sign-in, and access control for web/mobile apps', ro: 'Sign-up, sign-in, și control acces pentru aplicații web/mobile' },
+      { en: 'Encrypting databases', ro: 'Criptare DB-uri' },
+      { en: 'Auditing API calls', ro: 'Audit API calls' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Cognito = end-user auth (millions of users). User Pools (sign-up/sign-in) and Identity Pools (federated AWS access). Different from IAM, which is for AWS account access.',
+      ro: 'Cognito = auth pentru utilizatori finali (milioane). User Pools (sign-up/sign-in) și Identity Pools (acces AWS federat). Diferit de IAM, care e pentru acces în contul AWS.',
+    },
+    relatedServices: ['cognito'],
+  },
+  {
+    id: 'x-sec-10', type: 'multiple_choice', difficulty: 2,
+    categories: ['security'], examDomain: 'security', source: 'maarek',
+    question: { en: 'A bucket policy and an IAM policy both apply to a request. What is the result?', ro: 'O politică bucket și o politică IAM se aplică ambele unei cereri. Care e rezultatul?' },
+    options: [
+      { en: 'Always allowed if either says allow', ro: 'Mereu permis dacă oricare zice allow' },
+      { en: 'Allowed only if BOTH allow and NEITHER explicitly denies', ro: 'Permis doar dacă AMBELE permit și NICIUNA nu refuză explicit' },
+      { en: 'Bucket policy always wins', ro: 'Politica bucket câștigă mereu' },
+      { en: 'IAM policy always wins', ro: 'Politica IAM câștigă mereu' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'IAM evaluation: explicit DENY > explicit ALLOW > implicit DENY. The request is allowed only if SOMEWHERE allows AND NOWHERE denies. Bucket policies, IAM policies, and SCPs all stack.',
+      ro: 'Evaluare IAM: DENY explicit > ALLOW explicit > DENY implicit. Cererea e permisă doar dacă UNDEVA e allow ȘI NICĂIERI deny. Politicile bucket, IAM și SCP se stivuiesc.',
+    },
+    relatedServices: ['iam', 's3'],
+  },
+  {
+    id: 'x-sec-11', type: 'multiple_choice', difficulty: 2,
+    categories: ['security'], examDomain: 'security', source: 'tutorials-dojo',
+    question: { en: 'AWS Firewall Manager helps you:', ro: 'AWS Firewall Manager te ajută să:' },
+    options: [
+      { en: 'Deploy and centrally manage WAF, Shield Advanced, and Network Firewall rules across multiple accounts', ro: 'Deployezi și gestionezi central WAF, Shield Advanced și Network Firewall peste mai multe conturi' },
+      { en: 'Replace IAM', ro: 'Înlocuiești IAM' },
+      { en: 'Detect threats with ML', ro: 'Detecți amenințări cu ML' },
+      { en: 'Encrypt EBS volumes', ro: 'Criptezi volume EBS' },
+    ],
+    correct: 0,
+    explanation: {
+      en: 'Firewall Manager works with AWS Organizations to centrally configure WAF rules, Shield Advanced protection, Network Firewall, and Security Group policies across all member accounts.',
+      ro: 'Firewall Manager lucrează cu AWS Organizations pentru a configura central reguli WAF, protecție Shield Advanced, Network Firewall și politici Security Group peste toate conturile membre.',
+    },
+    relatedServices: ['waf', 'shield', 'organizations'],
+  },
+  {
+    id: 'x-sec-12', type: 'multiple_choice', difficulty: 1,
+    categories: ['security'], examDomain: 'security', source: 'maarek',
+    question: { en: 'The principle of "least privilege" means:', ro: 'Principiul "least privilege" înseamnă:' },
+    options: [
+      { en: 'Give users access to everything to avoid friction', ro: 'Dă acces la tot ca să eviți frecușul' },
+      { en: 'Grant only the permissions needed to do the job, nothing more', ro: 'Acordă doar permisiunile necesare pentru job, nimic mai mult' },
+      { en: 'Disable IAM completely', ro: 'Dezactivează IAM complet' },
+      { en: 'Use root account always', ro: 'Folosește mereu root' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Least privilege = minimum permissions to perform the job. Reduces blast radius if creds leak. IAM Access Analyzer can suggest least-privilege policies based on actual CloudTrail usage.',
+      ro: 'Least privilege = permisiunile minime pentru job. Reduce raza de explozie dacă cred. se scurg. IAM Access Analyzer poate sugera politici least-privilege pe baza utilizării reale din CloudTrail.',
+    },
+    relatedServices: ['iam'],
+  },
+
+  // ========================================================================
+  // TECH & SERVICES — extra
+  // ========================================================================
+  {
+    id: 'x-tech-1', type: 'multiple_choice', difficulty: 2,
+    categories: ['compute'], examDomain: 'tech-services', source: 'maarek',
+    question: { en: 'A team has spiky traffic — 100 req/s most of the day, 10,000 req/s for 2 hours. Which compute option is MOST cost-effective?', ro: 'O echipă are trafic spike — 100 req/s majoritatea zilei, 10,000 req/s timp de 2 ore. Care compute e cel mai eficient?' },
+    options: [
+      { en: 'Fixed EC2 fleet sized for peak', ro: 'Flotă EC2 fixă pentru peak' },
+      { en: 'Lambda (auto-scales to demand, pay per ms)', ro: 'Lambda (scalează auto, plătești per ms)' },
+      { en: 'Single On-Demand EC2', ro: 'O singură EC2 On-Demand' },
+      { en: 'Glacier', ro: 'Glacier' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Lambda scales effortlessly from 0 to thousands of concurrent invocations and bills per ms. Fixed EC2 sized for peak wastes 90%+ of capacity. ASG with EC2 also works but slower to scale (minutes vs ms).',
+      ro: 'Lambda scalează ușor de la 0 la mii de invocări concurente și facturează per ms. EC2 fixă pentru peak risipește 90%+. ASG cu EC2 merge și ea dar scalează mai lent (minute vs ms).',
+    },
+    relatedServices: ['lambda', 'ec2'],
+  },
+  {
+    id: 'x-tech-2', type: 'multiple_choice', difficulty: 2,
+    categories: ['storage'], examDomain: 'tech-services', source: 'aws-docs',
+    question: { en: 'Which S3 feature automatically moves objects between storage classes based on access patterns?', ro: 'Care feature S3 mută automat obiectele între clase storage după pattern-uri de acces?' },
+    options: [
+      { en: 'S3 Lifecycle policies', ro: 'S3 Lifecycle policies' },
+      { en: 'S3 Intelligent-Tiering', ro: 'S3 Intelligent-Tiering' },
+      { en: 'S3 Cross-Region Replication', ro: 'S3 Cross-Region Replication' },
+      { en: 'S3 Transfer Acceleration', ro: 'S3 Transfer Acceleration' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Intelligent-Tiering monitors access and moves objects between Frequent / Infrequent / Archive tiers automatically — no retrieval fees, small monitoring fee. Lifecycle policies are RULE-based, not access-based.',
+      ro: 'Intelligent-Tiering monitorizează accesul și mută obiectele între tier-uri Frequent / Infrequent / Archive automat — fără fee la retrieval, fee mic monitorizare. Lifecycle policies sunt bazate pe REGULI, nu pe acces.',
+    },
+    relatedServices: ['s3'],
+  },
+  {
+    id: 'x-tech-3', type: 'multiple_choice', difficulty: 1,
+    categories: ['network'], examDomain: 'tech-services', source: 'maarek',
+    question: { en: 'A NAT Gateway is used to:', ro: 'Un NAT Gateway e folosit pentru:' },
+    options: [
+      { en: 'Allow public traffic INTO private instances', ro: 'Permite trafic public ÎN instanțe private' },
+      { en: 'Let private instances make OUTBOUND requests to the internet without being publicly reachable', ro: 'Permite instanțelor private să facă cereri OUTBOUND la internet fără să fie public reachable' },
+      { en: 'Replace VPC peering', ro: 'Înlocuiește VPC peering' },
+      { en: 'Encrypt data', ro: 'Criptează datele' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'NAT Gateway = managed service for outbound internet traffic from private subnets (e.g., download patches). Inbound from internet stays blocked. Costs ~$0.045/hour + per-GB processed.',
+      ro: 'NAT Gateway = serviciu managed pentru trafic outbound spre internet din subnet-uri private (ex: descărcare patch-uri). Inbound de pe internet rămâne blocat. Costă ~$0.045/oră + per-GB.',
+    },
+    relatedServices: ['vpc'],
+  },
+  {
+    id: 'x-tech-4', type: 'multiple_choice', difficulty: 2,
+    categories: ['database'], examDomain: 'tech-services', source: 'tutorials-dojo',
+    question: { en: 'A retail company needs in-memory caching to reduce DB load during flash sales. Which AWS service?', ro: 'O companie retail are nevoie de caching in-memory să reducă load-ul DB la flash sales. Care serviciu AWS?' },
+    options: [
+      { en: 'Amazon Aurora', ro: 'Amazon Aurora' },
+      { en: 'Amazon ElastiCache (Redis or Memcached)', ro: 'Amazon ElastiCache (Redis sau Memcached)' },
+      { en: 'Amazon DynamoDB', ro: 'Amazon DynamoDB' },
+      { en: 'Amazon Redshift', ro: 'Amazon Redshift' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'ElastiCache = managed Redis/Memcached for sub-millisecond caching. Sits between app and DB. Redis offers persistence, replication, pub/sub. Memcached is simpler and faster for ephemeral.',
+      ro: 'ElastiCache = Redis/Memcached managed pentru cache sub-milisecundă. Se pune între app și DB. Redis oferă persistență, replicare, pub/sub. Memcached e mai simplu și mai rapid pentru efemer.',
+    },
+    relatedServices: ['elasticache'],
+  },
+  {
+    id: 'x-tech-5', type: 'multiple_choice', difficulty: 2,
+    categories: ['compute'], examDomain: 'tech-services', source: 'maarek',
+    question: { en: 'Spot Instances can be terminated by AWS with how much notice?', ro: 'Instanțele Spot pot fi oprite de AWS cu cât preaviz?' },
+    options: [
+      { en: 'No notice', ro: 'Fără preaviz' },
+      { en: '2 minutes', ro: '2 minute' },
+      { en: '1 hour', ro: '1 oră' },
+      { en: '24 hours', ro: '24 ore' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Spot Instances give 2-minute interruption notice via instance metadata + CloudWatch event. Use only for fault-tolerant workloads (batch, render, big data). Up to 90% off On-Demand.',
+      ro: 'Instanțele Spot dau preaviz 2 minute via instance metadata + eveniment CloudWatch. Folosește doar pentru workload-uri tolerante la defect (batch, render, big data). Până la 90% reducere.',
+    },
+    relatedServices: ['ec2'],
+  },
+  {
+    id: 'x-tech-6', type: 'multiple_choice', difficulty: 1,
+    categories: ['storage'], examDomain: 'tech-services', source: 'aws-docs',
+    question: { en: 'Which S3 storage class is BEST for backups that must be retrievable in milliseconds?', ro: 'Care clasă S3 e cea mai bună pentru backup-uri care trebuie retrievabile în milisecunde?' },
+    options: [
+      { en: 'S3 Glacier Deep Archive', ro: 'S3 Glacier Deep Archive' },
+      { en: 'S3 Glacier Flexible Retrieval', ro: 'S3 Glacier Flexible Retrieval' },
+      { en: 'S3 Glacier Instant Retrieval', ro: 'S3 Glacier Instant Retrieval' },
+      { en: 'S3 One Zone-Infrequent Access', ro: 'S3 One Zone-Infrequent Access' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Glacier Instant Retrieval = ms retrieval at low cost (~$0.004/GB-month, but min storage 90 days, retrieval fee). For data accessed quarterly. Flexible takes minutes-12h. Deep Archive 12-48h.',
+      ro: 'Glacier Instant Retrieval = retrieval în ms la cost mic (~$0.004/GB-lună, min storage 90 zile, fee retrieval). Pentru date trimestriale. Flexible ia minute-12h. Deep Archive 12-48h.',
+    },
+    relatedServices: ['s3', 'glacier'],
+  },
+  {
+    id: 'x-tech-7', type: 'multiple_choice', difficulty: 2,
+    categories: ['network'], examDomain: 'tech-services', source: 'maarek',
+    question: { en: 'Which is TRUE about VPC peering?', ro: 'Care e ADEVĂRAT despre VPC peering?' },
+    options: [
+      { en: 'It is transitive — A peers with B, B peers with C, so A reaches C', ro: 'E tranzitiv — A se peer cu B, B cu C, deci A ajunge la C' },
+      { en: 'Connection is one-to-one and NOT transitive', ro: 'Conexiunea e unu-la-unu și NU e tranzitivă' },
+      { en: 'It only works inside one Region', ro: 'Funcționează doar într-o Regiune' },
+      { en: 'It includes built-in encryption', ro: 'Include criptare built-in' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'VPC peering = direct, non-transitive 1:1 link between two VPCs. Cross-Region peering exists. For many-VPC topologies, use Transit Gateway (hub-and-spoke).',
+      ro: 'VPC peering = legătură directă, ne-tranzitivă, 1:1 între 2 VPC-uri. Cross-Region există. Pentru topologii multi-VPC, folosește Transit Gateway (hub-and-spoke).',
+    },
+    relatedServices: ['vpc'],
+  },
+  {
+    id: 'x-tech-8', type: 'multiple_choice', difficulty: 2,
+    categories: ['compute'], examDomain: 'tech-services', source: 'tutorials-dojo',
+    question: { en: 'Which AWS service is FULLY managed Kubernetes?', ro: 'Care serviciu AWS e Kubernetes complet managed?' },
+    options: [
+      { en: 'Amazon ECS', ro: 'Amazon ECS' },
+      { en: 'Amazon EKS', ro: 'Amazon EKS' },
+      { en: 'AWS Lambda', ro: 'AWS Lambda' },
+      { en: 'AWS Batch', ro: 'AWS Batch' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'EKS = managed Kubernetes (control plane fully managed; you can run workers on EC2 or Fargate). ECS is AWS\'s proprietary container orchestrator — simpler but less portable than K8s.',
+      ro: 'EKS = Kubernetes managed (control plane complet managed; rulezi workeri pe EC2 sau Fargate). ECS e orchestratorul de containere proprietar AWS — mai simplu dar mai puțin portabil ca K8s.',
+    },
+    relatedServices: ['eks', 'ecs', 'fargate'],
+  },
+  {
+    id: 'x-tech-9', type: 'multiple_choice', difficulty: 1,
+    categories: ['network'], examDomain: 'tech-services', source: 'maarek',
+    question: { en: 'A company wants a private connection between two VPCs without going through the public internet. Which is the SIMPLEST option?', ro: 'O companie vrea conexiune privată între 2 VPC-uri fără internet public. Care e opțiunea cea mai SIMPLĂ?' },
+    options: [
+      { en: 'Internet Gateway', ro: 'Internet Gateway' },
+      { en: 'NAT Gateway', ro: 'NAT Gateway' },
+      { en: 'VPC Peering', ro: 'VPC Peering' },
+      { en: 'Direct Connect', ro: 'Direct Connect' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'VPC Peering = simplest VPC-to-VPC private connection (works cross-Region, cross-account). Internet Gateway is for public access. NAT Gateway is for outbound from private subnets. Direct Connect is to on-prem.',
+      ro: 'VPC Peering = cea mai simplă conexiune VPC-la-VPC privată (cross-Region, cross-account). Internet Gateway = acces public. NAT Gateway = outbound din subnet-uri private. Direct Connect = la on-prem.',
+    },
+    relatedServices: ['vpc'],
+  },
+  {
+    id: 'x-tech-10', type: 'multiple_choice', difficulty: 2,
+    categories: ['storage'], examDomain: 'tech-services', source: 'aws-docs',
+    question: { en: 'Which feature enables fast, secure file transfer to/from S3 over long distances?', ro: 'Care feature permite transfer rapid și sigur către/de la S3 peste distanțe lungi?' },
+    options: [
+      { en: 'S3 Versioning', ro: 'S3 Versioning' },
+      { en: 'S3 Transfer Acceleration', ro: 'S3 Transfer Acceleration' },
+      { en: 'S3 Lifecycle policies', ro: 'S3 Lifecycle policies' },
+      { en: 'S3 Replication', ro: 'S3 Replication' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Transfer Acceleration uses CloudFront edge locations as upload entry points, then routes to S3 over AWS backbone — 50-500% faster for large files over long distances. Small extra fee per GB.',
+      ro: 'Transfer Acceleration folosește edge locations CloudFront ca puncte upload, apoi rutează la S3 prin backbone AWS — 50-500% mai rapid pentru fișiere mari peste distanțe lungi. Fee mic per GB.',
+    },
+    relatedServices: ['s3', 'cloudfront'],
+  },
+  {
+    id: 'x-tech-11', type: 'multiple_choice', difficulty: 2,
+    categories: ['integration'], examDomain: 'tech-services', source: 'tutorials-dojo',
+    question: { en: 'You need to send the SAME message to a Lambda, an SQS queue, AND an email. Which service?', ro: 'Trebuie să trimiți ACELAȘI mesaj la o Lambda, o coadă SQS ȘI un email. Ce serviciu?' },
+    options: [
+      { en: 'Amazon SQS', ro: 'Amazon SQS' },
+      { en: 'Amazon SNS (with multiple subscribers)', ro: 'Amazon SNS (cu mai mulți subscribers)' },
+      { en: 'AWS Step Functions', ro: 'AWS Step Functions' },
+      { en: 'Amazon Kinesis', ro: 'Amazon Kinesis' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'SNS pub/sub fan-out: one Topic publish → all subscribers (Lambda + SQS + email + SMS + HTTP). Classic AWS pattern. SQS is point-to-point.',
+      ro: 'SNS pub/sub fan-out: o publicare Topic → toți subscribers (Lambda + SQS + email + SMS + HTTP). Pattern AWS clasic. SQS e point-to-point.',
+    },
+    relatedServices: ['sns', 'sqs', 'lambda'],
+  },
+  {
+    id: 'x-tech-12', type: 'multiple_choice', difficulty: 1,
+    categories: ['network'], examDomain: 'tech-services', source: 'maarek',
+    question: { en: 'Which is TRUE about Application Load Balancer (ALB)?', ro: 'Care e ADEVĂRAT despre Application Load Balancer (ALB)?' },
+    options: [
+      { en: 'Operates at Layer 4 (TCP)', ro: 'Operează la Layer 4 (TCP)' },
+      { en: 'Operates at Layer 7 (HTTP/HTTPS), routes by path or hostname', ro: 'Operează la Layer 7 (HTTP/HTTPS), rutează după path sau hostname' },
+      { en: 'Cannot use SSL', ro: 'Nu poate folosi SSL' },
+      { en: 'Is for non-web traffic only', ro: 'E doar pentru trafic non-web' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'ALB = Layer 7 (HTTP/HTTPS), supports path-based, host-based, and header-based routing. Integrates with WAF, ACM (SSL), Cognito (auth). NLB is Layer 4 for TCP/UDP/TLS.',
+      ro: 'ALB = Layer 7 (HTTP/HTTPS), suportă rutare după path, host, header. Integrează cu WAF, ACM (SSL), Cognito (auth). NLB e Layer 4 pentru TCP/UDP/TLS.',
+    },
+    relatedServices: ['elb'],
+  },
+  {
+    id: 'x-tech-13', type: 'multiple_choice', difficulty: 2,
+    categories: ['analytics'], examDomain: 'tech-services', source: 'maarek',
+    question: { en: 'A team wants to visualize business data with dashboards and ML insights. Which service?', ro: 'O echipă vrea să vizualizeze date business cu dashboard-uri și insights ML. Ce serviciu?' },
+    options: [
+      { en: 'Amazon QuickSight', ro: 'Amazon QuickSight' },
+      { en: 'Amazon Redshift', ro: 'Amazon Redshift' },
+      { en: 'AWS Glue', ro: 'AWS Glue' },
+      { en: 'Amazon Athena', ro: 'Amazon Athena' },
+    ],
+    correct: 0,
+    explanation: {
+      en: 'QuickSight = serverless BI — connects to RDS/Redshift/Athena/S3, builds dashboards, has SPICE in-memory engine and ML Insights for anomaly/forecast. Pay-per-session pricing.',
+      ro: 'QuickSight = BI serverless — se conectează la RDS/Redshift/Athena/S3, construiește dashboard-uri, are motor SPICE in-memory și ML Insights pentru anomalie/forecast. Preț pay-per-session.',
+    },
+    relatedServices: ['quicksight'],
+  },
+  {
+    id: 'x-tech-14', type: 'multiple_choice', difficulty: 3,
+    categories: ['compute'], examDomain: 'tech-services', source: 'tutorials-dojo',
+    question: { en: 'A workload needs 24-hour daily processing with steady CPU. The team wants 60% off On-Demand. Best option?', ro: 'Un workload are procesare zilnică 24 ore cu CPU constant. Echipa vrea 60% reducere. Cea mai bună opțiune?' },
+    options: [
+      { en: 'On-Demand', ro: 'On-Demand' },
+      { en: 'Spot Instances', ro: 'Spot Instances' },
+      { en: 'Reserved Instances 3-year all upfront', ro: 'Reserved Instances 3 ani all upfront' },
+      { en: 'Dedicated Hosts', ro: 'Dedicated Hosts' },
+    ],
+    correct: 2,
+    explanation: {
+      en: '24/7 steady = ideal for 3-yr All Upfront RI = up to 72% off. Spot can be terminated (not safe for critical 24/7). On-Demand has no discount. Dedicated Hosts are for compliance/BYOL.',
+      ro: '24/7 constant = ideal pentru RI 3 ani All Upfront = până la 72% reducere. Spot poate fi oprit (nesigur 24/7 critic). On-Demand nu are reducere. Dedicated Hosts sunt pentru compliance/BYOL.',
+    },
+    relatedServices: ['ec2'],
+  },
+  {
+    id: 'x-tech-15', type: 'multiple_choice', difficulty: 2,
+    categories: ['analytics'], examDomain: 'tech-services', source: 'aws-docs',
+    question: { en: 'Which is the AWS managed ETL service that catalogs data and runs Spark jobs?', ro: 'Care e serviciul ETL managed AWS care catalogează date și rulează job-uri Spark?' },
+    options: [
+      { en: 'AWS Glue', ro: 'AWS Glue' },
+      { en: 'Amazon Athena', ro: 'Amazon Athena' },
+      { en: 'Amazon EMR', ro: 'Amazon EMR' },
+      { en: 'AWS Data Pipeline', ro: 'AWS Data Pipeline' },
+    ],
+    correct: 0,
+    explanation: {
+      en: 'Glue = serverless ETL with Data Catalog (cross-service metadata), crawlers (auto-schema), and Spark/Python jobs. Athena queries data; Glue prepares it. EMR is unmanaged Hadoop/Spark cluster.',
+      ro: 'Glue = ETL serverless cu Data Catalog (metadata cross-service), crawlers (auto-schema), job-uri Spark/Python. Athena interoghează; Glue pregătește. EMR e cluster Hadoop/Spark ne-managed.',
+    },
+    relatedServices: ['glue', 'athena'],
+  },
+  {
+    id: 'x-tech-16', type: 'multiple_choice', difficulty: 1,
+    categories: ['compute'], examDomain: 'tech-services', source: 'maarek',
+    question: { en: 'Which is a SERVERLESS compute option?', ro: 'Care e o opțiune compute SERVERLESS?' },
+    options: [
+      { en: 'EC2 Reserved Instance', ro: 'EC2 Reserved Instance' },
+      { en: 'AWS Lambda', ro: 'AWS Lambda' },
+      { en: 'Dedicated Host', ro: 'Dedicated Host' },
+      { en: 'EC2 Spot Instance', ro: 'EC2 Spot Instance' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Lambda is the canonical serverless compute. Other serverless services: Fargate (containers), DynamoDB (DB), Aurora Serverless, S3 (storage), API Gateway. EC2 in any flavor is NOT serverless.',
+      ro: 'Lambda e compute serverless canonic. Alte serverless: Fargate (containere), DynamoDB (DB), Aurora Serverless, S3 (storage), API Gateway. EC2 în orice formă NU e serverless.',
+    },
+    relatedServices: ['lambda', 'fargate'],
+  },
+
+  // ========================================================================
+  // BILLING & SUPPORT — extra
+  // ========================================================================
+  {
+    id: 'x-bill-1', type: 'multiple_choice', difficulty: 1,
+    categories: ['billing'], examDomain: 'billing-support', source: 'maarek',
+    question: { en: 'Which AWS Free Tier offering applies for 12 months after sign-up?', ro: 'Care ofertă Free Tier se aplică 12 luni de la semnare?' },
+    options: [
+      { en: 'EC2 t2.micro 750 hours/month', ro: 'EC2 t2.micro 750 ore/lună' },
+      { en: 'Lambda 1M requests/month (always free)', ro: 'Lambda 1M cereri/lună (always free)' },
+      { en: 'DynamoDB 25 GB (always free)', ro: 'DynamoDB 25 GB (always free)' },
+      { en: 'CloudWatch 10 metrics (always free)', ro: 'CloudWatch 10 metrici (always free)' },
+    ],
+    correct: 0,
+    explanation: {
+      en: 'EC2 t2.micro 750h is part of the 12-month free tier. Lambda, DynamoDB 25GB, CloudWatch 10 metrics are ALWAYS free.',
+      ro: 'EC2 t2.micro 750h e în free tier 12 luni. Lambda, DynamoDB 25GB, CloudWatch 10 metrici sunt MEREU gratuite.',
+    },
+    relatedServices: ['ec2'],
+  },
+  {
+    id: 'x-bill-2', type: 'multiple_choice', difficulty: 2,
+    categories: ['billing'], examDomain: 'billing-support', source: 'tutorials-dojo',
+    question: { en: 'Which AWS pricing model gives the BIGGEST discount but the HIGHEST risk of interruption?', ro: 'Care model de preț AWS dă cea mai MARE reducere dar cel mai MARE risc de întrerupere?' },
+    options: [
+      { en: 'On-Demand', ro: 'On-Demand' },
+      { en: 'Reserved Instances', ro: 'Reserved Instances' },
+      { en: 'Spot Instances', ro: 'Spot Instances' },
+      { en: 'Savings Plans', ro: 'Savings Plans' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Spot = up to 90% off On-Demand but AWS can take it back with 2-min notice when capacity is needed. Use ONLY for fault-tolerant/restartable workloads.',
+      ro: 'Spot = până la 90% reducere dar AWS o poate lua înapoi cu preaviz 2 min când are nevoie de capacitate. Folosește DOAR pentru workload-uri tolerante la defect/restartabile.',
+    },
+    relatedServices: ['ec2'],
+  },
+  {
+    id: 'x-bill-3', type: 'multiple_choice', difficulty: 2,
+    categories: ['billing'], examDomain: 'billing-support', source: 'aws-docs',
+    question: { en: 'Cost Anomaly Detection is a feature of:', ro: 'Cost Anomaly Detection e un feature al:' },
+    options: [
+      { en: 'AWS Trusted Advisor', ro: 'AWS Trusted Advisor' },
+      { en: 'AWS Cost Explorer', ro: 'AWS Cost Explorer' },
+      { en: 'AWS Cost Anomaly Detection (under Billing)', ro: 'AWS Cost Anomaly Detection (sub Billing)' },
+      { en: 'CloudWatch', ro: 'CloudWatch' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Cost Anomaly Detection uses ML to detect unusual spend patterns and alert you. Free service, sits under AWS Billing console. Different from Budgets (rule-based) and Cost Explorer (visualization).',
+      ro: 'Cost Anomaly Detection folosește ML să detecteze pattern-uri neobișnuite de cheltuieli și te alertează. Serviciu gratuit, sub consola Billing. Diferit de Budgets (bazat reguli) și Cost Explorer (vizualizare).',
+    },
+    relatedServices: ['budgets', 'costexplorer'],
+  },
+  {
+    id: 'x-bill-4', type: 'multiple_choice', difficulty: 2,
+    categories: ['support'], examDomain: 'billing-support', source: 'maarek',
+    question: { en: 'Which 2 support plans include access to AWS Trusted Advisor full check set?', ro: 'Care 2 planuri de support includ acces la setul complet AWS Trusted Advisor?' },
+    options: [
+      { en: 'Basic and Developer', ro: 'Basic și Developer' },
+      { en: 'Developer and Business', ro: 'Developer și Business' },
+      { en: 'Business and Enterprise', ro: 'Business și Enterprise' },
+      { en: 'Free for all plans', ro: 'Gratuit pe toate planurile' },
+    ],
+    correct: 2,
+    explanation: {
+      en: 'Business + Enterprise (and Enterprise On-Ramp) get FULL Trusted Advisor checks. Basic + Developer get only 7 free security checks. Trusted Advisor categories: Cost, Performance, Security, Fault Tolerance, Service Limits.',
+      ro: 'Business + Enterprise (și Enterprise On-Ramp) primesc TOATE Trusted Advisor checks. Basic + Developer doar 7 de securitate gratis. Categorii Trusted Advisor: Cost, Performance, Security, Fault Tolerance, Service Limits.',
+    },
+    relatedServices: ['trustedadvisor', 'supportplans'],
+  },
+  {
+    id: 'x-bill-5', type: 'multiple_choice', difficulty: 1,
+    categories: ['billing'], examDomain: 'billing-support', source: 'maarek',
+    question: { en: 'Which is FREE in AWS?', ro: 'Care e GRATUIT în AWS?' },
+    options: [
+      { en: 'AWS CloudFormation (the service itself)', ro: 'AWS CloudFormation (serviciul în sine)' },
+      { en: 'EC2 instance hours', ro: 'Ore EC2' },
+      { en: 'Outbound data transfer', ro: 'Trafic outbound' },
+      { en: 'NAT Gateway hours', ro: 'Ore NAT Gateway' },
+    ],
+    correct: 0,
+    explanation: {
+      en: 'CloudFormation, IAM, VPC, Auto Scaling, Organizations, Cost Explorer = FREE services (you pay only for resources they create/manage). Data transfer outbound is paid.',
+      ro: 'CloudFormation, IAM, VPC, Auto Scaling, Organizations, Cost Explorer = servicii GRATUITE (plătești doar resursele create/gestionate). Traficul outbound e plătit.',
+    },
+    relatedServices: ['cloudformation'],
+  },
+  {
+    id: 'x-bill-6', type: 'multiple_choice', difficulty: 2,
+    categories: ['support'], examDomain: 'billing-support', source: 'tutorials-dojo',
+    question: { en: 'A startup needs free 24/7 support for a single launch event. What is the realistic option?', ro: 'Un startup vrea suport gratuit 24/7 pentru un eveniment de lansare. Care e opțiunea realistă?' },
+    options: [
+      { en: 'Basic plan offers 24/7 phone support', ro: 'Planul Basic oferă telefon 24/7' },
+      { en: 'No support plan offers free 24/7 phone — Business+ is required', ro: 'Niciun plan nu oferă telefon 24/7 gratuit — necesar Business+' },
+      { en: 'Developer plan offers 24/7 phone', ro: 'Developer oferă telefon 24/7' },
+      { en: 'AWS Concierge is free', ro: 'AWS Concierge e gratuit' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'No free 24/7 support exists. Basic = AWS docs, forums, Personal Health Dashboard, no human chat. Business plan is the cheapest with 24/7 phone ($100/month or 3% of monthly AWS bill, whichever is higher).',
+      ro: 'Nu există suport 24/7 gratuit. Basic = docs AWS, forumuri, Personal Health Dashboard, fără om pe chat. Planul Business e cel mai ieftin cu telefon 24/7 ($100/lună sau 3% din factura lunară, max).',
+    },
+    relatedServices: ['supportplans'],
+  },
+  {
+    id: 'x-bill-7', type: 'multiple_choice', difficulty: 2,
+    categories: ['billing'], examDomain: 'billing-support', source: 'aws-docs',
+    question: { en: 'Which 3 billing tools BEST work together to control costs?', ro: 'Care 3 tool-uri de billing lucrează cel mai bine împreună să controlezi costurile?' },
+    options: [
+      { en: 'Pricing Calculator + Budgets + Cost Explorer', ro: 'Pricing Calculator + Budgets + Cost Explorer' },
+      { en: 'EC2 + S3 + RDS', ro: 'EC2 + S3 + RDS' },
+      { en: 'Trusted Advisor + Macie + Inspector', ro: 'Trusted Advisor + Macie + Inspector' },
+      { en: 'IAM + KMS + WAF', ro: 'IAM + KMS + WAF' },
+    ],
+    correct: 0,
+    explanation: {
+      en: 'Cost lifecycle: **Pricing Calculator** (estimate before) → **Budgets** (alerts during) → **Cost Explorer** (analyze after). Add Cost Anomaly Detection for ML alerts.',
+      ro: 'Ciclu cost: **Pricing Calculator** (estimezi înainte) → **Budgets** (alerte în timpul) → **Cost Explorer** (analizezi după). Adaugi Cost Anomaly Detection pentru alerte ML.',
+    },
+    relatedServices: ['calculator', 'budgets', 'costexplorer'],
+  },
+  {
+    id: 'x-bill-8', type: 'multiple_choice', difficulty: 1,
+    categories: ['billing'], examDomain: 'billing-support', source: 'maarek',
+    question: { en: 'AWS Marketplace is:', ro: 'AWS Marketplace e:' },
+    options: [
+      { en: 'A grocery store', ro: 'Un magazin alimentar' },
+      { en: 'A digital catalog where third parties sell software running on AWS, billed via AWS', ro: 'Un catalog digital unde terți vând software AWS, facturat prin AWS' },
+      { en: 'A free training platform', ro: 'O platformă training gratuită' },
+      { en: 'AWS\'s e-commerce store', ro: 'Magazinul e-commerce AWS' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Marketplace = curated catalog of third-party SaaS, AMIs, containers, ML models. Bills go through your AWS account. Vendor handles license; AWS handles billing. Useful for procurement teams.',
+      ro: 'Marketplace = catalog curatоriat cu SaaS, AMI-uri, containere, modele ML de la terți. Facturile trec prin contul tău AWS. Vânzătorul gestionează licența; AWS gestionează facturarea. Util pentru echipe procurement.',
+    },
+    relatedServices: ['marketplace'],
+  },
+  {
+    id: 'x-bill-9', type: 'multiple_choice', difficulty: 2,
+    categories: ['support'], examDomain: 'billing-support', source: 'tutorials-dojo',
+    question: { en: 'Which support feature is ONLY available with Enterprise Support?', ro: 'Care feature de support e DOAR la Enterprise Support?' },
+    options: [
+      { en: 'Access to AWS docs', ro: 'Acces la docs AWS' },
+      { en: 'Concierge for billing/account assistance', ro: 'Concierge pentru asistență facturare/cont' },
+      { en: '24/7 phone', ro: 'Telefon 24/7' },
+      { en: 'Trusted Advisor full checks', ro: 'Toate Trusted Advisor checks' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'Concierge (white-glove billing/account help) is Enterprise-only. 24/7 phone starts at Business. Full Trusted Advisor starts at Business. AWS docs are free for everyone.',
+      ro: 'Concierge (asistență fină facturare/cont) e doar Enterprise. Telefon 24/7 începe la Business. Toate Trusted Advisor încep la Business. Docs AWS gratuite pentru toți.',
+    },
+    relatedServices: ['supportplans'],
+  },
+  {
+    id: 'x-bill-10', type: 'multiple_choice', difficulty: 1,
+    categories: ['billing'], examDomain: 'billing-support', source: 'maarek',
+    question: { en: 'Which Region is generally the CHEAPEST for AWS pricing?', ro: 'Care Regiune e în general CEA MAI IEFTINĂ pentru preț AWS?' },
+    options: [
+      { en: 'sa-east-1 (São Paulo)', ro: 'sa-east-1 (São Paulo)' },
+      { en: 'us-east-1 (N. Virginia)', ro: 'us-east-1 (N. Virginia)' },
+      { en: 'ap-northeast-1 (Tokyo)', ro: 'ap-northeast-1 (Tokyo)' },
+      { en: 'eu-west-1 (Ireland)', ro: 'eu-west-1 (Ireland)' },
+    ],
+    correct: 1,
+    explanation: {
+      en: 'us-east-1 (N. Virginia) is the original AWS Region — almost always the cheapest and gets new services first. Far-Asia and Brazil regions are typically the most expensive.',
+      ro: 'us-east-1 (N. Virginia) e Regiunea originală — aproape mereu cea mai ieftină și primește serviciile noi prima. Regiunile Asia îndepărtată și Brazilia sunt de obicei cele mai scumpe.',
+    },
+    relatedServices: [],
+    relatedConcepts: ['regions'],
+  },
+];
