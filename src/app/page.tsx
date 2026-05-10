@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { Flame, Trophy, Target, BookOpen, Sparkles } from 'lucide-react';
-import type { Service, Concept, Language, Comparison, QuizQuestion } from '@/types';
+import type { Service, Concept, Language, Comparison, QuizQuestion, LearningPath } from '@/types';
 import { services } from '@/data/services';
 import { categories } from '@/data/categories';
 import { concepts } from '@/data/concepts';
@@ -14,6 +14,8 @@ import { ComparisonsSection } from '@/components/ComparisonsSection';
 import { ComparisonModal } from '@/components/ComparisonModal';
 import { DailyChallenge } from '@/components/DailyChallenge';
 import { FlashcardsModal } from '@/components/FlashcardsModal';
+import { LearningPathsSection } from '@/components/LearningPathsSection';
+import { LearningPathModal } from '@/components/LearningPathModal';
 import { ServiceModal } from '@/components/ServiceModal';
 import { ConceptModal } from '@/components/ConceptModal';
 import { QuizModalV2 } from '@/components/QuizModalV2';
@@ -32,6 +34,7 @@ export default function Home() {
   const [selectedComparison, setSelectedComparison] = useState<Comparison | null>(null);
   const [launcherOpen, setLauncherOpen] = useState(false);
   const [flashcardsOpen, setFlashcardsOpen] = useState(false);
+  const [selectedPath, setSelectedPath] = useState<LearningPath | null>(null);
   const [activeQuiz, setActiveQuiz] = useState<(QuizLaunchConfig & { sessionId: number }) | null>(null);
   /** When set, the active quiz is the Daily Challenge for this date. */
   const [dailyQuiz, setDailyQuiz] = useState<{ date: string; questions: QuizQuestion[]; sessionId: number } | null>(null);
@@ -206,6 +209,11 @@ export default function Home() {
           }
         />
 
+        <LearningPathsSection
+          language={language}
+          onPathClick={setSelectedPath}
+        />
+
         <div id="concepts">
           <ConceptsSection language={language} onConceptClick={handleConceptSelect} />
         </div>
@@ -259,6 +267,25 @@ export default function Home() {
           language={language}
           onClose={() => setFlashcardsOpen(false)}
           onServiceClick={handleServiceSelect}
+        />
+      )}
+      {selectedPath && (
+        <LearningPathModal
+          path={selectedPath}
+          language={language}
+          onClose={() => setSelectedPath(null)}
+          onServiceClick={(s) => {
+            setSelectedPath(null);
+            handleServiceSelect(s);
+          }}
+          onConceptClick={(c) => {
+            setSelectedPath(null);
+            handleConceptSelect(c);
+          }}
+          onComparisonClick={(c) => {
+            setSelectedPath(null);
+            setSelectedComparison(c);
+          }}
         />
       )}
       {selectedComparison && (
