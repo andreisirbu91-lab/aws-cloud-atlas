@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { Flame, Trophy, Target, BookOpen, Sparkles } from 'lucide-react';
-import type { Service, Concept, Language } from '@/types';
+import type { Service, Concept, Language, Comparison } from '@/types';
 import { services } from '@/data/services';
 import { categories } from '@/data/categories';
 import { concepts } from '@/data/concepts';
@@ -10,6 +10,8 @@ import { quizQuestions } from '@/data/quiz-questions';
 import { useProgressStore } from '@/store/progress';
 import { CategorySection } from '@/components/CategorySection';
 import { ConceptsSection } from '@/components/ConceptsSection';
+import { ComparisonsSection } from '@/components/ComparisonsSection';
+import { ComparisonModal } from '@/components/ComparisonModal';
 import { ServiceModal } from '@/components/ServiceModal';
 import { ConceptModal } from '@/components/ConceptModal';
 import { QuizModalV2 } from '@/components/QuizModalV2';
@@ -25,6 +27,7 @@ const LANGUAGES: { code: Language; label: string }[] = [
 export default function Home() {
   const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [selectedConcept, setSelectedConcept] = useState<Concept | null>(null);
+  const [selectedComparison, setSelectedComparison] = useState<Comparison | null>(null);
   const [launcherOpen, setLauncherOpen] = useState(false);
   const [activeQuiz, setActiveQuiz] = useState<(QuizLaunchConfig & { sessionId: number }) | null>(null);
   const [language, setLanguage] = useState<Language>('en');
@@ -186,6 +189,11 @@ export default function Home() {
           <ConceptsSection language={language} onConceptClick={handleConceptSelect} />
         </div>
 
+        <ComparisonsSection
+          language={language}
+          onComparisonClick={setSelectedComparison}
+        />
+
         {grouped.map(({ category, items }) => (
           <CategorySection
             key={category.id}
@@ -223,6 +231,17 @@ export default function Home() {
           onClose={() => setSelectedConcept(null)}
           onConceptClick={handleConceptSelect}
           onServiceClick={handleServiceSelect}
+        />
+      )}
+      {selectedComparison && (
+        <ComparisonModal
+          comparison={selectedComparison}
+          language={language}
+          onClose={() => setSelectedComparison(null)}
+          onServiceClick={(s) => {
+            setSelectedComparison(null);
+            handleServiceSelect(s);
+          }}
         />
       )}
       {launcherOpen && (

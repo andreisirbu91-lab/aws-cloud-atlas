@@ -4,6 +4,7 @@ import { securityQuestions } from './questions/security';
 import { techServicesQuestions } from './questions/tech-services';
 import { billingSupportQuestions } from './questions/billing-support';
 import { extraQuestions } from './questions/extra';
+import { extraQuestions2 } from './questions/extra2';
 
 /**
  * AWS Certified Cloud Practitioner (CLF-C02) practice questions.
@@ -754,6 +755,7 @@ export const quizQuestions: QuizQuestion[] = [
   ...techServicesQuestions,
   ...billingSupportQuestions,
   ...extraQuestions,
+  ...extraQuestions2,
 ].map((q) => ({ ...q, examDomain: inferDomain(q) }));
 
 /**
