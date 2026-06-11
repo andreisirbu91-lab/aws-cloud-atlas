@@ -23,6 +23,54 @@ export const analyticsServices: Service[] = [
     connections: ['s3', 'glue', 'quicksight'],
     docsUrl: 'https://docs.aws.amazon.com/athena/',
     visual: { color: COLOR, icon: 'database' },
+    howItWorks: [
+      { en: 'You point Athena at data already sitting in Amazon S3 — there is no loading or ETL step.', ro: 'Îndrepți Athena spre date care stau deja în Amazon S3 — nu există pas de încărcare sau ETL.' },
+      { en: 'You define table schemas (usually via the AWS Glue Data Catalog) that map to the S3 files.', ro: 'Definești scheme de tabele (de obicei prin AWS Glue Data Catalog) care se mapează pe fișierele din S3.' },
+      { en: 'You write standard SQL; Athena (built on Presto) runs the query serverlessly across the S3 data.', ro: 'Scrii SQL standard; Athena (construit pe Presto) rulează query-ul serverless peste datele din S3.' },
+      { en: 'You pay only for the amount of data scanned by each query — no servers to manage.', ro: 'Plătești doar pentru cantitatea de date scanată de fiecare query — fără servere de administrat.' },
+    ],
+    keyFacts: [
+      { en: 'Serverless interactive query service — no infrastructure to provision or manage.', ro: 'Serviciu serverless de query interactiv — fără infrastructură de provizionat sau administrat.' },
+      { en: 'Queries data directly in S3 using standard SQL; no loading or ETL needed.', ro: 'Interoghează datele direct în S3 folosind SQL standard; fără încărcare sau ETL.' },
+      { en: 'Built on Presto; supports CSV, JSON, ORC, Avro, and Parquet.', ro: 'Construit pe Presto; suportă CSV, JSON, ORC, Avro și Parquet.' },
+      { en: 'Often paired with QuickSight for visualization and Glue Data Catalog for table definitions.', ro: 'Adesea folosit împreună cu QuickSight pentru vizualizare și Glue Data Catalog pentru definiții de tabele.' },
+      { en: 'Use compressed/columnar formats (Parquet, ORC) to scan less data and pay less.', ro: 'Folosește formate comprimate/columnare (Parquet, ORC) ca să scanezi mai puține date și să plătești mai puțin.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Price', ro: 'Preț' }, value: { en: '$5.00 per TB of data scanned', ro: '$5.00 per TB de date scanat' } },
+      { label: { en: 'Servers to manage', ro: 'Servere de administrat' }, value: { en: 'Zero (serverless)', ro: 'Zero (serverless)' } },
+      { label: { en: 'Supported formats', ro: 'Formate suportate' }, value: { en: 'CSV, JSON, ORC, Avro, Parquet', ro: 'CSV, JSON, ORC, Avro, Parquet' } },
+    ],
+    whenToUse: [
+      { en: 'Occasional or ad-hoc SQL queries on data already stored in S3.', ro: 'Query-uri SQL ocazionale sau ad-hoc pe date deja stocate în S3.' },
+      { en: 'You want zero infrastructure — no clusters to provision and pay only for what you scan.', ro: 'Vrei zero infrastructură — fără clustere de provizionat și plătești doar pentru ce scanezi.' },
+      { en: 'Analyzing logs, data lakes, or exports in S3 without building an ETL pipeline first.', ro: 'Analizezi loguri, data lake-uri sau exporturi din S3 fără să construiești întâi un pipeline ETL.' },
+    ],
+    whenNotToUse: [
+      { en: 'For a full managed petabyte data warehouse with complex repeated BI workloads, use Amazon Redshift instead.', ro: 'Pentru un data warehouse managed la scară de petabytes cu workload-uri BI complexe și repetate, folosește Amazon Redshift.' },
+      { en: 'For real-time streaming ingestion and analysis, use Amazon Kinesis, not Athena.', ro: 'Pentru ingestie și analiză de streaming în timp real, folosește Amazon Kinesis, nu Athena.' },
+    ],
+    examTraps: [
+      { en: 'Athena = serverless SQL queries directly on S3, pay per TB scanned; Redshift = provisioned data warehouse where you load data in first.', ro: 'Athena = query-uri SQL serverless direct pe S3, plătești per TB scanat; Redshift = data warehouse provizionat în care încarci întâi datele.' },
+      { en: 'Athena does NOT load or move data — it queries data in place in S3. If a question says "load data in / ETL first", that points to Redshift.', ro: 'Athena NU încarcă și nu mută date — interoghează datele pe loc în S3. Dacă o întrebare zice „încarcă datele / ETL întâi", aceea indică Redshift.' },
+      { en: 'Pricing is per TB SCANNED, not per query or per hour — compressing/partitioning data lowers cost.', ro: 'Prețul este per TB SCANAT, nu per query sau per oră — comprimarea/partiționarea datelor scade costul.' },
+      { en: 'Athena uses the Glue Data Catalog for metadata and is often paired with QuickSight for dashboards — do not confuse these with the query engine itself.', ro: 'Athena folosește Glue Data Catalog pentru metadata și e adesea folosit cu QuickSight pentru dashboard-uri — nu confunda acestea cu motorul de query în sine.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'Is Athena serverless or does it require provisioning servers?', ro: 'Este Athena serverless sau necesită provizionarea de servere?' }, a: { en: 'Serverless — there is no infrastructure to provision or manage.', ro: 'Serverless — nu există infrastructură de provizionat sau administrat.' } },
+      { q: { en: 'How is Athena priced?', ro: 'Cum se taxează Athena?' }, a: { en: '$5.00 per TB of data scanned by your queries.', ro: '$5.00 per TB de date scanat de query-urile tale.' } },
+      { q: { en: 'When would you choose Redshift over Athena?', ro: 'Când ai alege Redshift în loc de Athena?' }, a: { en: 'For a full managed data warehouse with large, complex, repeated analytics where you load data in; Athena is for ad-hoc queries straight on S3.', ro: 'Pentru un data warehouse managed complet cu analize mari, complexe și repetate unde încarci datele; Athena e pentru query-uri ad-hoc direct pe S3.' } },
+      { q: { en: 'Which trick reduces Athena query cost?', ro: 'Ce truc reduce costul query-urilor Athena?' }, a: { en: 'Use compressed/columnar formats like Parquet or ORC so each query scans less data.', ro: 'Folosește formate comprimate/columnare ca Parquet sau ORC ca fiecare query să scaneze mai puține date.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'Data sits in Amazon S3', ro: 'Datele stau în Amazon S3' },
+        { en: 'Glue Data Catalog defines the tables', ro: 'Glue Data Catalog definește tabelele' },
+        { en: 'Athena runs SQL serverlessly on the S3 data', ro: 'Athena rulează SQL serverless pe datele din S3' },
+        { en: 'Results visualized in QuickSight (pay per TB scanned)', ro: 'Rezultate vizualizate în QuickSight (plătești per TB scanat)' },
+      ],
+      altText: { en: 'Flow from S3 data through the Glue Data Catalog into serverless Athena SQL queries and on to QuickSight dashboards.', ro: 'Flux de la datele din S3 prin Glue Data Catalog în query-uri SQL serverless Athena și mai departe spre dashboard-uri QuickSight.' },
+    },
   },
   {
     id: 'quicksight',

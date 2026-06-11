@@ -121,6 +121,51 @@ export const billingServices: Service[] = [
     connections: ['budgets', 'organizations'],
     docsUrl: 'https://docs.aws.amazon.com/cost-management/',
     visual: { color: BILLING, icon: 'activity' },
+    howItWorks: [
+      { en: 'Pulls your historical and current billing data and renders it as interactive graphs and reports.', ro: 'Preia datele de facturare istorice și curente și le afișează ca grafice și rapoarte interactive.' },
+      { en: 'Lets you filter and group spend by service, tag, account, region or AZ to find your biggest costs.', ro: 'Permite filtrarea și gruparea cheltuielilor pe serviciu, tag, cont, regiune sau AZ pentru a găsi costurile mari.' },
+      { en: 'Forecasts future cost and usage based on your past trends, up to 12 months ahead.', ro: 'Prognozează costul și utilizarea viitoare pe baza trend-urilor anterioare, până la 12 luni înainte.' },
+      { en: 'Suggests Reserved Instances, Savings Plans and right-sizing actions to lower spend.', ro: 'Sugerează Reserved Instances, Savings Plans și acțiuni de right-sizing pentru a reduce cheltuielile.' },
+    ],
+    keyFacts: [
+      { en: 'Used to visualize, understand and analyze costs and usage over time (past + present).', ro: 'Se folosește pentru a vizualiza, înțelege și analiza costurile și utilizarea în timp (trecut + prezent).' },
+      { en: 'Forecasts future cost from history, but does NOT send proactive alerts on a limit.', ro: 'Prognozează costul viitor din istoric, dar NU trimite alerte proactive la un prag.' },
+      { en: 'Breakdown by service, tag, account, region or AZ; daily, monthly or hourly granularity.', ro: 'Breakdown pe serviciu, tag, cont, regiune sau AZ; granularitate zilnică, lunară sau orară.' },
+      { en: 'Part of the Billing / Cost Management family, alongside AWS Budgets.', ro: 'Face parte din familia Billing / Cost Management, alături de AWS Budgets.' },
+      { en: 'Web UI is free; programmatic Cost Explorer API queries cost $0.01 each.', ro: 'UI-ul web este gratuit; interogările prin Cost Explorer API costă $0.01 fiecare.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Forecast horizon', ro: 'Orizont prognoză' }, value: { en: 'Up to 12 months', ro: 'Până la 12 luni' } },
+      { label: { en: 'UI cost', ro: 'Cost UI' }, value: { en: 'Free', ro: 'Gratuit' } },
+      { label: { en: 'API query cost', ro: 'Cost interogare API' }, value: { en: '$0.01 per request', ro: '$0.01 per cerere' } },
+    ],
+    whenToUse: [
+      { en: 'You want to see where your money went and spot your highest-spend services and trends.', ro: 'Vrei să vezi unde s-au dus banii și să identifici serviciile cu cele mai mari costuri și trend-urile.' },
+      { en: 'You need a cost forecast or RI / Savings Plans recommendations based on usage history.', ro: 'Ai nevoie de o prognoză de cost sau de recomandări RI / Savings Plans bazate pe istoricul de utilizare.' },
+    ],
+    whenNotToUse: [
+      { en: 'You want a proactive alert when spending crosses a limit — use AWS Budgets instead.', ro: 'Vrei o alertă proactivă când cheltuielile depășesc un prag — folosește AWS Budgets în schimb.' },
+      { en: 'You only need a one-time estimate for a service not yet launched — use the AWS Pricing Calculator.', ro: 'Ai nevoie doar de o estimare unică pentru un serviciu nelansat încă — folosește AWS Pricing Calculator.' },
+    ],
+    examTraps: [
+      { en: 'Cost Explorer = analyze, visualize and forecast spending (look at the data). Budgets = set a limit and get alerted. The verb in the question decides the answer.', ro: 'Cost Explorer = analizezi, vizualizezi și prognozezi cheltuielile (te uiți la date). Budgets = setezi un prag și primești alerte. Verbul din întrebare decide răspunsul.' },
+      { en: 'Cost Explorer CAN forecast, but it does not push proactive notifications — that is Budgets.', ro: 'Cost Explorer POATE prognoza, dar nu trimite notificări proactive — asta face Budgets.' },
+      { en: 'It reports on past and present spend; it is not a pre-launch estimator (that is the Pricing Calculator).', ro: 'Raportează cheltuielile trecute și prezente; nu este un estimator pre-lansare (acela e Pricing Calculator).' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'Which service lets you visualize and analyze past AWS spend with graphs and reports?', ro: 'Ce serviciu îți permite să vizualizezi și să analizezi cheltuielile AWS trecute cu grafice și rapoarte?' }, a: { en: 'AWS Cost Explorer.', ro: 'AWS Cost Explorer.' } },
+      { q: { en: 'How far ahead can Cost Explorer forecast costs?', ro: 'Cu cât înainte poate Cost Explorer să prognozeze costurile?' }, a: { en: 'Up to 12 months, based on historical usage.', ro: 'Până la 12 luni, pe baza utilizării istorice.' } },
+      { q: { en: 'You need a proactive alert when spend exceeds a threshold — is Cost Explorer the right tool?', ro: 'Ai nevoie de o alertă proactivă când cheltuielile depășesc un prag — este Cost Explorer instrumentul potrivit?' }, a: { en: 'No — use AWS Budgets for proactive alerts; Cost Explorer is for analysis.', ro: 'Nu — folosește AWS Budgets pentru alerte proactive; Cost Explorer e pentru analiză.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'Billing data', ro: 'Date facturare' },
+        { en: 'Cost Explorer', ro: 'Cost Explorer' },
+        { en: 'Graphs & reports', ro: 'Grafice și rapoarte' },
+        { en: 'Forecast & recommendations', ro: 'Prognoză și recomandări' },
+      ],
+      altText: { en: 'Billing data flows into Cost Explorer, which produces graphs, reports, forecasts and savings recommendations.', ro: 'Datele de facturare intră în Cost Explorer, care produce grafice, rapoarte, prognoze și recomandări de economisire.' },
+    },
   },
   {
     id: 'budgets',
@@ -142,6 +187,51 @@ export const billingServices: Service[] = [
     connections: ['costexplorer', 'sns'],
     docsUrl: 'https://docs.aws.amazon.com/cost-management/',
     visual: { color: BILLING, icon: 'check' },
+    howItWorks: [
+      { en: 'You set a custom budget — a cost or usage limit — for an account, service, tag or other scope.', ro: 'Setezi un buget personalizat — un prag de cost sau de utilizare — pentru un cont, serviciu, tag sau alt scope.' },
+      { en: 'Budgets watches your actual spend and your forecasted spend against that threshold.', ro: 'Budgets urmărește cheltuielile actuale și cele prognozate față de acel prag.' },
+      { en: 'When you exceed, or are forecast to exceed, a threshold it sends a proactive alert via email or SNS.', ro: 'Când depășești, sau ești prognozat să depășești, un prag, trimite o alertă proactivă prin email sau SNS.' },
+      { en: 'Budget Actions can react automatically — e.g. apply an IAM policy or stop resources on overage.', ro: 'Budget Actions pot reacționa automat — de ex. aplică o politică IAM sau opresc resurse la depășire.' },
+    ],
+    keyFacts: [
+      { en: 'Used to set a limit and get alerted BEFORE or when you overspend — proactive, not just reporting.', ro: 'Se folosește pentru a seta un prag și a primi alertă ÎNAINTE sau când depășești — proactiv, nu doar raportare.' },
+      { en: 'Can alert on forecasted cost, not only actual cost — stronger than a basic CloudWatch billing alarm.', ro: 'Poate alerta pe costul prognozat, nu doar pe cel actual — mai puternic decât o alarmă de facturare CloudWatch simplă.' },
+      { en: 'Budget types: Cost, Usage, Reserved Instance coverage and Savings Plans coverage/utilization.', ro: 'Tipuri de buget: Cost, Usage, acoperire Reserved Instance și acoperire/utilizare Savings Plans.' },
+      { en: 'Part of the Billing / Cost Management family, alongside AWS Cost Explorer.', ro: 'Face parte din familia Billing / Cost Management, alături de AWS Cost Explorer.' },
+      { en: 'Delivers notifications via email or Amazon SNS; Budget Actions can auto-remediate.', ro: 'Trimite notificări prin email sau Amazon SNS; Budget Actions pot remedia automat.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Free budgets', ro: 'Bugete gratuite' }, value: { en: 'First 2 budgets', ro: 'Primele 2 bugete' } },
+      { label: { en: 'Cost after free', ro: 'Cost după gratuit' }, value: { en: '$0.02 per budget per day', ro: '$0.02 per buget pe zi' } },
+      { label: { en: 'Alert basis', ro: 'Bază alertă' }, value: { en: 'Actual or forecasted', ro: 'Actual sau prognozat' } },
+    ],
+    whenToUse: [
+      { en: 'You want to be warned proactively before a monthly cost or usage limit is crossed.', ro: 'Vrei să fii avertizat proactiv înainte de a depăși un prag lunar de cost sau de utilizare.' },
+      { en: 'You need alerts on forecasted spend, or automatic actions (stop resources) when a budget is exceeded.', ro: 'Ai nevoie de alerte pe cheltuielile prognozate sau de acțiuni automate (oprire resurse) la depășirea unui buget.' },
+    ],
+    whenNotToUse: [
+      { en: 'You want to deeply analyze and visualize historical spend and trends — use AWS Cost Explorer.', ro: 'Vrei să analizezi și să vizualizezi în detaliu cheltuielile și trend-urile istorice — folosește AWS Cost Explorer.' },
+      { en: 'You only need a pre-deployment price estimate for a new architecture — use the AWS Pricing Calculator.', ro: 'Ai nevoie doar de o estimare de preț pre-deploy pentru o arhitectură nouă — folosește AWS Pricing Calculator.' },
+    ],
+    examTraps: [
+      { en: 'Budgets = set a limit and get alerted (proactive). Cost Explorer = analyze, visualize and forecast spend (look at the data). Match the verb in the question.', ro: 'Budgets = setezi un prag și primești alerte (proactiv). Cost Explorer = analizezi, vizualizezi și prognozezi cheltuielile (te uiți la date). Potrivește verbul din întrebare.' },
+      { en: 'Budgets can alert on FORECASTED cost — a plain CloudWatch billing alarm reacts only to actual cost.', ro: 'Budgets poate alerta pe costul PROGNOZAT — o alarmă de facturare CloudWatch simplă reacționează doar la costul actual.' },
+      { en: 'Both Budgets and Cost Explorer can forecast, but only Budgets sends the proactive notification on a limit.', ro: 'Și Budgets și Cost Explorer pot prognoza, dar doar Budgets trimite notificarea proactivă la un prag.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'Which service lets you set a cost or usage limit and get alerted when you exceed it?', ro: 'Ce serviciu îți permite să setezi un prag de cost sau de utilizare și să primești alertă când îl depășești?' }, a: { en: 'AWS Budgets.', ro: 'AWS Budgets.' } },
+      { q: { en: 'Can Budgets alert you before you actually overspend?', ro: 'Poate Budgets să te alerteze înainte să depășești efectiv?' }, a: { en: 'Yes — it can alert on forecasted spend, not only actual.', ro: 'Da — poate alerta pe cheltuielile prognozate, nu doar pe cele actuale.' } },
+      { q: { en: 'You want to visualize and analyze past spend in detail — Budgets or Cost Explorer?', ro: 'Vrei să vizualizezi și să analizezi în detaliu cheltuielile trecute — Budgets sau Cost Explorer?' }, a: { en: 'Cost Explorer — Budgets is for setting limits and alerts.', ro: 'Cost Explorer — Budgets e pentru setarea pragurilor și alertelor.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'Set budget limit', ro: 'Setezi pragul bugetului' },
+        { en: 'Track actual & forecast', ro: 'Urmărești actual și prognoză' },
+        { en: 'Threshold crossed', ro: 'Prag depășit' },
+        { en: 'Alert via email / SNS', ro: 'Alertă prin email / SNS' },
+      ],
+      altText: { en: 'You set a budget limit; Budgets tracks actual and forecasted spend and, when a threshold is crossed, sends a proactive alert via email or SNS.', ro: 'Setezi un prag de buget; Budgets urmărește cheltuielile actuale și prognozate și, când pragul e depășit, trimite o alertă proactivă prin email sau SNS.' },
+    },
   },
   {
     id: 'calculator',

@@ -29,6 +29,51 @@ export const managementServices: Service[] = [
     connections: ['ec2', 'lambda', 'sns', 'eventbridge'],
     docsUrl: 'https://docs.aws.amazon.com/cloudwatch/',
     visual: { color: COLOR, icon: 'activity' },
+    howItWorks: [
+      { en: 'AWS services and agents push metrics (CPU, network, latency) into CloudWatch automatically.', ro: 'Serviciile AWS și agenții trimit automat metrici (CPU, rețea, latență) în CloudWatch.' },
+      { en: 'You create alarms that watch a metric and fire when it crosses a threshold (e.g. CPU > 80%).', ro: 'Creezi alarme care urmăresc o metrică și se declanșează când depășește un prag (ex: CPU > 80%).' },
+      { en: 'Alarms trigger actions: send an SNS notification, scale an Auto Scaling group, or stop/reboot an EC2.', ro: 'Alarmele declanșează acțiuni: trimit o notificare SNS, scalează un grup Auto Scaling sau opresc/repornesc un EC2.' },
+      { en: 'Logs and metrics feed dashboards so you can see in real time how your resources are performing.', ro: 'Log-urile și metricile alimentează dashboard-uri ca să vezi în timp real cum performează resursele.' },
+    ],
+    keyFacts: [
+      { en: 'CloudWatch is about MONITORING — performance and "what is happening right now".', ro: 'CloudWatch înseamnă MONITORIZARE — performanță și „ce se întâmplă chiar acum”.' },
+      { en: 'It collects three things: metrics (numbers), logs (text), and alarms (thresholds).', ro: 'Colectează trei lucruri: metrici (numere), log-uri (text) și alarme (praguri).' },
+      { en: 'Billing alarms always live in the us-east-1 region.', ro: 'Alarmele de facturare există întotdeauna în regiunea us-east-1.' },
+      { en: 'Alarms can notify via SNS or trigger Auto Scaling and EC2 actions automatically.', ro: 'Alarmele pot notifica prin SNS sau pot declanșa automat Auto Scaling și acțiuni EC2.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Billing alarm region', ro: 'Regiunea alarmelor de facturare' }, value: { en: 'us-east-1', ro: 'us-east-1' } },
+      { label: { en: 'Standard metric resolution', ro: 'Rezoluție standard metrici' }, value: { en: '60 seconds', ro: '60 secunde' } },
+      { label: { en: 'High-resolution metric', ro: 'Metrică de înaltă rezoluție' }, value: { en: '1 second', ro: '1 secundă' } },
+    ],
+    whenToUse: [
+      { en: 'You want to track resource performance (CPU, memory, latency) and see it on dashboards.', ro: 'Vrei să urmărești performanța resurselor (CPU, memorie, latență) și să o vezi pe dashboard-uri.' },
+      { en: 'You need an alarm that notifies you or auto-scales when a metric crosses a threshold.', ro: 'Ai nevoie de o alarmă care te notifică sau scalează automat când o metrică depășește un prag.' },
+      { en: 'You want to centralize and search application logs.', ro: 'Vrei să centralizezi și să cauți în log-urile aplicației.' },
+    ],
+    whenNotToUse: [
+      { en: 'You need to know WHO made an API call and when — that is CloudTrail, not CloudWatch.', ro: 'Trebuie să afli CINE a făcut un apel API și când — asta e CloudTrail, nu CloudWatch.' },
+      { en: 'You need to check if a resource is configured correctly or compliant — use AWS Config.', ro: 'Trebuie să verifici dacă o resursă e configurată corect sau conformă — folosește AWS Config.' },
+    ],
+    examTraps: [
+      { en: 'CloudWatch = MONITORING/metrics ("how is it performing"); CloudTrail = API audit ("who did what"); Config = configuration/compliance.', ro: 'CloudWatch = MONITORIZARE/metrici („cum performează”); CloudTrail = audit API („cine a făcut ce”); Config = configurație/conformitate.' },
+      { en: 'A billing alarm question almost always points to us-east-1 — remember that region.', ro: 'O întrebare despre alarmă de facturare indică aproape mereu us-east-1 — reține regiunea.' },
+      { en: '"Trigger an action when CPU exceeds a threshold" = CloudWatch Alarm, not CloudTrail.', ro: '„Declanșează o acțiune când CPU depășește un prag” = CloudWatch Alarm, nu CloudTrail.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'Which service tells you how a resource is performing right now?', ro: 'Care serviciu îți spune cum performează o resursă chiar acum?' }, a: { en: 'Amazon CloudWatch (metrics, logs, alarms, dashboards).', ro: 'Amazon CloudWatch (metrici, log-uri, alarme, dashboard-uri).' } },
+      { q: { en: 'In which region do billing alarms live?', ro: 'În ce regiune există alarmele de facturare?' }, a: { en: 'us-east-1.', ro: 'us-east-1.' } },
+      { q: { en: 'What can a CloudWatch alarm trigger when a threshold is crossed?', ro: 'Ce poate declanșa o alarmă CloudWatch când se depășește un prag?' }, a: { en: 'An SNS notification, Auto Scaling, or EC2 stop/reboot actions.', ro: 'O notificare SNS, Auto Scaling sau acțiuni de oprire/repornire EC2.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'Resource emits metric', ro: 'Resursa emite metrica' },
+        { en: 'CloudWatch stores metric', ro: 'CloudWatch stochează metrica' },
+        { en: 'Alarm evaluates threshold', ro: 'Alarma evaluează pragul' },
+        { en: 'Action: SNS / Auto Scaling', ro: 'Acțiune: SNS / Auto Scaling' },
+      ],
+      altText: { en: 'Flow showing a resource emitting a metric to CloudWatch, an alarm checking the threshold, and triggering an SNS or Auto Scaling action.', ro: 'Flux care arată o resursă ce emite o metrică către CloudWatch, o alarmă ce verifică pragul și declanșează o acțiune SNS sau Auto Scaling.' },
+    },
   },
   {
     id: 'cloudtrail',
@@ -56,6 +101,51 @@ export const managementServices: Service[] = [
     connections: ['s3', 'cloudwatch', 'guardduty'],
     docsUrl: 'https://docs.aws.amazon.com/cloudtrail/',
     visual: { color: COLOR, icon: 'list' },
+    howItWorks: [
+      { en: 'Every API call in your account is recorded as an event: who made it, when, and from which IP.', ro: 'Fiecare apel API din cont este înregistrat ca eveniment: cine l-a făcut, când și de la ce IP.' },
+      { en: 'The last 90 days of management events are kept automatically in Event History, free.', ro: 'Ultimele 90 de zile de management events sunt păstrate automat în Event History, gratuit.' },
+      { en: 'To keep events longer or analyze them, you create a trail that delivers logs to an S3 bucket.', ro: 'Ca să păstrezi evenimentele mai mult sau să le analizezi, creezi un trail care livrează log-urile într-un bucket S3.' },
+      { en: 'Trails can be multi-region so activity from every region is captured in one place.', ro: 'Trail-urile pot fi multi-region ca să capteze activitatea din fiecare regiune într-un singur loc.' },
+    ],
+    keyFacts: [
+      { en: 'CloudTrail is the AUDIT trail — "who did what, when, and from where" across the account.', ro: 'CloudTrail este traseul de AUDIT — „cine a făcut ce, când și de unde” în tot contul.' },
+      { en: 'It records API calls (actions), not resource performance or state.', ro: 'Înregistrează apeluri API (acțiuni), nu performanța sau starea resurselor.' },
+      { en: 'Event history retains the last 90 days by default; send to S3 for longer retention.', ro: 'Event history reține ultimele 90 de zile by default; trimite în S3 pentru retenție mai lungă.' },
+      { en: 'Used to answer security and forensic questions like "who deleted this resource?".', ro: 'Folosit pentru întrebări de securitate și criminalistice precum „cine a șters resursa asta?”.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Default event history', ro: 'Istoric implicit evenimente' }, value: { en: '90 days', ro: '90 de zile' } },
+      { label: { en: 'Management events cost', ro: 'Cost management events' }, value: { en: 'Free', ro: 'Gratuit' } },
+      { label: { en: 'Recommended trail scope', ro: 'Scop recomandat trail' }, value: { en: 'Multi-region', ro: 'Multi-region' } },
+    ],
+    whenToUse: [
+      { en: 'You need an audit log of who performed which API action and when.', ro: 'Ai nevoie de un log de audit cu cine a executat ce acțiune API și când.' },
+      { en: 'A resource was deleted or changed and you must investigate who did it.', ro: 'O resursă a fost ștearsă sau modificată și trebuie să investighezi cine a făcut-o.' },
+      { en: 'You need to retain API activity beyond 90 days in S3 for compliance.', ro: 'Trebuie să păstrezi activitatea API peste 90 de zile în S3 pentru conformitate.' },
+    ],
+    whenNotToUse: [
+      { en: 'You want metrics, alarms or performance graphs — use Amazon CloudWatch instead.', ro: 'Vrei metrici, alarme sau grafice de performanță — folosește Amazon CloudWatch.' },
+      { en: 'You want to know whether a resource is configured correctly or compliant — use AWS Config.', ro: 'Vrei să afli dacă o resursă e configurată corect sau conformă — folosește AWS Config.' },
+    ],
+    examTraps: [
+      { en: 'CloudTrail = "WHO did what" (API audit); CloudWatch = monitoring/metrics; Config = configuration/compliance over time.', ro: 'CloudTrail = „CINE a făcut ce” (audit API); CloudWatch = monitorizare/metrici; Config = configurație/conformitate în timp.' },
+      { en: 'Any question about "who deleted/changed/created" a resource points to CloudTrail.', ro: 'Orice întrebare despre „cine a șters/modificat/creat” o resursă indică CloudTrail.' },
+      { en: 'Event history is only 90 days — to keep logs longer you must deliver them to S3.', ro: 'Event history e doar 90 de zile — pentru a păstra log-urile mai mult trebuie să le livrezi în S3.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'Which service records who made each API call and when?', ro: 'Care serviciu înregistrează cine a făcut fiecare apel API și când?' }, a: { en: 'AWS CloudTrail.', ro: 'AWS CloudTrail.' } },
+      { q: { en: 'How long does CloudTrail keep event history by default?', ro: 'Cât timp păstrează CloudTrail istoricul evenimentelor by default?' }, a: { en: '90 days; send to S3 to keep it longer.', ro: '90 de zile; trimite în S3 pentru a-l păstra mai mult.' } },
+      { q: { en: 'A resource was deleted — which service tells you who did it?', ro: 'O resursă a fost ștearsă — care serviciu îți spune cine a făcut-o?' }, a: { en: 'CloudTrail (it logs the user, time and source IP of the API call).', ro: 'CloudTrail (înregistrează utilizatorul, ora și IP-ul sursă al apelului API).' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'User makes API call', ro: 'Utilizatorul face un apel API' },
+        { en: 'CloudTrail records event', ro: 'CloudTrail înregistrează evenimentul' },
+        { en: 'Event History (90 days)', ro: 'Event History (90 de zile)' },
+        { en: 'Trail delivers to S3', ro: 'Trail livrează în S3' },
+      ],
+      altText: { en: 'Flow showing a user making an API call, CloudTrail recording it into 90-day event history, and a trail delivering it to S3 for long-term storage.', ro: 'Flux care arată un utilizator ce face un apel API, CloudTrail ce îl înregistrează în istoricul de 90 de zile și un trail ce îl livrează în S3 pentru stocare pe termen lung.' },
+    },
   },
   {
     id: 'config',
@@ -79,6 +169,51 @@ export const managementServices: Service[] = [
     connections: ['cloudtrail', 'sns', 'organizations'],
     docsUrl: 'https://docs.aws.amazon.com/config/',
     visual: { color: COLOR, icon: 'list' },
+    howItWorks: [
+      { en: 'Config continuously records the configuration of your resources and keeps a history of every change.', ro: 'Config înregistrează continuu configurația resurselor și păstrează un istoric al fiecărei modificări.' },
+      { en: 'You define Config Rules that describe the desired state (e.g. "S3 buckets must not be public").', ro: 'Definești Config Rules care descriu starea dorită (ex: „bucket-urile S3 nu trebuie să fie publice”).' },
+      { en: 'Config evaluates each resource against the rules and marks it compliant or non-compliant.', ro: 'Config evaluează fiecare resursă față de reguli și o marchează ca fiind conformă sau neconformă.' },
+      { en: 'Configuration history can be stored in S3, and remediation can auto-fix non-compliant resources.', ro: 'Istoricul configurației poate fi stocat în S3, iar remedierea poate repara automat resursele neconforme.' },
+    ],
+    keyFacts: [
+      { en: 'Config is about resource CONFIGURATION and COMPLIANCE over time.', ro: 'Config înseamnă CONFIGURAȚIA și CONFORMITATEA resurselor în timp.' },
+      { en: 'It answers "what changed, when, and is that change allowed?".', ro: 'Răspunde la „ce s-a schimbat, când și e permisă schimbarea?”.' },
+      { en: 'Config Rules evaluate resources as compliant or non-compliant against a desired state.', ro: 'Config Rules evaluează resursele ca fiind conforme sau neconforme față de o stare dorită.' },
+      { en: 'It is regional and keeps a timeline of how each resource looked at any moment.', ro: 'Este regional și păstrează un istoric al felului în care arăta fiecare resursă la orice moment.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Pricing model', ro: 'Model de preț' }, value: { en: 'Per configuration item recorded', ro: 'Per item de configurație înregistrat' } },
+      { label: { en: 'Scope', ro: 'Scop' }, value: { en: 'Regional', ro: 'Regional' } },
+      { label: { en: 'History storage', ro: 'Stocare istoric' }, value: { en: 'Amazon S3', ro: 'Amazon S3' } },
+    ],
+    whenToUse: [
+      { en: 'You need to check whether resources are configured correctly and stay compliant with rules.', ro: 'Trebuie să verifici dacă resursele sunt configurate corect și rămân conforme cu regulile.' },
+      { en: 'You want a timeline of how a resource configuration changed over time.', ro: 'Vrei un istoric al felului în care configurația unei resurse s-a schimbat în timp.' },
+      { en: 'You want to auto-remediate resources that drift out of compliance.', ro: 'Vrei să remediezi automat resursele care ies din conformitate.' },
+    ],
+    whenNotToUse: [
+      { en: 'You want to know who made an API call — that is CloudTrail, not Config.', ro: 'Vrei să afli cine a făcut un apel API — asta e CloudTrail, nu Config.' },
+      { en: 'You want metrics, alarms or performance monitoring — use Amazon CloudWatch.', ro: 'Vrei metrici, alarme sau monitorizare de performanță — folosește Amazon CloudWatch.' },
+    ],
+    examTraps: [
+      { en: 'Config = configuration + COMPLIANCE over time; CloudTrail = WHO made the API call; CloudWatch = monitoring/metrics.', ro: 'Config = configurație + CONFORMITATE în timp; CloudTrail = CINE a făcut apelul API; CloudWatch = monitorizare/metrici.' },
+      { en: 'Keywords "compliant / non-compliant" or "is this resource configured correctly" point to Config.', ro: 'Cuvintele „conform / neconform” sau „e configurată corect resursa” indică Config.' },
+      { en: 'Config tracks resource STATE; CloudTrail tracks ACTIONS — do not swap them.', ro: 'Config urmărește STAREA resursei; CloudTrail urmărește ACȚIUNILE — nu le confunda.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'Which service checks whether your resources are compliant with rules?', ro: 'Care serviciu verifică dacă resursele tale sunt conforme cu regulile?' }, a: { en: 'AWS Config (with Config Rules).', ro: 'AWS Config (cu Config Rules).' } },
+      { q: { en: 'What is the difference between Config and CloudTrail?', ro: 'Care e diferența dintre Config și CloudTrail?' }, a: { en: 'Config = resource configuration/state and compliance; CloudTrail = who made which API call.', ro: 'Config = configurația/starea resursei și conformitatea; CloudTrail = cine a făcut ce apel API.' } },
+      { q: { en: 'How can you see how a resource was configured last month?', ro: 'Cum poți vedea cum era configurată o resursă luna trecută?' }, a: { en: 'Use AWS Config configuration history (timeline).', ro: 'Folosește istoricul de configurație din AWS Config (timeline).' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'Config records resource', ro: 'Config înregistrează resursa' },
+        { en: 'Rule defines desired state', ro: 'Regula definește starea dorită' },
+        { en: 'Evaluate compliance', ro: 'Evaluează conformitatea' },
+        { en: 'Remediate / store history', ro: 'Remediază / stochează istoric' },
+      ],
+      altText: { en: 'Flow showing Config recording a resource, a rule defining the desired state, an evaluation of compliance, and optional remediation or history storage in S3.', ro: 'Flux care arată Config înregistrând o resursă, o regulă ce definește starea dorită, o evaluare a conformității și remediere opțională sau stocarea istoricului în S3.' },
+    },
   },
   {
     id: 'trustedadvisor',
@@ -101,6 +236,51 @@ export const managementServices: Service[] = [
     connections: ['supportplans', 'sns'],
     docsUrl: 'https://docs.aws.amazon.com/awssupport/',
     visual: { color: COLOR, icon: 'check' },
+    howItWorks: [
+      { en: 'Trusted Advisor runs automated checks against AWS best practices on your account.', ro: 'Trusted Advisor rulează verificări automate față de best-practice-urile AWS pe contul tău.' },
+      { en: 'Checks are grouped into 5 categories: Cost Optimization, Performance, Security, Fault Tolerance, Service Limits.', ro: 'Verificările sunt grupate în 5 categorii: Cost Optimization, Performance, Security, Fault Tolerance, Service Limits.' },
+      { en: 'Each check shows a status (OK, warning, action recommended) and a recommendation to fix it.', ro: 'Fiecare verificare arată un status (OK, avertizare, acțiune recomandată) și o recomandare de remediere.' },
+      { en: 'The full set of checks unlocks with a Business or Enterprise Support plan.', ro: 'Setul complet de verificări se deblochează cu un plan de suport Business sau Enterprise.' },
+    ],
+    keyFacts: [
+      { en: 'Trusted Advisor gives best-practice CHECKS across 5 categories.', ro: 'Trusted Advisor oferă VERIFICĂRI de best-practice în 5 categorii.' },
+      { en: 'The 5 categories: Cost Optimization, Performance, Security, Fault Tolerance, Service Limits.', ro: 'Cele 5 categorii: Cost Optimization, Performance, Security, Fault Tolerance, Service Limits.' },
+      { en: 'Basic and Developer plans get only a limited subset (core security checks + service limits).', ro: 'Planurile Basic și Developer primesc doar un subset limitat (verificări de bază de securitate + service limits).' },
+      { en: 'Full checks require a Business or Enterprise Support plan.', ro: 'Verificările complete necesită un plan de suport Business sau Enterprise.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Number of categories', ro: 'Număr de categorii' }, value: { en: '5', ro: '5' } },
+      { label: { en: 'Full checks require', ro: 'Verificările complete necesită' }, value: { en: 'Business / Enterprise Support', ro: 'Suport Business / Enterprise' } },
+      { label: { en: 'Basic / Developer access', ro: 'Acces Basic / Developer' }, value: { en: 'Limited subset', ro: 'Subset limitat' } },
+    ],
+    whenToUse: [
+      { en: 'You want automated recommendations to optimize cost, security, performance or fault tolerance.', ro: 'Vrei recomandări automate pentru optimizarea costului, securității, performanței sau fault tolerance.' },
+      { en: 'You want to check if you are approaching AWS service limits.', ro: 'Vrei să verifici dacă te apropii de limitele serviciilor AWS.' },
+      { en: 'You have a Business or Enterprise plan and want the full check set.', ro: 'Ai un plan Business sau Enterprise și vrei setul complet de verificări.' },
+    ],
+    whenNotToUse: [
+      { en: 'You need real-time metrics and alarms — use Amazon CloudWatch instead.', ro: 'Ai nevoie de metrici și alarme în timp real — folosește Amazon CloudWatch.' },
+      { en: 'You need detailed compliance rules per resource — use AWS Config.', ro: 'Ai nevoie de reguli detaliate de conformitate per resursă — folosește AWS Config.' },
+    ],
+    examTraps: [
+      { en: 'Remember the 5 categories: Cost, Performance, Security, Fault Tolerance, Service Limits.', ro: 'Reține cele 5 categorii: Cost, Performance, Security, Fault Tolerance, Service Limits.' },
+      { en: 'Full Trusted Advisor checks need Business OR Enterprise Support — Basic/Developer get only a subset.', ro: 'Verificările complete Trusted Advisor necesită suport Business SAU Enterprise — Basic/Developer primesc doar un subset.' },
+      { en: 'Trusted Advisor recommends best practices; it does not monitor metrics (CloudWatch) or audit API calls (CloudTrail).', ro: 'Trusted Advisor recomandă best practices; nu monitorizează metrici (CloudWatch) și nu auditează apeluri API (CloudTrail).' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'How many categories does Trusted Advisor check?', ro: 'Câte categorii verifică Trusted Advisor?' }, a: { en: '5: Cost Optimization, Performance, Security, Fault Tolerance, Service Limits.', ro: '5: Cost Optimization, Performance, Security, Fault Tolerance, Service Limits.' } },
+      { q: { en: 'Which support plans unlock the full set of Trusted Advisor checks?', ro: 'Care planuri de suport deblochează setul complet de verificări Trusted Advisor?' }, a: { en: 'Business and Enterprise Support plans.', ro: 'Planurile de suport Business și Enterprise.' } },
+      { q: { en: 'What do Basic and Developer plans get from Trusted Advisor?', ro: 'Ce primesc planurile Basic și Developer de la Trusted Advisor?' }, a: { en: 'Only a limited subset (core security checks and service limits).', ro: 'Doar un subset limitat (verificări de bază de securitate și service limits).' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'Scan account', ro: 'Scanează contul' },
+        { en: 'Run checks (5 categories)', ro: 'Rulează verificări (5 categorii)' },
+        { en: 'Show status + recommendation', ro: 'Afișează status + recomandare' },
+        { en: 'You apply best practice', ro: 'Aplici best practice-ul' },
+      ],
+      altText: { en: 'Flow showing Trusted Advisor scanning the account, running checks across 5 categories, showing status and recommendations, and the user applying the best practice.', ro: 'Flux care arată Trusted Advisor scanând contul, rulând verificări în 5 categorii, afișând status și recomandări, iar utilizatorul aplicând best practice-ul.' },
+    },
   },
   {
     id: 'systemsmanager',
@@ -148,6 +328,51 @@ export const managementServices: Service[] = [
     connections: ['iam', 'iamic', 'controltower', 'cloudtrail'],
     docsUrl: 'https://docs.aws.amazon.com/organizations/',
     visual: { color: COLOR, icon: 'list' },
+    howItWorks: [
+      { en: 'A management (master) account creates an organization and invites or creates member accounts.', ro: 'Un cont de management (master) creează o organizație și invită sau creează conturi membre.' },
+      { en: 'Accounts are grouped into Organizational Units (OUs) to form a hierarchy.', ro: 'Conturile sunt grupate în Organizational Units (OUs) pentru a forma o ierarhie.' },
+      { en: 'Service Control Policies (SCPs) attach to accounts or OUs and act as guardrails that restrict permissions.', ro: 'Service Control Policies (SCPs) se atașează conturilor sau OU-urilor și acționează ca guardrails care restricționează permisiunile.' },
+      { en: 'Consolidated Billing rolls all member accounts into a single bill with one payment method.', ro: 'Consolidated Billing adună toate conturile membre într-o singură factură cu o singură metodă de plată.' },
+    ],
+    keyFacts: [
+      { en: 'Organizations is a GLOBAL service for managing multiple AWS accounts centrally.', ro: 'Organizations este un serviciu GLOBAL pentru gestionarea centralizată a mai multor conturi AWS.' },
+      { en: 'Consolidated Billing gives one bill plus volume/aggregated pricing discounts.', ro: 'Consolidated Billing oferă o singură factură plus discounturi de volum/agregare la preț.' },
+      { en: 'Reserved Instance and Savings Plan discounts are shared across all accounts.', ro: 'Discounturile Reserved Instance și Savings Plan sunt partajate între toate conturile.' },
+      { en: 'SCPs restrict (deny) what member accounts can do — they are guardrails, not grants.', ro: 'SCP-urile restricționează (refuză) ce pot face conturile membre — sunt guardrails, nu acordări de permisiuni.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Service price', ro: 'Preț serviciu' }, value: { en: 'Free', ro: 'Gratuit' } },
+      { label: { en: 'Scope', ro: 'Scop' }, value: { en: 'Global', ro: 'Global' } },
+      { label: { en: 'Policy guardrail type', ro: 'Tip guardrail de politică' }, value: { en: 'SCP (deny/restrict)', ro: 'SCP (refuză/restricționează)' } },
+    ],
+    whenToUse: [
+      { en: 'You run several AWS accounts and want one consolidated bill and volume discounts.', ro: 'Ai mai multe conturi AWS și vrei o singură factură consolidată și discounturi de volum.' },
+      { en: 'You want central guardrails (SCPs) that restrict what member accounts can do.', ro: 'Vrei guardrails centralizate (SCP-uri) care restricționează ce pot face conturile membre.' },
+      { en: 'You want to group accounts into OUs and manage them as a hierarchy.', ro: 'Vrei să grupezi conturile în OU-uri și să le gestionezi ca o ierarhie.' },
+    ],
+    whenNotToUse: [
+      { en: 'You only have a single account — Organizations adds no value; use IAM for permissions.', ro: 'Ai un singur cont — Organizations nu aduce valoare; folosește IAM pentru permisiuni.' },
+      { en: 'You want a fully governed, pre-configured landing zone — use AWS Control Tower (built on Organizations).', ro: 'Vrei un landing zone complet guvernat și pre-configurat — folosește AWS Control Tower (construit peste Organizations).' },
+    ],
+    examTraps: [
+      { en: 'SCPs RESTRICT permissions (guardrails); they never grant permissions — IAM grants.', ro: 'SCP-urile RESTRICȚIONEAZĂ permisiuni (guardrails); nu acordă niciodată permisiuni — IAM acordă.' },
+      { en: 'Consolidated Billing SAVES money through aggregated volume pricing and shared RI/Savings Plan discounts.', ro: 'Consolidated Billing ECONOMISEȘTE bani prin preț de volum agregat și discounturi RI/Savings Plan partajate.' },
+      { en: 'The management (master) account pays the single combined bill for all member accounts.', ro: 'Contul de management (master) plătește factura unică combinată pentru toate conturile membre.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'How do you get a single bill and volume discounts across many AWS accounts?', ro: 'Cum obții o singură factură și discounturi de volum pentru mai multe conturi AWS?' }, a: { en: 'Use AWS Organizations with Consolidated Billing.', ro: 'Folosește AWS Organizations cu Consolidated Billing.' } },
+      { q: { en: 'What do Service Control Policies (SCPs) do?', ro: 'Ce fac Service Control Policies (SCPs)?' }, a: { en: 'They restrict (set guardrails on) what member accounts can do; they do not grant permissions.', ro: 'Restricționează (pun guardrails pe) ce pot face conturile membre; nu acordă permisiuni.' } },
+      { q: { en: 'What are OUs used for in Organizations?', ro: 'La ce folosesc OU-urile în Organizations?' }, a: { en: 'To group accounts into a hierarchy so policies apply to whole groups.', ro: 'Pentru a grupa conturile într-o ierarhie ca politicile să se aplice unor grupuri întregi.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'Management account', ro: 'Cont de management' },
+        { en: 'Organize accounts into OUs', ro: 'Organizează conturile în OU-uri' },
+        { en: 'Attach SCP guardrails', ro: 'Atașează guardrails SCP' },
+        { en: 'Consolidated bill + discounts', ro: 'Factură consolidată + discounturi' },
+      ],
+      altText: { en: 'Flow showing a management account organizing member accounts into OUs, attaching SCP guardrails, and receiving a consolidated bill with volume discounts.', ro: 'Flux care arată un cont de management organizând conturile membre în OU-uri, atașând guardrails SCP și primind o factură consolidată cu discounturi de volum.' },
+    },
   },
   {
     id: 'cloudformation',
@@ -172,6 +397,51 @@ export const managementServices: Service[] = [
     connections: ['ec2', 's3', 'iam', 'systemsmanager'],
     docsUrl: 'https://docs.aws.amazon.com/cloudformation/',
     visual: { color: COLOR, icon: 'list' },
+    howItWorks: [
+      { en: 'You write a template in YAML or JSON that declares the resources you want (declarative, not scripted).', ro: 'Scrii un template în YAML sau JSON care declară resursele dorite (declarativ, nu scriptat).' },
+      { en: 'CloudFormation reads the template and provisions the resources as a stack, in the correct order.', ro: 'CloudFormation citește template-ul și provizionează resursele ca un stack, în ordinea corectă.' },
+      { en: 'The same template can be deployed repeatably across regions and accounts for identical environments.', ro: 'Același template poate fi deployat repetabil în regiuni și conturi pentru medii identice.' },
+      { en: 'If creation fails, the stack auto-rolls back; Change Sets preview changes before you apply them.', ro: 'Dacă crearea eșuează, stack-ul face auto-rollback; Change Sets previzualizează modificările înainte de apply.' },
+    ],
+    keyFacts: [
+      { en: 'CloudFormation is Infrastructure as Code (IaC) — declarative templates provision resources.', ro: 'CloudFormation este Infrastructure as Code (IaC) — template-uri declarative provizionează resurse.' },
+      { en: 'Resources are deployed and managed together as a stack.', ro: 'Resursele sunt deployate și gestionate împreună ca un stack.' },
+      { en: 'It is free — you pay only for the resources it creates.', ro: 'Este gratuit — plătești doar resursele pe care le creează.' },
+      { en: 'Templates make infrastructure repeatable, version-controlled and automated.', ro: 'Template-urile fac infrastructura repetabilă, version-controlled și automatizată.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Service price', ro: 'Preț serviciu' }, value: { en: 'Free (pay for resources)', ro: 'Gratuit (plătești resursele)' } },
+      { label: { en: 'Template format', ro: 'Format template' }, value: { en: 'YAML or JSON', ro: 'YAML sau JSON' } },
+      { label: { en: 'Deployment unit', ro: 'Unitate de deployment' }, value: { en: 'Stack', ro: 'Stack' } },
+    ],
+    whenToUse: [
+      { en: 'You want to provision infrastructure repeatably and automatically from a template.', ro: 'Vrei să provizionezi infrastructura repetabil și automat dintr-un template.' },
+      { en: 'You want to version-control your infrastructure and deploy identical environments.', ro: 'Vrei să faci version-control la infrastructură și să deployezi medii identice.' },
+      { en: 'You need to roll out the same stack across multiple regions or accounts.', ro: 'Trebuie să deployezi același stack în mai multe regiuni sau conturi.' },
+    ],
+    whenNotToUse: [
+      { en: 'You only need to manage and patch existing EC2 instances — use AWS Systems Manager.', ro: 'Trebuie doar să gestionezi și să patch-uiești instanțe EC2 existente — folosește AWS Systems Manager.' },
+      { en: 'You want a curated catalog of approved, pre-built products for users — use AWS Service Catalog.', ro: 'Vrei un catalog curat de produse aprobate, pre-construite pentru utilizatori — folosește AWS Service Catalog.' },
+    ],
+    examTraps: [
+      { en: 'CloudFormation is FREE — you only pay for the resources the template creates.', ro: 'CloudFormation este GRATUIT — plătești doar resursele pe care le creează template-ul.' },
+      { en: 'Keywords "Infrastructure as Code", "template", "stack", "repeatable/automated infrastructure" point to CloudFormation.', ro: 'Cuvintele „Infrastructure as Code”, „template”, „stack”, „infrastructură repetabilă/automatizată” indică CloudFormation.' },
+      { en: 'CloudFormation is declarative (you describe the end state); it is not a step-by-step script.', ro: 'CloudFormation este declarativ (descrii starea finală); nu este un script pas cu pas.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'Which AWS service lets you provision infrastructure from a declarative template?', ro: 'Care serviciu AWS îți permite să provizionezi infrastructura dintr-un template declarativ?' }, a: { en: 'AWS CloudFormation (Infrastructure as Code).', ro: 'AWS CloudFormation (Infrastructure as Code).' } },
+      { q: { en: 'How much does CloudFormation itself cost?', ro: 'Cât costă CloudFormation în sine?' }, a: { en: 'It is free; you pay only for the resources it creates.', ro: 'Este gratuit; plătești doar resursele pe care le creează.' } },
+      { q: { en: 'What is a group of resources deployed together by CloudFormation called?', ro: 'Cum se numește un grup de resurse deployate împreună de CloudFormation?' }, a: { en: 'A stack.', ro: 'Un stack.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'Write template (YAML/JSON)', ro: 'Scrii template (YAML/JSON)' },
+        { en: 'CloudFormation reads it', ro: 'CloudFormation îl citește' },
+        { en: 'Provision stack in order', ro: 'Provizionează stack-ul în ordine' },
+        { en: 'Repeat across regions/accounts', ro: 'Repetă în regiuni/conturi' },
+      ],
+      altText: { en: 'Flow showing a YAML or JSON template read by CloudFormation, which provisions resources as a stack in order and can be repeated across regions and accounts.', ro: 'Flux care arată un template YAML sau JSON citit de CloudFormation, care provizionează resursele ca un stack în ordine și poate fi repetat în regiuni și conturi.' },
+    },
   },
   {
     id: 'controltower',

@@ -31,6 +31,54 @@ export const networkServices: Service[] = [
     connections: ['ec2', 'rds', 'elb', 'directconnect', 'privatelink'],
     docsUrl: 'https://docs.aws.amazon.com/vpc/',
     visual: { color: 'hsl(190, 90%, 50%)', icon: 'network' },
+    howItWorks: [
+      { en: 'You define a VPC with a private IP range (CIDR block) inside one Region.', ro: 'Definești un VPC cu un interval de IP-uri private (bloc CIDR) într-o Regiune.' },
+      { en: 'You split it into subnets — public (internet-facing) and private (internal).', ro: 'Îl împarți în subnets — publice (spre internet) și private (interne).' },
+      { en: 'Route tables + an Internet Gateway control how traffic leaves and enters.', ro: 'Route tables + un Internet Gateway controlează cum intră și iese traficul.' },
+      { en: 'NACLs (subnet) and Security Groups (instance) filter traffic at two layers.', ro: 'NACL-urile (subnet) și Security Groups (instanță) filtrează traficul pe două niveluri.' },
+    ],
+    keyFacts: [
+      { en: 'A VPC is REGIONAL; subnets are tied to a single AZ each.', ro: 'Un VPC e REGIONAL; fiecare subnet e legat de un singur AZ.' },
+      { en: 'Public subnet = has a route to an Internet Gateway. Private subnet = does not.', ro: 'Subnet public = are rută spre un Internet Gateway. Subnet privat = nu are.' },
+      { en: 'NAT Gateway lets private subnets reach the internet OUTBOUND only.', ro: 'NAT Gateway lasă subnet-urile private să ajungă pe internet DOAR outbound.' },
+      { en: 'Security Group = stateful (instance level); NACL = stateless (subnet level).', ro: 'Security Group = stateful (nivel instanță); NACL = stateless (nivel subnet).' },
+      { en: 'VPC Peering is NOT transitive — A↔B and B↔C does not give A↔C.', ro: 'VPC Peering NU e tranzitiv — A↔B și B↔C nu dau A↔C.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'VPC scope', ro: 'Domeniu VPC' }, value: { en: '1 Region', ro: '1 Regiune' } },
+      { label: { en: 'Subnet scope', ro: 'Domeniu subnet' }, value: { en: '1 AZ', ro: '1 AZ' } },
+      { label: { en: 'VPC base cost', ro: 'Cost de bază VPC' }, value: { en: 'Free', ro: 'Gratuit' } },
+    ],
+    whenToUse: [
+      { en: 'Isolate your AWS resources in a private, controlled network.', ro: 'Izolezi resursele AWS într-o rețea privată, controlată.' },
+      { en: 'Place databases in private subnets and web servers in public subnets.', ro: 'Pui bazele de date în subnets private și serverele web în subnets publice.' },
+      { en: 'Connect to on-premises via VPN or Direct Connect for hybrid setups.', ro: 'Te conectezi on-premises prin VPN sau Direct Connect pentru setup-uri hibride.' },
+    ],
+    whenNotToUse: [
+      { en: 'Connecting MANY VPCs + on-prem in a hub → Transit Gateway, not a mesh of peerings.', ro: 'Conectarea MULTOR VPC-uri + on-prem într-un hub → Transit Gateway, nu o plasă de peering-uri.' },
+      { en: 'A simple global static site → S3 + CloudFront doesn\'t need you to design a VPC.', ro: 'Un site static global simplu → S3 + CloudFront nu cere să proiectezi un VPC.' },
+    ],
+    examTraps: [
+      { en: 'Security Group = STATEFUL + instance level. NACL = STATELESS + subnet level. Most-tested confusion.', ro: 'Security Group = STATEFUL + nivel instanță. NACL = STATELESS + nivel subnet. Cea mai testată confuzie.' },
+      { en: 'NAT Gateway = outbound internet for private subnets. Internet Gateway = the VPC\'s door to the internet.', ro: 'NAT Gateway = internet outbound pentru subnets private. Internet Gateway = ușa VPC-ului spre internet.' },
+      { en: 'VPC Peering is NOT transitive — a frequent trick question.', ro: 'VPC Peering NU e tranzitiv — întrebare-capcană frecventă.' },
+      { en: 'A VPC spans a Region; a subnet lives in ONE AZ. Don\'t swap the scopes.', ro: 'Un VPC acoperă o Regiune; un subnet stă într-UN AZ. Nu inversa domeniile.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'What is the key difference between a Security Group and a NACL?', ro: 'Care e diferența cheie între un Security Group și un NACL?' }, a: { en: 'Security Group is STATEFUL and works at the instance level (allow rules only); NACL is STATELESS and works at the subnet level (allow + deny rules).', ro: 'Security Group e STATEFUL și lucrează la nivel de instanță (doar reguli allow); NACL e STATELESS și lucrează la nivel de subnet (reguli allow + deny).' } },
+      { q: { en: 'How do instances in a PRIVATE subnet get outbound internet access?', ro: 'Cum obțin instanțele dintr-un subnet PRIVAT acces outbound la internet?' }, a: { en: 'Through a NAT Gateway (or NAT instance) placed in a public subnet — outbound only, no inbound from the internet.', ro: 'Printr-un NAT Gateway (sau NAT instance) într-un subnet public — doar outbound, fără inbound de pe internet.' } },
+      { q: { en: 'Is VPC peering transitive? If A peers with B and B peers with C, can A reach C?', ro: 'E VPC peering tranzitiv? Dacă A face peering cu B și B cu C, ajunge A la C?' }, a: { en: 'No — peering is not transitive. A cannot reach C through B. Use a Transit Gateway for many-to-many connectivity.', ro: 'Nu — peering-ul nu e tranzitiv. A nu ajunge la C prin B. Folosește un Transit Gateway pentru conectivitate many-to-many.' } },
+      { q: { en: 'What makes a subnet "public" rather than "private"?', ro: 'Ce face un subnet „public” și nu „privat”?' }, a: { en: 'A route in its route table pointing to an Internet Gateway. Without that route, the subnet is private.', ro: 'O rută în route table-ul lui spre un Internet Gateway. Fără acea rută, subnet-ul e privat.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'VPC (Region)', ro: 'VPC (Regiune)' },
+        { en: 'Public subnet + IGW', ro: 'Subnet public + IGW' },
+        { en: 'Private subnet + NAT', ro: 'Subnet privat + NAT' },
+        { en: 'SG / NACL filter', ro: 'Filtru SG / NACL' },
+      ],
+      altText: { en: 'A regional VPC contains public subnets (via Internet Gateway) and private subnets (outbound via NAT), with Security Groups and NACLs filtering traffic.', ro: 'Un VPC regional conține subnets publice (prin Internet Gateway) și private (outbound prin NAT), cu Security Groups și NACL care filtrează traficul.' },
+    },
   },
   {
     id: 'cloudfront',
@@ -58,6 +106,55 @@ export const networkServices: Service[] = [
     connections: ['s3', 'elb', 'route53', 'waf', 'shield', 'acm'],
     docsUrl: 'https://docs.aws.amazon.com/cloudfront/',
     visual: { color: 'hsl(190, 90%, 50%)', icon: 'network' },
+    howItWorks: [
+      { en: 'CloudFront caches copies of your content at 450+ edge locations (Points of Presence) worldwide.', ro: 'CloudFront păstrează copii ale conținutului tău în 450+ locații edge (Points of Presence) din toată lumea.' },
+      { en: 'A user request is served from the nearest edge location, cutting latency dramatically.', ro: 'O cerere a utilizatorului e servită din cea mai apropiată locație edge, reducând drastic latența.' },
+      { en: 'On a cache miss, the edge fetches from the origin (S3, EC2, ALB or any HTTP server) and caches it.', ro: 'La un cache miss, edge-ul aduce conținutul de la origin (S3, EC2, ALB sau orice server HTTP) și îl pune în cache.' },
+      { en: 'At the edge it adds security: AWS Shield (DDoS), WAF and forced HTTPS.', ro: 'La edge adaugă securitate: AWS Shield (DDoS), WAF și HTTPS forțat.' },
+    ],
+    keyFacts: [
+      { en: 'CloudFront is a CACHING CDN — it speeds up READ performance globally.', ro: 'CloudFront e un CDN cu CACHE — accelerează performanța de CITIRE la nivel global.' },
+      { en: 'Origins can be an S3 bucket, EC2, an ALB, or any custom HTTP server.', ro: 'Origin-urile pot fi un bucket S3, EC2, un ALB sau orice server HTTP custom.' },
+      { en: 'It is NOT the same as S3 Cross-Region Replication — CloudFront caches, it does not replicate buckets.', ro: 'NU e același lucru cu S3 Cross-Region Replication — CloudFront face cache, nu replică bucket-uri.' },
+      { en: 'Global Accelerator does NOT cache — it optimizes the network path and gives static anycast IPs.', ro: 'Global Accelerator NU face cache — optimizează calea de rețea și oferă IP-uri anycast statice.' },
+      { en: 'Integrates with Shield + WAF at the edge for DDoS protection and firewall rules.', ro: 'Se integrează cu Shield + WAF la edge pentru protecție DDoS și reguli de firewall.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Edge locations', ro: 'Locații edge' }, value: { en: '450+ globally', ro: '450+ global' } },
+      { label: { en: 'Service scope', ro: 'Domeniu serviciu' }, value: { en: 'Global', ro: 'Global' } },
+      { label: { en: 'Layer', ro: 'Layer' }, value: { en: 'Edge / CDN', ro: 'Edge / CDN' } },
+      { label: { en: 'Main benefit', ro: 'Beneficiu principal' }, value: { en: 'Lower latency', ro: 'Latență mai mică' } },
+    ],
+    whenToUse: [
+      { en: 'Serve static and dynamic web content fast to users around the world.', ro: 'Servești conținut web static și dinamic rapid către utilizatori din toată lumea.' },
+      { en: 'Distribute a global static website or media from an S3 bucket with low latency.', ro: 'Distribui un site static global sau media dintr-un bucket S3 cu latență mică.' },
+      { en: 'Add DDoS protection (Shield) and WAF at the edge in front of your origin.', ro: 'Adaugi protecție DDoS (Shield) și WAF la edge în fața origin-ului.' },
+    ],
+    whenNotToUse: [
+      { en: 'Non-cacheable TCP/UDP traffic that needs static IPs → AWS Global Accelerator, not CloudFront.', ro: 'Trafic TCP/UDP necacheabil care are nevoie de IP-uri statice → AWS Global Accelerator, nu CloudFront.' },
+      { en: 'Keeping a full copy of data in another Region for resilience → S3 Cross-Region Replication.', ro: 'Păstrarea unei copii complete a datelor în altă Regiune pentru reziliență → S3 Cross-Region Replication.' },
+    ],
+    examTraps: [
+      { en: 'CloudFront = caching CDN at the edge. Global Accelerator = no caching, network-path optimization + static anycast IPs.', ro: 'CloudFront = CDN cu cache la edge. Global Accelerator = fără cache, optimizare cale de rețea + IP-uri anycast statice.' },
+      { en: 'CloudFront caches content; it does NOT replicate S3 buckets — that is Cross-Region Replication.', ro: 'CloudFront face cache; NU replică bucket-uri S3 — aia e Cross-Region Replication.' },
+      { en: '"Reduce latency for global users reading content" → CloudFront is the answer.', ro: '„Reduce latența pentru utilizatori globali care citesc conținut” → răspunsul e CloudFront.' },
+      { en: 'CloudFront is a GLOBAL service with DDoS protection (Shield + WAF) built in at the edge.', ro: 'CloudFront e un serviciu GLOBAL cu protecție DDoS (Shield + WAF) integrată la edge.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'What problem does CloudFront primarily solve?', ro: 'Ce problemă rezolvă CloudFront în principal?' }, a: { en: 'High latency for global users — it caches content at edge locations near users to speed up read performance.', ro: 'Latența mare pentru utilizatori globali — păstrează conținut în cache la locații edge aproape de utilizatori pentru a accelera citirea.' } },
+      { q: { en: 'How is CloudFront different from Global Accelerator?', ro: 'Prin ce diferă CloudFront de Global Accelerator?' }, a: { en: 'CloudFront CACHES content at the edge; Global Accelerator does NOT cache — it optimizes the network path and gives static anycast IPs.', ro: 'CloudFront pune conținutul în CACHE la edge; Global Accelerator NU face cache — optimizează calea de rețea și oferă IP-uri anycast statice.' } },
+      { q: { en: 'What can act as an origin for CloudFront?', ro: 'Ce poate fi un origin pentru CloudFront?' }, a: { en: 'An S3 bucket, EC2, an ALB, or any custom HTTP server.', ro: 'Un bucket S3, EC2, un ALB sau orice server HTTP custom.' } },
+      { q: { en: 'Which security services does CloudFront integrate at the edge?', ro: 'Ce servicii de securitate integrează CloudFront la edge?' }, a: { en: 'AWS Shield (DDoS protection) and WAF (web firewall), plus forced HTTPS.', ro: 'AWS Shield (protecție DDoS) și WAF (firewall web), plus HTTPS forțat.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'User request', ro: 'Cerere user' },
+        { en: 'Nearest edge location', ro: 'Cea mai apropiată locație edge' },
+        { en: 'Cache hit? serve / miss? fetch origin', ro: 'Cache hit? servește / miss? aduce de la origin' },
+        { en: 'Origin (S3 / EC2 / ALB)', ro: 'Origin (S3 / EC2 / ALB)' },
+      ],
+      altText: { en: 'A user request hits the nearest CloudFront edge location; on a cache hit it is served instantly, on a miss the edge fetches from the origin (S3, EC2 or ALB) and caches it.', ro: 'O cerere a utilizatorului ajunge la cea mai apropiată locație edge CloudFront; la cache hit e servită instant, la miss edge-ul aduce de la origin (S3, EC2 sau ALB) și o pune în cache.' },
+    },
   },
   {
     id: 'route53',
@@ -87,6 +184,55 @@ export const networkServices: Service[] = [
     connections: ['cloudfront', 'elb', 's3', 'apigateway'],
     docsUrl: 'https://docs.aws.amazon.com/route53/',
     visual: { color: 'hsl(190, 90%, 50%)', icon: 'network' },
+    howItWorks: [
+      { en: 'Route 53 is a managed, highly available DNS service that translates domain names into IP addresses.', ro: 'Route 53 e un serviciu DNS managed, foarte disponibil, care traduce nume de domenii în adrese IP.' },
+      { en: 'It is also a domain registrar — you can buy and manage domains directly in it.', ro: 'E și un registrar de domenii — poți cumpăra și gestiona domenii direct din el.' },
+      { en: 'Routing policies decide which answer to return: Simple, Weighted, Latency, Failover, Geolocation, Geoproximity, Multi-value.', ro: 'Politicile de routing decid ce răspuns returnează: Simple, Weighted, Latency, Failover, Geolocation, Geoproximity, Multi-value.' },
+      { en: 'Health checks let it route traffic away from unhealthy endpoints automatically.', ro: 'Health check-urile îi permit să redirecționeze automat traficul de la endpoint-uri nesănătoase.' },
+    ],
+    keyFacts: [
+      { en: 'Route 53 is a GLOBAL service (not regional) and DNS uses port 53 — hence the name.', ro: 'Route 53 e un serviciu GLOBAL (nu regional), iar DNS folosește portul 53 — de aici și numele.' },
+      { en: 'It can route to AWS resources (ALB, CloudFront, S3 website) or to external endpoints.', ro: 'Poate direcționa către resurse AWS (ALB, CloudFront, site S3) sau către endpoint-uri externe.' },
+      { en: 'Latency-based routing sends users to the lowest-latency Region; Geolocation routes by user location.', ro: 'Latency-based trimite utilizatorii la Regiunea cu cea mai mică latență; Geolocation direcționează după locația utilizatorului.' },
+      { en: 'Failover routing = active-passive: switches to a secondary when the primary fails a health check.', ro: 'Failover = activ-pasiv: comută pe un endpoint secundar când cel primar pică un health check.' },
+      { en: 'Route 53 offers a 100% availability SLA.', ro: 'Route 53 oferă un SLA de disponibilitate de 100%.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'DNS port', ro: 'Port DNS' }, value: { en: '53', ro: '53' } },
+      { label: { en: 'Service scope', ro: 'Domeniu serviciu' }, value: { en: 'Global', ro: 'Global' } },
+      { label: { en: 'Availability SLA', ro: 'SLA disponibilitate' }, value: { en: '100%', ro: '100%' } },
+      { label: { en: 'Routing policies', ro: 'Politici de routing' }, value: { en: '7 types', ro: '7 tipuri' } },
+    ],
+    whenToUse: [
+      { en: 'Host DNS for your domain and point it at AWS resources like an ALB, CloudFront or an S3 website.', ro: 'Găzduiești DNS pentru domeniul tău și îl îndrepți spre resurse AWS ca un ALB, CloudFront sau un site S3.' },
+      { en: 'Send users to the lowest-latency Region (Latency policy) or to a Region by their location (Geolocation).', ro: 'Trimiți utilizatorii la Regiunea cu latența cea mai mică (Latency) sau la o Regiune după locația lor (Geolocation).' },
+      { en: 'Build active-passive disaster recovery with Failover routing + health checks.', ro: 'Construiești disaster recovery activ-pasiv cu Failover routing + health check-uri.' },
+    ],
+    whenNotToUse: [
+      { en: 'Caching content close to users to reduce read latency → CloudFront, not DNS routing.', ro: 'Cache de conținut aproape de utilizatori pentru a reduce latența de citire → CloudFront, nu routing DNS.' },
+      { en: 'Optimizing the TCP/UDP network path with static IPs → AWS Global Accelerator.', ro: 'Optimizarea căii de rețea TCP/UDP cu IP-uri statice → AWS Global Accelerator.' },
+    ],
+    examTraps: [
+      { en: 'Latency-based = lowest latency. Geolocation = based on WHERE the user is. Do not confuse the two.', ro: 'Latency-based = latența cea mai mică. Geolocation = în funcție de UNDE e utilizatorul. Nu le confunda.' },
+      { en: 'Failover routing is for active-passive DR — primary + secondary with health checks.', ro: 'Failover routing e pentru DR activ-pasiv — primar + secundar cu health check-uri.' },
+      { en: 'Route 53 is a GLOBAL service; do not call it regional on the exam.', ro: 'Route 53 e un serviciu GLOBAL; nu îl numi regional la examen.' },
+      { en: 'The "53" refers to DNS port 53 — Route 53 is DNS + a domain registrar.', ro: '„53” se referă la portul DNS 53 — Route 53 e DNS + registrar de domenii.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'What is Route 53 and what does the "53" stand for?', ro: 'Ce e Route 53 și ce înseamnă „53”?' }, a: { en: 'A managed, highly available DNS service (and domain registrar). 53 is the DNS port number.', ro: 'Un serviciu DNS managed, foarte disponibil (și registrar de domenii). 53 e numărul portului DNS.' } },
+      { q: { en: 'Difference between Latency-based and Geolocation routing?', ro: 'Diferența dintre routing Latency-based și Geolocation?' }, a: { en: 'Latency-based routes to the Region with the lowest latency; Geolocation routes based on the physical location of the user.', ro: 'Latency-based direcționează la Regiunea cu latența cea mai mică; Geolocation direcționează după locația fizică a utilizatorului.' } },
+      { q: { en: 'Which routing policy supports active-passive disaster recovery?', ro: 'Ce politică de routing suportă disaster recovery activ-pasiv?' }, a: { en: 'Failover routing — it sends traffic to a secondary endpoint when the primary fails its health check.', ro: 'Failover routing — trimite traficul către un endpoint secundar când cel primar pică health check-ul.' } },
+      { q: { en: 'Is Route 53 a regional or a global service?', ro: 'Route 53 e un serviciu regional sau global?' }, a: { en: 'Global — it is not tied to a single Region.', ro: 'Global — nu e legat de o singură Regiune.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'User DNS query', ro: 'Interogare DNS user' },
+        { en: 'Route 53 (global DNS)', ro: 'Route 53 (DNS global)' },
+        { en: 'Routing policy + health check', ro: 'Politică routing + health check' },
+        { en: 'Best endpoint (ALB / CloudFront / S3)', ro: 'Cel mai bun endpoint (ALB / CloudFront / S3)' },
+      ],
+      altText: { en: 'A user DNS query reaches Route 53, which applies a routing policy and health checks to return the best healthy endpoint, such as an ALB, CloudFront distribution or S3 website.', ro: 'O interogare DNS a utilizatorului ajunge la Route 53, care aplică o politică de routing și health check-uri pentru a returna cel mai bun endpoint sănătos, ca un ALB, o distribuție CloudFront sau un site S3.' },
+    },
   },
   {
     id: 'apigateway',
@@ -142,6 +288,55 @@ export const networkServices: Service[] = [
     connections: ['ec2', 'ecs', 'autoscaling', 'route53', 'acm', 'waf'],
     docsUrl: 'https://docs.aws.amazon.com/elasticloadbalancing/',
     visual: { color: 'hsl(190, 90%, 50%)', icon: 'network' },
+    howItWorks: [
+      { en: 'ELB is a managed load balancer that spreads incoming traffic across multiple targets in multiple AZs.', ro: 'ELB e un load balancer managed care distribuie traficul de intrare peste mai multe target-uri din mai multe AZ-uri.' },
+      { en: 'Targets can be EC2 instances, containers (ECS), IP addresses or Lambda functions.', ro: 'Target-urile pot fi instanțe EC2, containere (ECS), adrese IP sau funcții Lambda.' },
+      { en: 'Health checks ensure traffic is sent only to healthy targets, giving high availability.', ro: 'Health check-urile asigură că traficul merge doar la target-uri sănătoase, oferind disponibilitate ridicată.' },
+      { en: 'It works together with Auto Scaling, which adds or removes targets behind the load balancer.', ro: 'Funcționează împreună cu Auto Scaling, care adaugă sau scoate target-uri din spatele load balancer-ului.' },
+    ],
+    keyFacts: [
+      { en: 'ALB (Application LB) = Layer 7, HTTP/HTTPS, routes by path/host — for web apps & microservices.', ro: 'ALB (Application LB) = Layer 7, HTTP/HTTPS, routing pe path/host — pentru aplicații web și microservicii.' },
+      { en: 'NLB (Network LB) = Layer 4, TCP/UDP, ultra-high performance (millions of req/sec) and a static IP.', ro: 'NLB (Network LB) = Layer 4, TCP/UDP, performanță ultra-ridicată (milioane req/sec) și IP static.' },
+      { en: 'GLB (Gateway LB) = Layer 3, used to deploy virtual appliances like firewalls.', ro: 'GLB (Gateway LB) = Layer 3, folosit pentru a deploya appliance-uri virtuale ca firewall-uri.' },
+      { en: 'CLB (Classic LB) is legacy/deprecated — avoid it for new projects.', ro: 'CLB (Classic LB) e legacy/depreciat — evită-l în proiecte noi.' },
+      { en: 'ELB routes only to HEALTHY targets and spans multiple AZs for high availability.', ro: 'ELB direcționează doar către target-uri SĂNĂTOASE și acoperă mai multe AZ-uri pentru disponibilitate ridicată.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'ALB layer', ro: 'Layer ALB' }, value: { en: 'Layer 7 (HTTP)', ro: 'Layer 7 (HTTP)' } },
+      { label: { en: 'NLB layer', ro: 'Layer NLB' }, value: { en: 'Layer 4 (TCP/UDP)', ro: 'Layer 4 (TCP/UDP)' } },
+      { label: { en: 'NLB performance', ro: 'Performanță NLB' }, value: { en: 'Millions req/sec', ro: 'Milioane req/sec' } },
+      { label: { en: 'Load balancer types', ro: 'Tipuri load balancer' }, value: { en: 'ALB / NLB / GLB / CLB', ro: 'ALB / NLB / GLB / CLB' } },
+    ],
+    whenToUse: [
+      { en: 'Spread web (HTTP/HTTPS) traffic across servers with path/host routing → ALB.', ro: 'Distribui trafic web (HTTP/HTTPS) între servere cu routing pe path/host → ALB.' },
+      { en: 'Handle extreme TCP/UDP performance or need a static IP → NLB.', ro: 'Gestionezi performanță TCP/UDP extremă sau ai nevoie de IP static → NLB.' },
+      { en: 'Provide high availability by balancing across multiple AZs together with Auto Scaling.', ro: 'Oferi disponibilitate ridicată balansând între mai multe AZ-uri împreună cu Auto Scaling.' },
+    ],
+    whenNotToUse: [
+      { en: 'Caching content close to global users to cut latency → CloudFront, not a load balancer.', ro: 'Cache de conținut aproape de utilizatori globali pentru a reduce latența → CloudFront, nu un load balancer.' },
+      { en: 'Routing users by DNS policy (latency, failover, geolocation) → Route 53.', ro: 'Direcționarea utilizatorilor prin politică DNS (latency, failover, geolocation) → Route 53.' },
+    ],
+    examTraps: [
+      { en: 'ALB = HTTP / Layer 7 (path & host routing). NLB = TCP/UDP / Layer 4 (extreme performance + static IP).', ro: 'ALB = HTTP / Layer 7 (routing pe path și host). NLB = TCP/UDP / Layer 4 (performanță extremă + IP static).' },
+      { en: '"Static IP for the load balancer" or "millions of requests/sec" → NLB is the answer.', ro: '„IP static pentru load balancer” sau „milioane de cereri/sec” → răspunsul e NLB.' },
+      { en: 'CLB (Classic) is legacy — the exam favours ALB/NLB for new architectures.', ro: 'CLB (Classic) e legacy — examenul preferă ALB/NLB pentru arhitecturi noi.' },
+      { en: 'ELB only routes to HEALTHY targets — health checks are core to its high availability.', ro: 'ELB direcționează doar către target-uri SĂNĂTOASE — health check-urile sunt esențiale pentru disponibilitatea lui.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'When do you choose an ALB vs an NLB?', ro: 'Când alegi un ALB față de un NLB?' }, a: { en: 'ALB for HTTP/HTTPS Layer 7 with path/host routing (web apps); NLB for TCP/UDP Layer 4, extreme performance and a static IP.', ro: 'ALB pentru HTTP/HTTPS Layer 7 cu routing pe path/host (aplicații web); NLB pentru TCP/UDP Layer 4, performanță extremă și IP static.' } },
+      { q: { en: 'How does ELB provide high availability?', ro: 'Cum oferă ELB disponibilitate ridicată?' }, a: { en: 'It balances traffic across targets in multiple AZs and uses health checks to route only to healthy targets.', ro: 'Balansează traficul peste target-uri din mai multe AZ-uri și folosește health check-uri pentru a direcționa doar către target-uri sănătoase.' } },
+      { q: { en: 'Which ELB type gives a static IP and millions of requests per second?', ro: 'Ce tip de ELB oferă IP static și milioane de cereri pe secundă?' }, a: { en: 'The Network Load Balancer (NLB), operating at Layer 4 (TCP/UDP).', ro: 'Network Load Balancer (NLB), care lucrează la Layer 4 (TCP/UDP).' } },
+      { q: { en: 'Which load balancer type is legacy and should be avoided?', ro: 'Ce tip de load balancer e legacy și ar trebui evitat?' }, a: { en: 'The Classic Load Balancer (CLB) — use ALB or NLB instead.', ro: 'Classic Load Balancer (CLB) — folosește ALB sau NLB în loc.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'Incoming traffic', ro: 'Trafic de intrare' },
+        { en: 'ELB (ALB / NLB)', ro: 'ELB (ALB / NLB)' },
+        { en: 'Health check targets', ro: 'Health check target-uri' },
+        { en: 'Healthy targets across AZs', ro: 'Target-uri sănătoase în mai multe AZ-uri' },
+      ],
+      altText: { en: 'Incoming traffic reaches an ELB (ALB for HTTP Layer 7 or NLB for TCP Layer 4), which health-checks targets and distributes requests only to healthy EC2/containers across multiple Availability Zones.', ro: 'Traficul de intrare ajunge la un ELB (ALB pentru HTTP Layer 7 sau NLB pentru TCP Layer 4), care verifică sănătatea target-urilor și distribuie cererile doar către EC2/containere sănătoase din mai multe Availability Zones.' },
+    },
   },
   {
     id: 'directconnect',

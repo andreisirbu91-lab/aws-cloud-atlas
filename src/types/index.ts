@@ -48,6 +48,36 @@ export interface Service {
   learned?: boolean;
   confidenceLevel?: number;
   nextReview?: string;
+
+  // ── Learning-science enrichment (all OPTIONAL; only top ~30 services populate these) ──
+  // Each field maps to an evidence-based technique (Dunlosky 2013; Mayer; Sweller; Learning Scientists).
+
+  /** 3-4 step "how it works" flow. Segmenting → lowers cognitive load (Sweller). */
+  howItWorks?: Array<Record<string, string>>;
+
+  /** 3-5 quick-reference facts to memorize. HARD CAP 5 (chunking). Mirrors Concept.keyFacts. */
+  keyFacts?: Array<Record<string, string>>;
+
+  /** When to reach for this service (application/transfer). 2-4 bullets. */
+  whenToUse?: Array<Record<string, string>>;
+
+  /** When NOT to use it / what to use instead (interleaving, discrimination between confusable services). 2-4 bullets. */
+  whenNotToUse?: Array<Record<string, string>>;
+
+  /** Common exam mistakes & confusions (elaborative interrogation). Highest exam value. 2-5 bullets. */
+  examTraps?: Array<Record<string, string>>;
+
+  /** Specific limits/figures to memorize (e.g. "S3 object max = 5 TB"). label = what, value = the number. */
+  keyNumbers?: Array<{ label: Record<string, string>; value: Record<string, string> }>;
+
+  /** Active-recall Q&A (HIGHEST utility — retrieval practice). Distinct from MCQ quiz: open "explain X", self-graded after reveal. */
+  retrievalQuestions?: Array<{ q: Record<string, string>; a: Record<string, string> }>;
+
+  /** OPTIONAL lightweight functional diagram (dual coding). Text-based on purpose — no image assets. */
+  diagram?: {
+    steps: Array<Record<string, string>>;
+    altText: Record<string, string>;
+  };
 }
 
 export interface Category {

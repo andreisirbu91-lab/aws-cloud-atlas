@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import { Flame, Trophy, Target, BookOpen, Sparkles } from 'lucide-react';
+import { Flame, Trophy, Target, BookOpen, Sparkles, Brain } from 'lucide-react';
 import type { Service, Concept, Language, Comparison, QuizQuestion, LearningPath } from '@/types';
 import { services } from '@/data/services';
 import { categories } from '@/data/categories';
@@ -14,6 +14,7 @@ import { ComparisonsSection } from '@/components/ComparisonsSection';
 import { ComparisonModal } from '@/components/ComparisonModal';
 import { DailyChallenge } from '@/components/DailyChallenge';
 import { FlashcardsModal } from '@/components/FlashcardsModal';
+import { RetrievalDrillModal } from '@/components/RetrievalDrillModal';
 import { LearningPathsSection } from '@/components/LearningPathsSection';
 import { LearningPathModal } from '@/components/LearningPathModal';
 import { ServiceModal } from '@/components/ServiceModal';
@@ -34,6 +35,7 @@ export default function Home() {
   const [selectedComparison, setSelectedComparison] = useState<Comparison | null>(null);
   const [launcherOpen, setLauncherOpen] = useState(false);
   const [flashcardsOpen, setFlashcardsOpen] = useState(false);
+  const [drillOpen, setDrillOpen] = useState(false);
   const [selectedPath, setSelectedPath] = useState<LearningPath | null>(null);
   const [activeQuiz, setActiveQuiz] = useState<(QuizLaunchConfig & { sessionId: number }) | null>(null);
   /** When set, the active quiz is the Daily Challenge for this date. */
@@ -189,6 +191,14 @@ export default function Home() {
               <BookOpen className="h-4 w-4" />
               Flashcards
             </button>
+            <button
+              type="button"
+              onClick={() => setDrillOpen(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-accent/30 bg-accent-soft px-4 py-2 text-sm font-medium text-accent hover:bg-accent/15"
+            >
+              <Brain className="h-4 w-4" />
+              {language === 'ro' ? 'Recall mixt' : 'Retrieval drill'}
+            </button>
             <a
               href="#concepts"
               className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-elevated px-4 py-2 text-sm font-medium text-text-primary hover:border-border-strong"
@@ -267,6 +277,12 @@ export default function Home() {
           language={language}
           onClose={() => setFlashcardsOpen(false)}
           onServiceClick={handleServiceSelect}
+        />
+      )}
+      {drillOpen && (
+        <RetrievalDrillModal
+          language={language}
+          onClose={() => setDrillOpen(false)}
         />
       )}
       {selectedPath && (

@@ -1,7 +1,11 @@
 'use client';
 
-import { useEffect } from 'react';
-import { X, ExternalLink, Check, Lightbulb, BookOpen, DollarSign, Link2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import {
+  X, ExternalLink, Check, Lightbulb, BookOpen, DollarSign, Link2,
+  Brain, ChevronDown, ListOrdered, KeyRound, ThumbsUp, ThumbsDown,
+  AlertTriangle, Hash, GitBranch, ChevronRight, Repeat,
+} from 'lucide-react';
 import type { Service, Language } from '@/types';
 import { useProgressStore } from '@/store/progress';
 import { getServiceById } from '@/data/services';
@@ -11,6 +15,156 @@ interface ServiceModalProps {
   language: Language;
   onClose: () => void;
   onServiceClick: (s: Service) => void;
+}
+
+/** Bilingual fallback: current language → English → first available. */
+function t(rec: Record<string, string> | undefined, lang: Language): string {
+  if (!rec) return '';
+  return rec[lang] ?? rec.en ?? Object.values(rec)[0] ?? '';
+}
+
+/**
+ * Collapsible section for progressive disclosure — manages cognitive load
+ * so dense exam material isn't a wall of text. Reuses the existing uppercase
+ * header style. `defaultOpen` controls whether it starts expanded.
+ */
+function Section({
+  icon,
+  label,
+  defaultOpen = false,
+  children,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <section className="mb-4 overflow-hidden rounded-xl border border-border">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center justify-between gap-2 bg-surface px-4 py-3 text-left transition-colors hover:bg-muted"
+        aria-expanded={open}
+      >
+        <span className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
+          {icon}
+          {label}
+        </span>
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-text-tertiary transition-transform ${open ? 'rotate-180' : ''}`}
+        />
+      </button>
+      {open && <div className="border-t border-border px-4 py-3 animate-fade-up">{children}</div>}
+    </section>
+  );
+}
+
+/**
+ * Retrieval-practice card (the highest-utility technique — active recall).
+ * Hides the answer, reveals on click, then self-grade feeds the SAME
+ * spaced-repetition signal flashcards use (updateServiceConfidence).
+ */
+function RetrievalCard({
+  questions,
+  serviceId,
+  language,
+}: {
+  questions: NonNullable<Service['retrievalQuestions']>;
+  serviceId: string;
+  language: Language;
+}) {
+  const updateConfidence = useProgressStore((s) => s.updateServiceConfidence);
+  const curLevel = useProgressStore(
+    (s) => s.progress.serviceProgress[serviceId]?.confidenceLevel ?? 0,
+  );
+  const [idx, setIdx] = useState(0);
+  const [revealed, setRevealed] = useState(false);
+
+  const q = questions[idx];
+
+  function grade(knew: boolean) {
+    updateConfidence(serviceId, knew ? Math.min(5, curLevel + 1) : 1);
+    setRevealed(false);
+    setIdx((i) => (i + 1) % questions.length);
+  }
+
+  return (
+    <section className="mb-6 rounded-xl border border-accent/30 bg-accent-soft/40 px-4 py-4">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent">
+          <Brain className="h-3.5 w-3.5" />
+          {language === 'ro' ? 'Testează-te' : 'Test yourself'}
+        </h3>
+        <span className="font-mono text-2xs text-text-tertiary">
+          {idx + 1}/{questions.length}
+        </span>
+      </div>
+
+      <p className="mb-3 text-sm font-medium leading-relaxed text-text-primary text-pretty">
+        {t(q.q, language)}
+      </p>
+
+      {!revealed ? (
+        <button
+          type="button"
+          onClick={() => setRevealed(true)}
+          className="flex w-full items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border px-4 py-4 text-sm text-text-tertiary transition-colors hover:border-accent/40 hover:bg-accent-soft hover:text-accent"
+        >
+          <BookOpen className="h-4 w-4" />
+          {language === 'ro' ? 'Click pentru răspuns' : 'Click to reveal answer'}
+        </button>
+      ) : (
+        <div className="animate-fade-up">
+          <p className="rounded-lg border border-border bg-surface px-3 py-2.5 text-sm leading-relaxed text-text-primary text-pretty">
+            {t(q.a, language)}
+          </p>
+          <div className="mt-3 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => grade(false)}
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-danger/40 bg-danger/5 px-3 py-2 text-sm font-medium text-danger hover:bg-danger/10"
+            >
+              <Repeat className="h-3.5 w-3.5" />
+              {language === 'ro' ? 'Repetă' : 'Review'}
+            </button>
+            <button
+              type="button"
+              onClick={() => grade(true)}
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-accent px-3 py-2 text-sm font-semibold text-accent-foreground shadow-sm hover:opacity-90"
+            >
+              <Check className="h-3.5 w-3.5" />
+              {language === 'ro' ? 'Știam' : 'Got it'}
+            </button>
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+/** Renders a list of bilingual records as bullets. */
+function BulletList({
+  items,
+  language,
+  max,
+}: {
+  items: Array<Record<string, string>>;
+  language: Language;
+  max?: number;
+}) {
+  const shown = max ? items.slice(0, max) : items;
+  return (
+    <ul className="space-y-1.5">
+      {shown.map((item, i) => (
+        <li key={i} className="flex gap-2 text-sm leading-relaxed text-text-primary">
+          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-text-tertiary" aria-hidden />
+          <span>{t(item, language)}</span>
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 export function ServiceModal({ service, language, onClose, onServiceClick }: ServiceModalProps) {
@@ -36,9 +190,9 @@ export function ServiceModal({ service, language, onClose, onServiceClick }: Ser
     return () => window.removeEventListener('keydown', handler);
   }, [onClose]);
 
-  const desc = service.description[language] ?? service.description.en;
-  const analogy = service.analogy[language] ?? service.analogy.en;
-  const pricing = service.pricing[language] ?? service.pricing.en;
+  const desc = t(service.description, language);
+  const analogy = t(service.analogy, language);
+  const pricing = t(service.pricing, language);
 
   const connections = service.connections
     .map((id) => getServiceById(id))
@@ -85,31 +239,71 @@ export function ServiceModal({ service, language, onClose, onServiceClick }: Ser
 
         {/* Body */}
         <div className="max-h-[calc(92vh-130px)] overflow-y-auto px-6 py-5">
-          {/* What it is */}
+          {/* What it is — always visible (low cognitive load entry) */}
           <section className="mb-6">
             <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
               <BookOpen className="h-3.5 w-3.5" />
-              What it is
+              {language === 'ro' ? 'Ce este' : 'What it is'}
             </h3>
             <p className="text-base leading-relaxed text-text-primary text-pretty">{desc}</p>
           </section>
 
-          {/* Analogy */}
+          {/* Analogy — always visible (elaboration / concrete example) */}
           <section className="mb-6 rounded-xl border border-accent/20 bg-accent-soft px-4 py-3">
             <h3 className="mb-1 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent">
               <Lightbulb className="h-3.5 w-3.5" />
-              Analogy
+              {language === 'ro' ? 'Analogie' : 'Analogy'}
             </h3>
             <p className="text-sm italic leading-relaxed text-text-primary">{analogy}</p>
           </section>
 
-          {/* Exam tips */}
+          {/* Test yourself — retrieval practice (highest utility) */}
+          {service.retrievalQuestions && service.retrievalQuestions.length > 0 && (
+            <RetrievalCard
+              questions={service.retrievalQuestions}
+              serviceId={service.id}
+              language={language}
+            />
+          )}
+
+          {/* How it works — segmenting (default open) */}
+          {service.howItWorks && service.howItWorks.length > 0 && (
+            <Section
+              icon={<ListOrdered className="h-3.5 w-3.5" />}
+              label={language === 'ro' ? 'Cum funcționează' : 'How it works'}
+              defaultOpen
+            >
+              <ol className="space-y-2">
+                {service.howItWorks.map((step, i) => (
+                  <li key={i} className="flex gap-3">
+                    <span className="mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-muted font-mono text-2xs font-semibold text-text-secondary">
+                      {i + 1}
+                    </span>
+                    <p className="text-sm leading-relaxed text-text-primary">{t(step, language)}</p>
+                  </li>
+                ))}
+              </ol>
+            </Section>
+          )}
+
+          {/* Key facts — chunked, capped at 5 (default open) */}
+          {service.keyFacts && service.keyFacts.length > 0 && (
+            <Section
+              icon={<KeyRound className="h-3.5 w-3.5" />}
+              label={language === 'ro' ? 'De reținut' : 'Key facts'}
+              defaultOpen
+            >
+              <BulletList items={service.keyFacts} language={language} max={5} />
+            </Section>
+          )}
+
+          {/* Key exam points (existing examTips) — default open */}
           {service.examTips.length > 0 && (
-            <section className="mb-6">
-              <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
-                <Check className="h-3.5 w-3.5" />
-                Key exam points ({service.examTips.length})
-              </h3>
+            <Section
+              icon={<Check className="h-3.5 w-3.5" />}
+              label={`${language === 'ro' ? 'Puncte de examen' : 'Key exam points'} (${service.examTips.length})`}
+              defaultOpen
+            >
               <ul className="space-y-2">
                 {service.examTips.map((tip, i) => (
                   <li
@@ -120,19 +314,99 @@ export function ServiceModal({ service, language, onClose, onServiceClick }: Ser
                       {i + 1}
                     </span>
                     <p className="text-sm leading-relaxed text-text-primary">
-                      {tip.content[language] ?? tip.content.en}
+                      {t(tip.content, language)}
                     </p>
                   </li>
                 ))}
               </ul>
-            </section>
+            </Section>
+          )}
+
+          {/* Key numbers — figures to memorize (collapsed) */}
+          {service.keyNumbers && service.keyNumbers.length > 0 && (
+            <Section
+              icon={<Hash className="h-3.5 w-3.5" />}
+              label={language === 'ro' ? 'Cifre cheie' : 'Key numbers'}
+            >
+              <dl className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                {service.keyNumbers.map((n, i) => (
+                  <div
+                    key={i}
+                    className="flex items-baseline justify-between gap-3 rounded-lg border border-border bg-surface px-3 py-2"
+                  >
+                    <dt className="text-xs text-text-secondary">{t(n.label, language)}</dt>
+                    <dd className="shrink-0 font-mono text-sm font-semibold text-text-primary">
+                      {t(n.value, language)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </Section>
+          )}
+
+          {/* When to use — application (collapsed) */}
+          {service.whenToUse && service.whenToUse.length > 0 && (
+            <Section
+              icon={<ThumbsUp className="h-3.5 w-3.5" />}
+              label={language === 'ro' ? 'Când folosești' : 'When to use'}
+            >
+              <BulletList items={service.whenToUse} language={language} />
+            </Section>
+          )}
+
+          {/* When NOT to use — interleaving / discrimination (collapsed) */}
+          {service.whenNotToUse && service.whenNotToUse.length > 0 && (
+            <Section
+              icon={<ThumbsDown className="h-3.5 w-3.5" />}
+              label={language === 'ro' ? 'Când NU folosești' : 'When NOT to use'}
+            >
+              <div className="rounded-lg border border-danger/30 bg-danger/5 px-3 py-2">
+                <BulletList items={service.whenNotToUse} language={language} />
+              </div>
+            </Section>
+          )}
+
+          {/* Exam traps — elaborative interrogation (collapsed) */}
+          {service.examTraps && service.examTraps.length > 0 && (
+            <Section
+              icon={<AlertTriangle className="h-3.5 w-3.5" />}
+              label={language === 'ro' ? 'Capcane de examen' : 'Exam traps'}
+            >
+              <div className="rounded-lg border border-warning/30 bg-warning/5 px-3 py-2">
+                <BulletList items={service.examTraps} language={language} />
+              </div>
+            </Section>
+          )}
+
+          {/* Diagram — dual coding (collapsed) */}
+          {service.diagram && service.diagram.steps.length > 0 && (
+            <Section
+              icon={<GitBranch className="h-3.5 w-3.5" />}
+              label={language === 'ro' ? 'Diagramă' : 'Diagram'}
+            >
+              <div
+                className="flex flex-wrap items-center gap-1.5"
+                aria-label={t(service.diagram.altText, language)}
+              >
+                {service.diagram.steps.map((step, i) => (
+                  <span key={i} className="flex items-center gap-1.5">
+                    <span className="rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-medium text-text-primary">
+                      {t(step, language)}
+                    </span>
+                    {i < service.diagram!.steps.length - 1 && (
+                      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-text-tertiary" aria-hidden />
+                    )}
+                  </span>
+                ))}
+              </div>
+            </Section>
           )}
 
           {/* Pricing */}
-          <section className="mb-6">
+          <section className="mb-6 mt-2">
             <h3 className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
               <DollarSign className="h-3.5 w-3.5" />
-              Pricing
+              {language === 'ro' ? 'Prețuri' : 'Pricing'}
             </h3>
             <p className="font-mono text-sm text-text-primary">{pricing}</p>
           </section>
@@ -142,7 +416,7 @@ export function ServiceModal({ service, language, onClose, onServiceClick }: Ser
             <section className="mb-6">
               <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-text-tertiary">
                 <Link2 className="h-3.5 w-3.5" />
-                Works with
+                {language === 'ro' ? 'Funcționează cu' : 'Works with'}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {connections.map((c) => (
@@ -172,7 +446,7 @@ export function ServiceModal({ service, language, onClose, onServiceClick }: Ser
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-sm font-medium text-accent hover:underline"
             >
-              View AWS docs
+              {language === 'ro' ? 'Vezi documentația AWS' : 'View AWS docs'}
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
           )}
@@ -192,10 +466,10 @@ export function ServiceModal({ service, language, onClose, onServiceClick }: Ser
           >
             {isLearned ? (
               <span className="inline-flex items-center gap-1.5">
-                <Check className="h-4 w-4" /> Mastered
+                <Check className="h-4 w-4" /> {language === 'ro' ? 'Stăpânit' : 'Mastered'}
               </span>
             ) : (
-              'Mark as learned'
+              language === 'ro' ? 'Marchează ca învățat' : 'Mark as learned'
             )}
           </button>
         </div>

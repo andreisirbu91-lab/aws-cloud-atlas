@@ -31,6 +31,54 @@ export const securityServices: Service[] = [
     connections: ['cognito', 'organizations', 'cloudtrail', 'kms', 'sts'],
     docsUrl: 'https://docs.aws.amazon.com/iam/',
     visual: { color: 'hsl(0, 72%, 51%)', icon: 'shield' },
+    howItWorks: [
+      { en: 'You create identities: users (people/apps), groups (sets of users), or roles (temporary).', ro: 'Creezi identități: users (oameni/apps), groups (seturi de users), sau roles (temporare).' },
+      { en: 'You attach policies — JSON documents that Allow or Deny specific actions on resources.', ro: 'Atașezi policies — documente JSON care Allow sau Deny acțiuni specifice pe resurse.' },
+      { en: 'When a request is made, IAM evaluates all matching policies to decide access.', ro: 'La o cerere, IAM evaluează toate politicile potrivite ca să decidă accesul.' },
+      { en: 'Services assume roles to get temporary credentials instead of long-lived keys.', ro: 'Serviciile asumă roluri ca să obțină credențiale temporare în loc de chei pe termen lung.' },
+    ],
+    keyFacts: [
+      { en: 'IAM is GLOBAL — not tied to a Region.', ro: 'IAM e GLOBAL — nu e legat de o Regiune.' },
+      { en: '4 building blocks: Users, Groups, Roles, Policies.', ro: '4 cărămizi: Users, Groups, Roles, Policies.' },
+      { en: 'Policies are JSON: Effect (Allow/Deny), Action, Resource.', ro: 'Politicile sunt JSON: Effect (Allow/Deny), Action, Resource.' },
+      { en: 'Roles give TEMPORARY credentials — best for services and cross-account access.', ro: 'Rolurile dau credențiale TEMPORARE — ideale pentru servicii și acces cross-account.' },
+      { en: 'IAM itself is free.', ro: 'IAM în sine e gratuit.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Cost', ro: 'Cost' }, value: { en: 'Free', ro: 'Gratuit' } },
+      { label: { en: 'Scope', ro: 'Domeniu' }, value: { en: 'Global', ro: 'Global' } },
+      { label: { en: 'MFA factor', ro: 'Factor MFA' }, value: { en: '2nd factor', ro: 'al 2-lea factor' } },
+    ],
+    whenToUse: [
+      { en: 'Grant a person or app the minimum permissions they need (least privilege).', ro: 'Acorzi unei persoane sau aplicații minimul de permisiuni necesare (least privilege).' },
+      { en: 'Let an AWS service (e.g. EC2, Lambda) access other services securely via a role.', ro: 'Lași un serviciu AWS (ex: EC2, Lambda) să acceseze alte servicii sigur, printr-un rol.' },
+      { en: 'Centralize access control and enforce MFA on sensitive accounts.', ro: 'Centralizezi controlul accesului și impui MFA pe conturile sensibile.' },
+    ],
+    whenNotToUse: [
+      { en: 'Sign-up/login for your app\'s END users (customers) → use Amazon Cognito, not IAM.', ro: 'Înregistrare/login pentru utilizatorii FINALI ai aplicației (clienți) → folosește Cognito, nu IAM.' },
+      { en: 'Managing many AWS accounts at once → use AWS Organizations (with IAM inside each).', ro: 'Gestionarea multor conturi AWS deodată → folosește AWS Organizations (cu IAM în fiecare).' },
+    ],
+    examTraps: [
+      { en: 'IAM = your team/services accessing AWS. Cognito = your app\'s customers logging in. Classic mix-up.', ro: 'IAM = echipa/serviciile tale care accesează AWS. Cognito = clienții aplicației care fac login. Confuzie clasică.' },
+      { en: 'IAM is GLOBAL — a question implying IAM is "per region" is wrong.', ro: 'IAM e GLOBAL — o întrebare care sugerează că IAM e „per regiune” e greșită.' },
+      { en: 'An explicit DENY always overrides any ALLOW in IAM policy evaluation.', ro: 'Un DENY explicit întotdeauna anulează orice ALLOW în evaluarea politicilor IAM.' },
+      { en: 'Use ROLES (temporary) for EC2/Lambda — never hardcode access keys in code.', ro: 'Folosește ROLURI (temporare) pentru EC2/Lambda — nu pune niciodată chei de acces în cod.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'Is IAM a global or a regional service?', ro: 'IAM e un serviciu global sau regional?' }, a: { en: 'Global — IAM users, roles, and policies are not tied to any Region.', ro: 'Global — userii, rolurile și politicile IAM nu sunt legate de nicio Regiune.' } },
+      { q: { en: 'Your app needs to let thousands of customers sign up and log in. IAM or Cognito?', ro: 'Aplicația ta trebuie să lase mii de clienți să se înregistreze și să facă login. IAM sau Cognito?' }, a: { en: 'Cognito. IAM is for managing access of your own team and AWS services, not your application\'s end users.', ro: 'Cognito. IAM e pentru gestionarea accesului echipei tale și al serviciilor AWS, nu al utilizatorilor finali ai aplicației.' } },
+      { q: { en: 'Why should an EC2 instance use an IAM role instead of stored access keys?', ro: 'De ce ar trebui o instanță EC2 să folosească un rol IAM în loc de chei de acces salvate?' }, a: { en: 'Roles provide automatically-rotated TEMPORARY credentials — no long-lived secret to leak or manage.', ro: 'Rolurile oferă credențiale TEMPORARE rotite automat — niciun secret pe termen lung de scurs sau gestionat.' } },
+      { q: { en: 'In IAM policy evaluation, what wins: an explicit Deny or an Allow?', ro: 'În evaluarea politicilor IAM, ce câștigă: un Deny explicit sau un Allow?' }, a: { en: 'An explicit Deny always wins — it overrides any Allow.', ro: 'Un Deny explicit câștigă întotdeauna — anulează orice Allow.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'User / Service', ro: 'User / Serviciu' },
+        { en: 'Group or Role', ro: 'Grup sau Rol' },
+        { en: 'Policy (JSON)', ro: 'Politică (JSON)' },
+        { en: 'Allow / Deny', ro: 'Allow / Deny' },
+      ],
+      altText: { en: 'A user or service is attached to a group/role, which carries a JSON policy that allows or denies actions.', ro: 'Un user sau serviciu e atașat unui grup/rol, care poartă o politică JSON ce permite sau refuză acțiuni.' },
+    },
   },
   {
     id: 'cognito',
@@ -57,6 +105,54 @@ export const securityServices: Service[] = [
     connections: ['apigateway', 'iam', 'lambda'],
     docsUrl: 'https://docs.aws.amazon.com/cognito/',
     visual: { color: 'hsl(0, 72%, 51%)', icon: 'shield' },
+    howItWorks: [
+      { en: 'User Pools act as a user directory: your app\'s customers sign up and sign in (email, social, SAML).', ro: 'User Pools sunt un director de utilizatori: clienții aplicației tale se înregistrează și fac login (email, social, SAML).' },
+      { en: 'After a successful login, Cognito returns JWT tokens your app uses to authenticate the user.', ro: 'După un login reușit, Cognito returnează token-uri JWT pe care aplicația le folosește ca să autentifice utilizatorul.' },
+      { en: 'Identity Pools exchange those tokens for TEMPORARY AWS credentials so the user can reach AWS services.', ro: 'Identity Pools schimbă acele token-uri în credențiale AWS TEMPORARE ca utilizatorul să poată accesa servicii AWS.' },
+      { en: 'You can add MFA, social login (Google/Facebook/Apple), and federation without building auth yourself.', ro: 'Poți adăuga MFA, social login (Google/Facebook/Apple) și federație fără să construiești tu auth-ul.' },
+    ],
+    keyFacts: [
+      { en: 'Cognito is for YOUR app\'s end users (customers) — sign-up, sign-in, federation.', ro: 'Cognito e pentru utilizatorii FINALI ai aplicației tale (clienți) — sign-up, sign-in, federație.' },
+      { en: 'Two parts: User Pools (directory + JWT tokens) and Identity Pools (temporary AWS credentials).', ro: 'Două părți: User Pools (director + token-uri JWT) și Identity Pools (credențiale AWS temporare).' },
+      { en: 'Supports social login (Google, Facebook, Apple), SAML, OIDC, and MFA.', ro: 'Suportă social login (Google, Facebook, Apple), SAML, OIDC și MFA.' },
+      { en: 'User Pools return JWT tokens that your app validates on each request.', ro: 'User Pools returnează token-uri JWT pe care aplicația le validează la fiecare cerere.' },
+      { en: 'First 50k monthly active users are free.', ro: 'Primii 50k utilizatori activi lunar sunt gratuiți.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Free tier', ro: 'Free tier' }, value: { en: '50k MAU', ro: '50k MAU' } },
+      { label: { en: 'Token type', ro: 'Tip token' }, value: { en: 'JWT', ro: 'JWT' } },
+      { label: { en: 'Main parts', ro: 'Părți principale' }, value: { en: '2 (User + Identity Pools)', ro: '2 (User + Identity Pools)' } },
+    ],
+    whenToUse: [
+      { en: 'Add sign-up and login for thousands of customers in your web or mobile app.', ro: 'Adaugi sign-up și login pentru mii de clienți în aplicația ta web sau mobilă.' },
+      { en: 'Let users log in with Google/Facebook/Apple instead of building your own auth.', ro: 'Lași userii să facă login cu Google/Facebook/Apple în loc să construiești propriul auth.' },
+      { en: 'Give app users temporary AWS credentials to reach AWS services directly.', ro: 'Oferi userilor aplicației credențiale AWS temporare ca să acceseze direct servicii AWS.' },
+    ],
+    whenNotToUse: [
+      { en: 'Managing access for your own team or AWS services → use IAM, not Cognito.', ro: 'Gestionarea accesului pentru echipa ta sau serviciile AWS → folosește IAM, nu Cognito.' },
+      { en: 'Single sign-on across many AWS accounts for employees → use IAM Identity Center.', ro: 'Single sign-on peste multe conturi AWS pentru angajați → folosește IAM Identity Center.' },
+    ],
+    examTraps: [
+      { en: 'Cognito = your app\'s customers. IAM = your team/AWS-internal access. This is the highest-value trap.', ro: 'Cognito = clienții aplicației tale. IAM = accesul echipei tale/intern AWS. E cea mai valoroasă capcană.' },
+      { en: 'User Pools = directory + login (JWT). Identity Pools = exchange for AWS credentials. Don\'t swap them.', ro: 'User Pools = director + login (JWT). Identity Pools = schimb pentru credențiale AWS. Nu le confunda.' },
+      { en: '"Federated social login for customers" points to Cognito, not Directory Service or IAM.', ro: '„Social login federat pentru clienți” indică Cognito, nu Directory Service sau IAM.' },
+      { en: 'Cognito is for end-user identity, not for storing secrets — that\'s Secrets Manager.', ro: 'Cognito e pentru identitatea utilizatorilor finali, nu pentru stocarea secretelor — acela e Secrets Manager.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'Your mobile app needs sign-up and login for customers. Which AWS service?', ro: 'Aplicația ta mobilă are nevoie de sign-up și login pentru clienți. Ce serviciu AWS?' }, a: { en: 'Amazon Cognito — it handles end-user identity (sign-up, sign-in, federation) for your app.', ro: 'Amazon Cognito — gestionează identitatea utilizatorilor finali (sign-up, sign-in, federație) pentru aplicația ta.' } },
+      { q: { en: 'What is the difference between a Cognito User Pool and an Identity Pool?', ro: 'Care e diferența dintre un Cognito User Pool și un Identity Pool?' }, a: { en: 'User Pool is the user directory that handles login and returns JWT tokens; Identity Pool exchanges those tokens for temporary AWS credentials.', ro: 'User Pool e directorul de utilizatori care gestionează login-ul și returnează token-uri JWT; Identity Pool schimbă acele token-uri în credențiale AWS temporare.' } },
+      { q: { en: 'Cognito or IAM: granting your developers access to the AWS console?', ro: 'Cognito sau IAM: acordarea accesului dezvoltatorilor tăi la consola AWS?' }, a: { en: 'IAM. Cognito is for your application\'s customers, not your internal team.', ro: 'IAM. Cognito e pentru clienții aplicației tale, nu pentru echipa ta internă.' } },
+      { q: { en: 'How can app users log in with their Google or Facebook accounts?', ro: 'Cum pot userii aplicației să facă login cu conturile lor Google sau Facebook?' }, a: { en: 'Cognito supports social login (Google, Facebook, Apple) plus SAML and OIDC federation.', ro: 'Cognito suportă social login (Google, Facebook, Apple) plus federație SAML și OIDC.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'App user', ro: 'User al aplicației' },
+        { en: 'User Pool (login → JWT)', ro: 'User Pool (login → JWT)' },
+        { en: 'Identity Pool', ro: 'Identity Pool' },
+        { en: 'Temporary AWS credentials', ro: 'Credențiale AWS temporare' },
+      ],
+      altText: { en: 'An app user logs in via a User Pool to get JWT tokens, then an Identity Pool exchanges them for temporary AWS credentials.', ro: 'Un user al aplicației face login printr-un User Pool ca să obțină token-uri JWT, apoi un Identity Pool le schimbă în credențiale AWS temporare.' },
+    },
   },
   {
     id: 'kms',
@@ -85,6 +181,54 @@ export const securityServices: Service[] = [
     connections: ['s3', 'ebs', 'rds', 'secretsmanager', 'cloudtrail'],
     docsUrl: 'https://docs.aws.amazon.com/kms/',
     visual: { color: 'hsl(0, 72%, 51%)', icon: 'lock' },
+    howItWorks: [
+      { en: 'You create and control encryption keys in KMS — AWS-managed keys or your own Customer Managed Keys (CMK).', ro: 'Creezi și controlezi chei de criptare în KMS — chei gestionate de AWS sau propriile Customer Managed Keys (CMK).' },
+      { en: 'KMS integrates with most AWS services (S3, EBS, RDS) to encrypt data at rest with one click.', ro: 'KMS se integrează cu majoritatea serviciilor AWS (S3, EBS, RDS) ca să cripteze datele at rest cu un click.' },
+      { en: 'Access is controlled by IAM policies plus key policies; CloudTrail logs every key usage for audit.', ro: 'Accesul e controlat de politici IAM plus key policies; CloudTrail loghează fiecare utilizare a cheii pentru audit.' },
+      { en: 'A KMS key never leaves its Region unencrypted, and you can enable automatic yearly rotation.', ro: 'O cheie KMS nu părăsește niciodată Regiunea ei necriptată, iar tu poți activa rotația automată anuală.' },
+    ],
+    keyFacts: [
+      { en: 'KMS creates and controls ENCRYPTION KEYS — not secrets like passwords.', ro: 'KMS creează și controlează CHEI DE CRIPTARE — nu secrete precum parole.' },
+      { en: 'Keys are REGIONAL — a KMS key never leaves its Region unencrypted.', ro: 'Cheile sunt REGIONALE — o cheie KMS nu părăsește niciodată Regiunea ei necriptată.' },
+      { en: 'Integrated with most AWS services (S3, EBS, RDS) for encryption at rest.', ro: 'Integrat cu majoritatea serviciilor AWS (S3, EBS, RDS) pentru criptare at rest.' },
+      { en: 'Access controlled via IAM + key policies; CloudTrail audits all key usage.', ro: 'Acces controlat prin IAM + key policies; CloudTrail auditează toată utilizarea cheilor.' },
+      { en: 'CMK (Customer Managed Keys): you control rotation and policy; rotation can be automatic.', ro: 'CMK (Customer Managed Keys): tu controlezi rotația și politica; rotația poate fi automată.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Scope', ro: 'Domeniu' }, value: { en: 'Regional', ro: 'Regional' } },
+      { label: { en: 'CMK cost', ro: 'Cost CMK' }, value: { en: '$1/month', ro: '$1/lună' } },
+      { label: { en: 'Auto rotation', ro: 'Rotație automată' }, value: { en: 'Yearly', ro: 'Anuală' } },
+    ],
+    whenToUse: [
+      { en: 'Encrypt data at rest in S3, EBS, or RDS using managed keys (SSE-KMS).', ro: 'Criptezi datele at rest în S3, EBS sau RDS folosind chei gestionate (SSE-KMS).' },
+      { en: 'Need full control and audit over key rotation and policy → use a Customer Managed Key.', ro: 'Ai nevoie de control complet și audit pe rotația și politica cheii → folosește o Customer Managed Key.' },
+      { en: 'Centralize encryption keys with CloudTrail audit logging of every use.', ro: 'Centralizezi cheile de criptare cu logare CloudTrail pentru fiecare utilizare.' },
+    ],
+    whenNotToUse: [
+      { en: 'Storing secrets like DB passwords or API keys → use Secrets Manager (or Parameter Store), not KMS.', ro: 'Stocarea secretelor precum parole DB sau API keys → folosește Secrets Manager (sau Parameter Store), nu KMS.' },
+      { en: 'Issuing SSL/TLS certificates for HTTPS → use AWS Certificate Manager (ACM), not KMS.', ro: 'Emiterea certificatelor SSL/TLS pentru HTTPS → folosește AWS Certificate Manager (ACM), nu KMS.' },
+    ],
+    examTraps: [
+      { en: 'KMS = encryption KEYS. Secrets Manager / Parameter Store = storing SECRETS (passwords, API keys). Different purpose.', ro: 'KMS = CHEI de criptare. Secrets Manager / Parameter Store = stocarea SECRETELOR (parole, API keys). Scop diferit.' },
+      { en: 'KMS keys are REGIONAL — a question implying a key spans Regions unencrypted is wrong.', ro: 'Cheile KMS sunt REGIONALE — o întrebare care sugerează că o cheie traversează Regiuni necriptată e greșită.' },
+      { en: 'For audit of who used a key and when, the answer is CloudTrail (KMS logs there).', ro: 'Pentru audit despre cine a folosit o cheie și când, răspunsul e CloudTrail (KMS loghează acolo).' },
+      { en: 'CMK = you control rotation/policy; AWS-managed keys = AWS controls them. Don\'t confuse the two.', ro: 'CMK = tu controlezi rotația/politica; chei AWS-managed = AWS le controlează. Nu le confunda.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'Are KMS keys global or regional?', ro: 'Cheile KMS sunt globale sau regionale?' }, a: { en: 'Regional — a KMS key never leaves its Region unencrypted.', ro: 'Regionale — o cheie KMS nu părăsește niciodată Regiunea ei necriptată.' } },
+      { q: { en: 'You need to store a database password securely. KMS or Secrets Manager?', ro: 'Trebuie să stochezi o parolă de bază de date în siguranță. KMS sau Secrets Manager?' }, a: { en: 'Secrets Manager. KMS manages encryption KEYS; Secrets Manager stores the SECRET (and uses KMS to encrypt it).', ro: 'Secrets Manager. KMS gestionează CHEILE de criptare; Secrets Manager stochează SECRETUL (și folosește KMS ca să-l cripteze).' } },
+      { q: { en: 'How do you audit every use of a KMS key?', ro: 'Cum auditezi fiecare utilizare a unei chei KMS?' }, a: { en: 'CloudTrail logs all KMS key usage, giving a full audit trail.', ro: 'CloudTrail loghează toată utilizarea cheilor KMS, oferind un audit complet.' } },
+      { q: { en: 'What is the difference between an AWS-managed key and a Customer Managed Key (CMK)?', ro: 'Care e diferența dintre o cheie AWS-managed și o Customer Managed Key (CMK)?' }, a: { en: 'AWS controls AWS-managed keys; with a CMK you control the rotation, policy, and access.', ro: 'AWS controlează cheile AWS-managed; cu o CMK tu controlezi rotația, politica și accesul.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'Create KMS key (CMK)', ro: 'Creezi cheia KMS (CMK)' },
+        { en: 'Enable encryption on S3/EBS/RDS', ro: 'Activezi criptarea pe S3/EBS/RDS' },
+        { en: 'Data encrypted at rest', ro: 'Date criptate at rest' },
+        { en: 'CloudTrail logs key usage', ro: 'CloudTrail loghează utilizarea cheii' },
+      ],
+      altText: { en: 'A KMS key is created and used to encrypt data at rest in services like S3, EBS, and RDS, while CloudTrail logs every key usage.', ro: 'O cheie KMS e creată și folosită ca să cripteze datele at rest în servicii ca S3, EBS și RDS, iar CloudTrail loghează fiecare utilizare a cheii.' },
+    },
   },
   {
     id: 'waf',

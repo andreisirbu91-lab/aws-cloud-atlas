@@ -26,6 +26,53 @@ export const integrationServices: Service[] = [
     connections: ['sqs', 'lambda', 'cloudwatch'],
     docsUrl: 'https://docs.aws.amazon.com/sns/',
     visual: { color: COLOR, icon: 'send' },
+    howItWorks: [
+      { en: 'A publisher sends a single message to an SNS topic (the central channel).', ro: 'Un publisher trimite un singur mesaj către un topic SNS (canalul central).' },
+      { en: 'The topic immediately fans out (pushes) that message to every subscriber at once.', ro: 'Topic-ul face fan-out imediat (push) acelui mesaj către toți subscriberii deodată.' },
+      { en: 'Subscribers can be SQS queues, Lambda functions, email, SMS, HTTP/S endpoints or mobile push.', ro: 'Subscriberii pot fi cozi SQS, funcții Lambda, email, SMS, endpoint-uri HTTP/S sau mobile push.' },
+      { en: 'SNS is push-based: it delivers to subscribers — they do not poll like with SQS.', ro: 'SNS e push-based: livrează către subscriberi — ei nu fac poll ca la SQS.' },
+    ],
+    keyFacts: [
+      { en: 'Pub/sub messaging with one-to-many (1:N) delivery via topics.', ro: 'Mesagerie pub/sub cu livrare one-to-many (1:N) prin topics.' },
+      { en: 'Push model — SNS pushes messages out; SQS uses a pull/poll model.', ro: 'Model push — SNS împinge mesajele; SQS folosește model pull/poll.' },
+      { en: 'Fan-out pattern: one SNS topic delivers to many SQS queues simultaneously.', ro: 'Pattern fan-out: un topic SNS livrează către multe cozi SQS simultan.' },
+      { en: 'FIFO topics give ordered, deduplicated delivery for strict-order use cases.', ro: 'Topic-urile FIFO oferă livrare ordonată și deduplicată pentru cazuri cu ordine strictă.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Delivery model', ro: 'Model de livrare' }, value: { en: 'Push (one-to-many)', ro: 'Push (one-to-many)' } },
+      { label: { en: 'Price', ro: 'Preț' }, value: { en: '$0.50 / 1M notifications', ro: '$0.50 / 1M notificări' } },
+      { label: { en: 'Subscriber types', ro: 'Tipuri de subscriberi' }, value: { en: 'SQS, Lambda, Email, SMS, HTTP/S, Mobile', ro: 'SQS, Lambda, Email, SMS, HTTP/S, Mobile' } },
+    ],
+    whenToUse: [
+      { en: 'You need to broadcast one message to many subscribers at once (fan-out).', ro: 'Trebuie să difuzezi un mesaj către mulți subscriberi deodată (fan-out).' },
+      { en: 'You want push notifications: email, SMS or mobile push triggered by an event.', ro: 'Vrei notificări push: email, SMS sau mobile push declanșate de un eveniment.' },
+      { en: 'You want one event to trigger several systems in parallel (e.g. topic → multiple SQS queues).', ro: 'Vrei ca un eveniment să declanșeze mai multe sisteme în paralel (ex. topic → mai multe cozi SQS).' },
+    ],
+    whenNotToUse: [
+      { en: 'You need a durable buffer where a worker polls and processes each message once — use SQS instead.', ro: 'Ai nevoie de un buffer durabil unde un worker face poll și procesează fiecare mesaj o singură dată — folosește SQS.' },
+      { en: 'You need rich event routing and filtering across many AWS services and SaaS sources — use EventBridge instead.', ro: 'Ai nevoie de rutare și filtrare bogată a evenimentelor între multe servicii AWS și surse SaaS — folosește EventBridge.' },
+    ],
+    examTraps: [
+      { en: 'SNS = pub/sub, push, one-to-many; SQS = queue, pull/poll, decouple one producer to consumer with buffering. Do not confuse them.', ro: 'SNS = pub/sub, push, one-to-many; SQS = coadă, pull/poll, decuplezi un producer de consumer cu buffering. Nu le confunda.' },
+      { en: 'SNS pushes to subscribers; consumers do NOT poll SNS (polling = SQS).', ro: 'SNS împinge către subscriberi; consumerii NU fac poll la SNS (poll = SQS).' },
+      { en: '"Fan-out to multiple queues" = SNS topic in front of several SQS queues.', ro: '"Fan-out către mai multe cozi" = topic SNS în fața mai multor cozi SQS.' },
+      { en: 'SNS does not store messages for later polling — if a subscriber is down, use an SQS queue subscriber to retain them.', ro: 'SNS nu stochează mesajele pentru poll ulterior — dacă un subscriber e jos, folosește un subscriber SQS ca să le rețină.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'Is SNS push-based or pull-based?', ro: 'SNS e push-based sau pull-based?' }, a: { en: 'Push-based — SNS pushes messages to subscribers (SQS is pull/poll).', ro: 'Push-based — SNS împinge mesajele către subscriberi (SQS e pull/poll).' } },
+      { q: { en: 'What is the SNS fan-out pattern?', ro: 'Ce este pattern-ul fan-out SNS?' }, a: { en: 'One SNS topic delivers the same message to many subscribers (e.g. multiple SQS queues) at once.', ro: 'Un topic SNS livrează același mesaj către mulți subscriberi (ex. mai multe cozi SQS) deodată.' } },
+      { q: { en: 'Which subscriber types can an SNS topic deliver to?', ro: 'Către ce tipuri de subscriberi poate livra un topic SNS?' }, a: { en: 'SQS, Lambda, email, SMS, HTTP/S endpoints and mobile push.', ro: 'SQS, Lambda, email, SMS, endpoint-uri HTTP/S și mobile push.' } },
+      { q: { en: 'When should you use SQS instead of SNS?', ro: 'Când ar trebui să folosești SQS în loc de SNS?' }, a: { en: 'When you need a durable queue where a worker polls and processes each message exactly once.', ro: 'Când ai nevoie de o coadă durabilă unde un worker face poll și procesează fiecare mesaj exact o dată.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'Publisher', ro: 'Publisher' },
+        { en: 'SNS Topic', ro: 'Topic SNS' },
+        { en: 'Fan-out (push)', ro: 'Fan-out (push)' },
+        { en: 'Subscribers: SQS / Lambda / Email / SMS', ro: 'Subscriberi: SQS / Lambda / Email / SMS' },
+      ],
+      altText: { en: 'A publisher sends one message to an SNS topic, which fans it out by push to many subscribers.', ro: 'Un publisher trimite un mesaj către un topic SNS, care îl distribuie prin push către mulți subscriberi.' },
+    },
   },
   {
     id: 'sqs',
@@ -52,6 +99,55 @@ export const integrationServices: Service[] = [
     connections: ['lambda', 'sns', 'eventbridge'],
     docsUrl: 'https://docs.aws.amazon.com/sqs/',
     visual: { color: COLOR, icon: 'list' },
+    howItWorks: [
+      { en: 'A producer sends messages into an SQS queue, which stores them durably as a buffer.', ro: 'Un producer trimite mesaje într-o coadă SQS, care le stochează durabil ca buffer.' },
+      { en: 'Consumers poll (pull) the queue, retrieve messages, process them and then delete them.', ro: 'Consumerii fac poll (pull) la coadă, iau mesajele, le procesează și apoi le șterg.' },
+      { en: 'Producers and consumers work independently and at different rates — this decouples them.', ro: 'Producerii și consumerii lucrează independent și în ritmuri diferite — asta îi decuplează.' },
+      { en: 'Messages are processed asynchronously, so the queue absorbs traffic spikes without losing work.', ro: 'Mesajele sunt procesate asincron, deci coada absoarbe spike-urile de trafic fără să piardă lucru.' },
+    ],
+    keyFacts: [
+      { en: 'Fully managed message queue used to decouple application components for resilience.', ro: 'Coadă de mesaje complet managed, folosită pentru a decupla componentele unei aplicații pentru reziliență.' },
+      { en: 'Pull/poll model — consumers poll the queue; SNS uses a push model.', ro: 'Model pull/poll — consumerii fac poll la coadă; SNS folosește model push.' },
+      { en: 'Standard queues: best-effort ordering, at-least-once delivery, near-unlimited throughput.', ro: 'Cozi Standard: ordonare best-effort, livrare at-least-once, throughput aproape nelimitat.' },
+      { en: 'FIFO queues: strict ordering and exactly-once processing, but lower throughput.', ro: 'Cozi FIFO: ordonare strictă și procesare exactly-once, dar throughput mai mic.' },
+      { en: 'Default message retention is 4 days (max 14 days).', ro: 'Retenția implicită a mesajelor e 4 zile (maxim 14 zile).' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Delivery model', ro: 'Model de livrare' }, value: { en: 'Pull / poll', ro: 'Pull / poll' } },
+      { label: { en: 'Default retention', ro: 'Retenție implicită' }, value: { en: '4 days (max 14 days)', ro: '4 zile (max 14 zile)' } },
+      { label: { en: 'Queue types', ro: 'Tipuri de coadă' }, value: { en: 'Standard / FIFO', ro: 'Standard / FIFO' } },
+      { label: { en: 'Price', ro: 'Preț' }, value: { en: '$0.40 / 1M requests', ro: '$0.40 / 1M cereri' } },
+    ],
+    whenToUse: [
+      { en: 'You need to decouple a producer from a consumer so they scale independently.', ro: 'Trebuie să decuplezi un producer de un consumer ca să scaleze independent.' },
+      { en: 'You want a durable buffer that absorbs traffic spikes and smooths out load.', ro: 'Vrei un buffer durabil care absoarbe spike-urile de trafic și netezește load-ul.' },
+      { en: 'You need each message processed once by a worker that polls and then deletes it.', ro: 'Ai nevoie ca fiecare mesaj să fie procesat o dată de un worker care face poll și apoi îl șterge.' },
+    ],
+    whenNotToUse: [
+      { en: 'You need to broadcast one message to many subscribers at once (push) — use SNS instead.', ro: 'Trebuie să difuzezi un mesaj către mulți subscriberi deodată (push) — folosește SNS.' },
+      { en: 'You need real-time streaming or analytics over ordered records — use Kinesis instead.', ro: 'Ai nevoie de streaming în timp real sau analytics pe înregistrări ordonate — folosește Kinesis.' },
+    ],
+    examTraps: [
+      { en: 'SQS = queue, pull/poll, decouple one producer from a consumer with buffering; SNS = pub/sub, push, one-to-many. Do not confuse them.', ro: 'SQS = coadă, pull/poll, decuplezi un producer de un consumer cu buffering; SNS = pub/sub, push, one-to-many. Nu le confunda.' },
+      { en: 'Consumers POLL (pull) SQS — they do not get pushed to (pushing = SNS).', ro: 'Consumerii fac POLL (pull) la SQS — nu li se face push (push = SNS).' },
+      { en: 'Standard = best-effort order + at-least-once + near-unlimited throughput; FIFO = strict order + exactly-once + lower throughput.', ro: 'Standard = ordine best-effort + at-least-once + throughput aproape nelimitat; FIFO = ordine strictă + exactly-once + throughput mai mic.' },
+      { en: '"Fan-out" is SNS, not SQS — but a common pattern is one SNS topic in front of multiple SQS queues.', ro: '"Fan-out" e SNS, nu SQS — dar un pattern frecvent e un topic SNS în fața mai multor cozi SQS.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'Is SQS push-based or pull-based?', ro: 'SQS e push-based sau pull-based?' }, a: { en: 'Pull-based — consumers poll the queue, process messages, then delete them (SNS is push).', ro: 'Pull-based — consumerii fac poll la coadă, procesează mesajele, apoi le șterg (SNS e push).' } },
+      { q: { en: 'What is the main purpose of SQS?', ro: 'Care e scopul principal al SQS?' }, a: { en: 'To decouple application components using a durable buffer so they work independently and async.', ro: 'Să decupleze componentele unei aplicații printr-un buffer durabil ca să lucreze independent și asincron.' } },
+      { q: { en: 'What is the difference between Standard and FIFO queues?', ro: 'Care e diferența dintre cozile Standard și FIFO?' }, a: { en: 'Standard = best-effort ordering, at-least-once, near-unlimited throughput; FIFO = strict ordering, exactly-once, lower throughput.', ro: 'Standard = ordonare best-effort, at-least-once, throughput aproape nelimitat; FIFO = ordonare strictă, exactly-once, throughput mai mic.' } },
+      { q: { en: 'What is the default message retention in SQS?', ro: 'Care e retenția implicită a mesajelor în SQS?' }, a: { en: '4 days by default, configurable up to a maximum of 14 days.', ro: '4 zile implicit, configurabilă până la maxim 14 zile.' } },
+    ],
+    diagram: {
+      steps: [
+        { en: 'Producer', ro: 'Producer' },
+        { en: 'SQS Queue (buffer)', ro: 'Coadă SQS (buffer)' },
+        { en: 'Consumer polls (pull)', ro: 'Consumer face poll (pull)' },
+        { en: 'Process & delete message', ro: 'Procesează și șterge mesajul' },
+      ],
+      altText: { en: 'A producer sends messages to an SQS queue that buffers them; a consumer polls the queue, processes each message and deletes it.', ro: 'Un producer trimite mesaje către o coadă SQS care le ține în buffer; un consumer face poll la coadă, procesează fiecare mesaj și îl șterge.' },
+    },
   },
   {
     id: 'eventbridge',
