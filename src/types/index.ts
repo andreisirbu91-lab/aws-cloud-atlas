@@ -153,6 +153,14 @@ export interface QuizQuestion {
   options?: Array<Record<string, string>>;
   correct: number | boolean;
   explanation: Record<string, string>;
+  /**
+   * OPTIONAL per-option rationale (Udemy-style): one entry per option, in the
+   * same order as `options`. Each says why that option is correct or incorrect.
+   * When present, the quiz shows the matching line under each revealed option.
+   */
+  optionExplanations?: Array<Record<string, string>>;
+  /** OPTIONAL reference links (e.g. official AWS docs) shown after the explanation. */
+  references?: Array<{ label: string; url: string }>;
   hint?: Record<string, string>;
   relatedServices: string[];
   /** Concept IDs (from concepts.ts) that this question tests. */

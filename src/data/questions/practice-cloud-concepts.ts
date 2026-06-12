@@ -29,6 +29,15 @@ export const practiceCloudConceptsQuestions: QuizQuestion[] = [
       en: 'Paying per hour used instead of buying servers up front is the classic "trade CapEx for OpEx" benefit — a variable bill that tracks usage. A (economies of scale) is about AWS\'s lower prices from aggregate buying power, not the pay-per-use model itself. C (go global) is about deploying to Regions worldwide. D (stop guessing capacity) is about Auto Scaling matching demand, not about how you are billed.',
       ro: 'Plata pe oră în loc de cumpărarea serverelor în avans e clasicul beneficiu „schimbi CapEx cu OpEx" — o factură variabilă care urmărește consumul. A (economii de scară) se referă la prețurile mai mici ale AWS din puterea de cumpărare agregată, nu la modelul pay-per-use. C (globalizare) e despre deployment în Regiuni din toată lumea. D (nu mai ghicești capacitatea) e despre Auto Scaling care urmează cererea, nu despre cum ești facturat.',
     },
+    optionExplanations: [
+      { en: 'Incorrect — economies of scale is about AWS\'s lower prices from aggregate buying power, not the pay-per-use billing model.', ro: 'Greșit — economiile de scară se referă la prețurile mai mici ale AWS din puterea de cumpărare agregată, nu la modelul de facturare pay-per-use.' },
+      { en: 'Correct — paying per compute hour used instead of buying servers up front is the classic "trade CapEx for OpEx" variable-cost benefit.', ro: 'Corect — plata pe oră de compute folosită în loc de cumpărarea serverelor în avans este clasicul beneficiu de cost variabil „schimbi CapEx cu OpEx".' },
+      { en: 'Incorrect — "go global in minutes" is about deploying to AWS Regions worldwide, not about how you are billed.', ro: 'Greșit — „globalizare în minute" e despre deployment în Regiuni AWS din toată lumea, nu despre cum ești facturat.' },
+      { en: 'Incorrect — "stop guessing capacity" is about Auto Scaling matching demand, not about the variable billing model.', ro: 'Greșit — „nu mai ghicești capacitatea" e despre Auto Scaling care urmează cererea, nu despre modelul de facturare variabil.' },
+    ],
+    references: [
+      { label: 'Six advantages of cloud computing', url: 'https://docs.aws.amazon.com/whitepapers/latest/aws-overview/six-advantages-of-cloud-computing.html' },
+    ],
     relatedServices: ['ec2'],
   },
   {
@@ -53,6 +62,15 @@ export const practiceCloudConceptsQuestions: QuizQuestion[] = [
       en: 'Mixing on-premises infrastructure (the ERP servers) with public cloud (the AWS website + burst capacity) is the definition of a hybrid deployment, often connected via Direct Connect or VPN. A (Cloud / all-in) would mean everything runs on AWS with nothing on-premises. B (on-premises) would mean everything stays in the building — but the website is on AWS. D (Edge) is not a deployment model; edge locations are part of AWS global infrastructure.',
       ro: 'Combinarea infrastructurii on-premises (serverele ERP) cu cloud-ul public (site-ul AWS + capacitatea de vârf) este chiar definiția deployment-ului hibrid, conectat de obicei prin Direct Connect sau VPN. A (Cloud / complet) ar însemna că totul rulează pe AWS, fără nimic on-premises. B (on-premises) ar însemna că totul rămâne în clădire — dar site-ul e pe AWS. D (Edge) nu e un model de deployment; edge locations fac parte din infrastructura globală AWS.',
     },
+    optionExplanations: [
+      { en: 'Incorrect — "cloud / all-in" would mean everything runs on AWS with nothing left on-premises.', ro: 'Greșit — „cloud / complet" ar însemna că totul rulează pe AWS, fără nimic on-premises.' },
+      { en: 'Incorrect — "on-premises" would mean everything stays in the building, but the website runs on AWS.', ro: 'Greșit — „on-premises" ar însemna că totul rămâne în clădire, dar site-ul rulează pe AWS.' },
+      { en: 'Correct — mixing on-premises infrastructure (ERP) with public cloud (AWS website + burst capacity) is the definition of a hybrid deployment.', ro: 'Corect — combinarea infrastructurii on-premises (ERP) cu cloud-ul public (site-ul AWS + capacitatea de vârf) este chiar definiția deployment-ului hibrid.' },
+      { en: 'Incorrect — "edge" is not a deployment model; edge locations are part of AWS global infrastructure.', ro: 'Greșit — „edge" nu e un model de deployment; edge locations fac parte din infrastructura globală AWS.' },
+    ],
+    references: [
+      { label: 'Types of cloud computing', url: 'https://aws.amazon.com/types-of-cloud-computing/' },
+    ],
     relatedServices: ['directconnect', 'outposts'],
     relatedConcepts: ['cloud-types'],
   },
@@ -78,6 +96,15 @@ export const practiceCloudConceptsQuestions: QuizQuestion[] = [
       en: 'PaaS (e.g., AWS Elastic Beanstalk) lets you deploy your own code while AWS manages the OS, patching, and scaling — exactly the described split. A (IaaS, e.g., EC2) would still leave the team responsible for the OS and patching. C (SaaS, e.g., Amazon WorkMail) delivers finished software, so the team would not be writing their own code. D (on-premises) means the team manages everything, the opposite of what they want.',
       ro: 'PaaS (ex: AWS Elastic Beanstalk) îți permite să deployezi propriul cod în timp ce AWS gestionează OS-ul, patching-ul și scalarea — exact împărțirea descrisă. A (IaaS, ex: EC2) ar lăsa echipa responsabilă de OS și patching. C (SaaS, ex: Amazon WorkMail) livrează software gata făcut, deci echipa nu și-ar mai scrie propriul cod. D (on-premises) înseamnă că echipa gestionează totul, opusul a ceea ce vor.',
     },
+    optionExplanations: [
+      { en: 'Incorrect — IaaS (e.g., EC2) would still leave the team responsible for the OS and patching.', ro: 'Greșit — IaaS (ex: EC2) ar lăsa echipa responsabilă de OS și patching.' },
+      { en: 'Correct — PaaS (e.g., Elastic Beanstalk) lets you deploy your own code while AWS manages the OS, patching, and scaling.', ro: 'Corect — PaaS (ex: Elastic Beanstalk) îți permite să deployezi propriul cod în timp ce AWS gestionează OS-ul, patching-ul și scalarea.' },
+      { en: 'Incorrect — SaaS (e.g., Amazon WorkMail) delivers finished software, so the team would not write their own code.', ro: 'Greșit — SaaS (ex: Amazon WorkMail) livrează software gata făcut, deci echipa nu și-ar mai scrie propriul cod.' },
+      { en: 'Incorrect — on-premises means the team manages everything, the opposite of what they want.', ro: 'Greșit — on-premises înseamnă că echipa gestionează totul, opusul a ceea ce vor.' },
+    ],
+    references: [
+      { label: 'Types of cloud computing', url: 'https://aws.amazon.com/types-of-cloud-computing/' },
+    ],
     relatedServices: ['beanstalk', 'ec2'],
   },
   {
@@ -102,6 +129,15 @@ export const practiceCloudConceptsQuestions: QuizQuestion[] = [
       en: 'Adding AND removing capacity automatically to match real-time demand is elasticity. Note the difference from scalability, which is only the ability to grow capacity. A (high availability) means staying up despite failures (e.g., Multi-AZ), not scaling with demand. C (durability) is about not losing data (e.g., S3\'s 11 nines). D (fault tolerance) means continuing to operate when a component fails — related to availability, not to cost-following scaling.',
       ro: 'Adăugarea ȘI eliminarea automată a capacității după cererea în timp real este elasticitate. Atenție la diferența față de scalabilitate, care e doar capacitatea de a crește. A (high availability) înseamnă a rămâne funcțional în ciuda defectelor (ex: Multi-AZ), nu scalare după cerere. C (durabilitate) e despre a nu pierde date (ex: cele 11 nouă ale S3). D (toleranță la defecte) înseamnă continuarea operării când un component cade — legată de disponibilitate, nu de scalarea care urmează costul.',
     },
+    optionExplanations: [
+      { en: 'Incorrect — high availability means staying up despite failures (e.g., Multi-AZ), not scaling with demand.', ro: 'Greșit — high availability înseamnă a rămâne funcțional în ciuda defectelor (ex: Multi-AZ), nu scalare după cerere.' },
+      { en: 'Correct — automatically adding AND removing capacity to match real-time demand is elasticity.', ro: 'Corect — adăugarea ȘI eliminarea automată a capacității după cererea în timp real este elasticitate.' },
+      { en: 'Incorrect — durability is about not losing data (e.g., S3\'s 11 nines), not about scaling with demand.', ro: 'Greșit — durabilitatea e despre a nu pierde date (ex: cele 11 nouă ale S3), nu despre scalarea după cerere.' },
+      { en: 'Incorrect — fault tolerance means continuing to operate when a component fails — related to availability, not cost-following scaling.', ro: 'Greșit — toleranța la defecte înseamnă continuarea operării când un component cade — legată de disponibilitate, nu de scalarea care urmează costul.' },
+    ],
+    references: [
+      { label: 'Reliability pillar — What is reliability?', url: 'https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/what-is-reliability.html' },
+    ],
     relatedServices: ['ec2', 'lambda'],
   },
   {
@@ -126,6 +162,15 @@ export const practiceCloudConceptsQuestions: QuizQuestion[] = [
       en: 'Buying Reserved Instances, rightsizing, and removing unused resources are textbook Cost Optimization practices — spending only on what delivers value. A (Reliability) is about recovering from failures and meeting availability targets. B (Performance Efficiency) is about using the right resource types to meet performance as demand changes; rightsizing touches it, but the stated goal here is reducing the bill. D (Operational Excellence) is about running and improving operations (e.g., IaC, monitoring), not cost.',
       ro: 'Cumpărarea de Reserved Instances, redimensionarea și eliminarea resurselor nefolosite sunt practici de manual pentru Cost Optimization — cheltuiești doar pe ce aduce valoare. A (Reliability) e despre recuperarea din defecte și atingerea țintelor de disponibilitate. B (Performance Efficiency) e despre folosirea tipurilor potrivite de resurse pentru a menține performanța când se schimbă cererea; redimensionarea o atinge, dar scopul declarat aici e reducerea facturii. D (Operational Excellence) e despre rularea și îmbunătățirea operațiunilor (ex: IaC, monitorizare), nu despre cost.',
     },
+    optionExplanations: [
+      { en: 'Incorrect — Reliability is about recovering from failures and meeting availability targets, not reducing the bill.', ro: 'Greșit — Reliability e despre recuperarea din defecte și atingerea țintelor de disponibilitate, nu despre reducerea facturii.' },
+      { en: 'Incorrect — Performance Efficiency is about using the right resource types as demand changes; rightsizing touches it, but the stated goal here is reducing the bill.', ro: 'Greșit — Performance Efficiency e despre folosirea tipurilor potrivite de resurse când se schimbă cererea; redimensionarea o atinge, dar scopul declarat aici e reducerea facturii.' },
+      { en: 'Correct — buying Reserved Instances, rightsizing, and removing unused resources are textbook Cost Optimization practices.', ro: 'Corect — cumpărarea de Reserved Instances, redimensionarea și eliminarea resurselor nefolosite sunt practici de manual pentru Cost Optimization.' },
+      { en: 'Incorrect — Operational Excellence is about running and improving operations (e.g., IaC, monitoring), not cost.', ro: 'Greșit — Operational Excellence e despre rularea și îmbunătățirea operațiunilor (ex: IaC, monitorizare), nu despre cost.' },
+    ],
+    references: [
+      { label: 'The pillars of the Well-Architected Framework', url: 'https://docs.aws.amazon.com/wellarchitected/latest/framework/the-pillars-of-the-framework.html' },
+    ],
     relatedServices: ['ec2', 'ebs'],
     relatedConcepts: ['well-architected'],
   },
@@ -151,6 +196,15 @@ export const practiceCloudConceptsQuestions: QuizQuestion[] = [
       en: 'When choosing a Region you weigh compliance/data residency, latency (proximity to users), price, and service availability. Here data must stay in Germany (compliance) and latency matters, so picking a compliant, nearby Region (e.g., Frankfurt) addresses both. A (Edge Locations) are for caching content via CloudFront, not for where primary data legally resides. C (a single AZ) hurts availability and does not address residency. D (many Regions) would spread data across countries, violating the data-residency requirement.',
       ro: 'Când alegi o Regiune cântărești conformitatea/rezidența datelor, latența (apropierea de utilizatori), prețul și disponibilitatea serviciilor. Aici datele trebuie să rămână în Germania (conformitate) și contează latența, deci alegerea unei Regiuni conforme și apropiate (ex: Frankfurt) rezolvă ambele. A (Edge Locations) sunt pentru cache de conținut via CloudFront, nu pentru unde rezidă legal datele primare. C (un singur AZ) scade disponibilitatea și nu rezolvă rezidența. D (multe Regiuni) ar răspândi datele în mai multe țări, încălcând cerința de rezidență a datelor.',
     },
+    optionExplanations: [
+      { en: 'Incorrect — Edge Locations are for caching content via CloudFront, not for where primary data legally resides.', ro: 'Greșit — Edge Locations sunt pentru cache de conținut via CloudFront, nu pentru unde rezidă legal datele primare.' },
+      { en: 'Correct — choose a compliant, geographically close Region (e.g., Frankfurt) to satisfy data residency and low latency together.', ro: 'Corect — alegi o Regiune conformă și apropiată geografic (ex: Frankfurt) pentru a satisface rezidența datelor și latența mică împreună.' },
+      { en: 'Incorrect — a single Availability Zone hurts availability and does not address data residency.', ro: 'Greșit — un singur Availability Zone scade disponibilitatea și nu rezolvă rezidența datelor.' },
+      { en: 'Incorrect — using many Regions would spread data across countries, violating the data-residency requirement.', ro: 'Greșit — folosirea mai multor Regiuni ar răspândi datele în mai multe țări, încălcând cerința de rezidență a datelor.' },
+    ],
+    references: [
+      { label: 'AWS Global Infrastructure', url: 'https://aws.amazon.com/about-aws/global-infrastructure/' },
+    ],
     relatedServices: ['cloudfront'],
     relatedConcepts: ['regions', 'availability-zones', 'edge-locations'],
   },
@@ -176,6 +230,15 @@ export const practiceCloudConceptsQuestions: QuizQuestion[] = [
       en: 'The Security perspective of the CAF covers identity and access management, threat detection, data protection, and security governance — exactly these tasks. A (Business) aligns cloud investment with business outcomes and ROI. B (People) covers culture, training, and organizational change. D (Platform) builds the cloud environment and provisions infrastructure/services, but the access controls and security governance described belong to the Security perspective. (CAF has 6 perspectives: Business, People, Governance, Platform, Security, Operations.)',
       ro: 'Perspectiva Security din CAF acoperă managementul identității și accesului, detectarea amenințărilor, protecția datelor și guvernanța securității — exact aceste sarcini. A (Business) aliniază investiția în cloud cu rezultatele de business și ROI. B (People) acoperă cultura, training-ul și schimbarea organizațională. D (Platform) construiește mediul cloud și provizionează infrastructura/serviciile, dar controalele de acces și guvernanța securității descrise aparțin perspectivei Security. (CAF are 6 perspective: Business, People, Governance, Platform, Security, Operations.)',
     },
+    optionExplanations: [
+      { en: 'Incorrect — the Business perspective aligns cloud investment with business outcomes and ROI, not security controls.', ro: 'Greșit — perspectiva Business aliniază investiția în cloud cu rezultatele de business și ROI, nu controalele de securitate.' },
+      { en: 'Incorrect — the People perspective covers culture, training, and organizational change, not access controls.', ro: 'Greșit — perspectiva People acoperă cultura, training-ul și schimbarea organizațională, nu controalele de acces.' },
+      { en: 'Correct — the Security perspective owns identity and access management, threat detection, data protection, and security governance.', ro: 'Corect — perspectiva Security deține managementul identității și accesului, detectarea amenințărilor, protecția datelor și guvernanța securității.' },
+      { en: 'Incorrect — the Platform perspective builds the cloud environment and provisions infrastructure, but the access controls and security governance belong to Security.', ro: 'Greșit — perspectiva Platform construiește mediul cloud și provizionează infrastructura, dar controalele de acces și guvernanța securității aparțin perspectivei Security.' },
+    ],
+    references: [
+      { label: 'AWS Cloud Adoption Framework overview', url: 'https://docs.aws.amazon.com/whitepapers/latest/overview-aws-cloud-adoption-framework/welcome.html' },
+    ],
     relatedServices: ['iam'],
     relatedConcepts: ['caf'],
   },

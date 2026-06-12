@@ -29,6 +29,16 @@ export const practiceBillingQuestions: QuizQuestion[] = [
       en: '**AWS Budgets** is correct: it lets you set a custom cost/usage limit and sends a proactive alert when you exceed it OR are forecast to exceed it — exactly the "warn me before it happens" use case. **Cost Explorer** only visualizes and forecasts past/current spend (you look at the data, it does not alert you). **Pricing Calculator** estimates cost BEFORE you build anything, so it cannot watch live spend. **CUR** is the most detailed billing data export for deep analysis, but it is a report, not an alerting tool.',
       ro: '**AWS Budgets** e corect: îți permite să setezi o limită custom de cost/usage și trimite o alertă proactivă când o depășești SAU când ești prognozat să o depășești — exact cazul "avertizează-mă înainte să se întâmple". **Cost Explorer** doar vizualizează și prognozează cheltuiala trecută/curentă (te uiți la date, nu te alertează). **Pricing Calculator** estimează costul ÎNAINTE să construiești ceva, deci nu poate urmări cheltuiala live. **CUR** e cel mai detaliat export de date de facturare pentru analiză, dar e un raport, nu un instrument de alertare.',
     },
+    optionExplanations: [
+      { en: 'Incorrect — Cost Explorer only visualizes and forecasts past/current spend; you look at the data, it does not proactively alert you.', ro: 'Greșit — Cost Explorer doar vizualizează și prognozează cheltuiala trecută/curentă; te uiți la date, nu te alertează proactiv.' },
+      { en: 'Correct — AWS Budgets lets you set a custom cost limit and sends a proactive alert when you exceed it or are forecast to exceed it.', ro: 'Corect — AWS Budgets îți permite să setezi o limită custom de cost și trimite o alertă proactivă când o depășești sau ești prognozat să o depășești.' },
+      { en: 'Incorrect — Pricing Calculator only estimates cost before you build anything, so it cannot watch live spend.', ro: 'Greșit — Pricing Calculator doar estimează costul înainte să construiești ceva, deci nu poate urmări cheltuiala live.' },
+      { en: 'Incorrect — CUR is the most detailed billing data export for analysis, but it is a report, not an alerting tool.', ro: 'Greșit — CUR e cel mai detaliat export de date de facturare pentru analiză, dar e un raport, nu un instrument de alertare.' },
+    ],
+    references: [
+      { label: 'AWS Budgets', url: 'https://aws.amazon.com/aws-cost-management/aws-budgets/' },
+      { label: 'AWS Cost Explorer', url: 'https://aws.amazon.com/aws-cost-management/aws-cost-explorer/' },
+    ],
     relatedServices: ['budgets', 'costexplorer', 'calculator'],
     relatedConcepts: ['pricing-fundamentals'],
   },
@@ -54,6 +64,15 @@ export const practiceBillingQuestions: QuizQuestion[] = [
       en: '**AWS Trusted Advisor** is correct: it inspects your account and gives recommendations across its 5 categories — Cost Optimization, Performance, Security, Fault Tolerance, and Service Limits (full checks require a Business or Enterprise support plan; Basic gets only a core subset). **Cost Explorer** only analyzes spend, not security or fault tolerance. **AWS Health Dashboard** reports the health/status of AWS services and events affecting you, not best-practice checks. **AWS Config** records and evaluates resource configuration compliance, but it is not the 5-category advisor described here.',
       ro: '**AWS Trusted Advisor** e corect: îți inspectează contul și oferă recomandări pe cele 5 categorii ale sale — Cost Optimization, Performance, Security, Fault Tolerance și Service Limits (checks-urile complete necesită un plan de support Business sau Enterprise; Basic primește doar un subset de bază). **Cost Explorer** analizează doar cheltuiala, nu securitatea sau fault tolerance. **AWS Health Dashboard** raportează starea/statusul serviciilor AWS și evenimentele care te afectează, nu checks de bune practici. **AWS Config** înregistrează și evaluează conformitatea configurației resurselor, dar nu e advisorul pe 5 categorii descris aici.',
     },
+    optionExplanations: [
+      { en: 'Correct — Trusted Advisor inspects your account across exactly its 5 categories: Cost Optimization, Performance, Security, Fault Tolerance, and Service Limits.', ro: 'Corect — Trusted Advisor îți inspectează contul pe exact cele 5 categorii ale sale: Cost Optimization, Performance, Security, Fault Tolerance și Service Limits.' },
+      { en: 'Incorrect — Cost Explorer only analyzes spend, not security, performance, or fault tolerance.', ro: 'Greșit — Cost Explorer analizează doar cheltuiala, nu securitatea, performanța sau fault tolerance.' },
+      { en: 'Incorrect — AWS Health Dashboard reports the status of AWS services and events affecting you, not best-practice checks.', ro: 'Greșit — AWS Health Dashboard raportează statusul serviciilor AWS și evenimentele care te afectează, nu checks de bune practici.' },
+      { en: 'Incorrect — AWS Config records and evaluates resource configuration compliance, not the 5-category advice described here.', ro: 'Greșit — AWS Config înregistrează și evaluează conformitatea configurației resurselor, nu recomandările pe 5 categorii descrise aici.' },
+    ],
+    references: [
+      { label: 'AWS Trusted Advisor', url: 'https://docs.aws.amazon.com/awssupport/latest/user/trusted-advisor.html' },
+    ],
     relatedServices: ['trustedadvisor'],
   },
   {
@@ -78,6 +97,15 @@ export const practiceBillingQuestions: QuizQuestion[] = [
       en: '**Enterprise** is correct: it is the only plan that includes a designated Technical Account Manager (TAM), the Concierge support team, and a < 15-minute response time for business-critical cases. **Business** gives 24/7 phone/chat/email access to a Cloud Support Engineer, full Trusted Advisor, and < 1-hour response for production-down — but no TAM and no 15-minute SLA. **Developer** only offers business-hours email guidance and no 24/7 access. **Basic** is free and provides documentation, forums, and core Trusted Advisor checks, with no technical case support at all.',
       ro: '**Enterprise** e corect: e singurul plan care include un Technical Account Manager (TAM) desemnat, echipa de suport Concierge și un timp de răspuns < 15 minute pentru cazurile business-critical. **Business** oferă acces 24/7 prin telefon/chat/email la un Cloud Support Engineer, Trusted Advisor complet și răspuns < 1 oră pentru production-down — dar fără TAM și fără SLA de 15 minute. **Developer** oferă doar îndrumare pe email în timpul orelor de program și fără acces 24/7. **Basic** e gratuit și oferă documentație, forumuri și checks de bază din Trusted Advisor, fără niciun suport tehnic pe cazuri.',
     },
+    optionExplanations: [
+      { en: 'Incorrect — Developer only offers business-hours email guidance with no 24/7 access, no TAM, and no Concierge.', ro: 'Greșit — Developer oferă doar îndrumare pe email în orele de program, fără acces 24/7, fără TAM și fără Concierge.' },
+      { en: 'Incorrect — Business gives 24/7 access to a Cloud Support Engineer and < 1-hour production-down response, but no TAM and no 15-minute SLA.', ro: 'Greșit — Business oferă acces 24/7 la un Cloud Support Engineer și răspuns < 1 oră pentru production-down, dar fără TAM și fără SLA de 15 minute.' },
+      { en: 'Correct — Enterprise is the only plan with a designated TAM, the Concierge team, and a < 15-minute response for business-critical cases.', ro: 'Corect — Enterprise e singurul plan cu un TAM desemnat, echipa Concierge și răspuns < 15 minute pentru cazurile business-critical.' },
+      { en: 'Incorrect — Basic is free and provides only documentation, forums, and core Trusted Advisor checks, with no technical case support.', ro: 'Greșit — Basic e gratuit și oferă doar documentație, forumuri și checks de bază din Trusted Advisor, fără suport tehnic pe cazuri.' },
+    ],
+    references: [
+      { label: 'AWS Support Plans', url: 'https://aws.amazon.com/premiumsupport/plans/' },
+    ],
     relatedServices: ['supportplans'],
     relatedConcepts: ['support-plans'],
   },
@@ -103,6 +131,15 @@ export const practiceBillingQuestions: QuizQuestion[] = [
       en: 'Consolidated billing through **AWS Organizations** produces one bill across many accounts, and because usage is aggregated, you reach volume-pricing tiers faster and can share Reserved Instance / Savings Plan discounts across accounts — option 2 is correct. Free Enterprise Support is wrong: support plans are paid and chosen per the payer account, never granted automatically. "Data transfer out becomes free" is wrong: outbound data transfer is a core cost driver and is still charged. "Budgets alerts are disabled" is wrong: Budgets keeps working and is in fact more useful across a consolidated organization.',
       ro: 'Consolidated billing prin **AWS Organizations** produce o singură factură pe mai multe conturi, iar pentru că usage-ul e agregat, atingi mai repede pragurile de volume pricing și poți partaja reducerile Reserved Instance / Savings Plan între conturi — opțiunea 2 e corectă. Enterprise Support gratuit e greșit: planurile de support sunt plătite și alese la nivelul contului payer, niciodată acordate automat. "Transferul OUT devine gratuit" e greșit: transferul de date outbound e un cost driver principal și se taxează în continuare. "Alertele Budgets sunt dezactivate" e greșit: Budgets funcționează în continuare și e chiar mai util într-o organizație consolidată.',
     },
+    optionExplanations: [
+      { en: 'Incorrect — support plans are paid and chosen per the payer account; they are never granted automatically to member accounts.', ro: 'Greșit — planurile de support sunt plătite și alese la nivelul contului payer; nu sunt acordate automat conturilor membre.' },
+      { en: 'Correct — consolidated billing produces one bill across accounts, and aggregated usage reaches volume tiers faster and shares Reserved Instance / Savings Plan discounts.', ro: 'Corect — consolidated billing produce o singură factură pe conturi, iar usage-ul agregat atinge mai repede pragurile de volum și partajează reducerile Reserved Instance / Savings Plan.' },
+      { en: 'Incorrect — outbound data transfer is a core cost driver and is still charged under consolidated billing.', ro: 'Greșit — transferul de date outbound e un cost driver principal și se taxează în continuare sub consolidated billing.' },
+      { en: 'Incorrect — Budgets keeps working and is in fact more useful across a consolidated organization.', ro: 'Greșit — Budgets funcționează în continuare și e chiar mai util într-o organizație consolidată.' },
+    ],
+    references: [
+      { label: 'AWS Organizations Consolidated Billing', url: 'https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_accounts_consolidated-billing.html' },
+    ],
     relatedServices: ['organizations', 'budgets'],
     relatedConcepts: ['pricing-fundamentals'],
   },

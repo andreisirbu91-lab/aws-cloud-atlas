@@ -29,6 +29,16 @@ export const practiceTechQuestions: QuizQuestion[] = [
       en: 'EFS is a managed, multi-AZ file system (NFS) that hundreds of Linux EC2 instances can mount and share at the same time — exactly the shared-access, multi-AZ need here. EBS is block storage attached to ONE instance in ONE AZ, so it cannot be shared across AZs. S3 is object storage accessed via API, not a mountable file system for a typical app. Glacier is cheap archival storage with retrieval delays, not live shared access.',
       ro: 'EFS este un sistem de fișiere managed, multi-AZ (NFS) pe care sute de instanțe EC2 Linux îl pot monta și partaja simultan — exact nevoia de acces partajat, multi-AZ de aici. EBS este stocare block atașată la O SINGURĂ instanță într-un SINGUR AZ, deci nu poate fi partajat între AZ-uri. S3 este object storage accesat prin API, nu un sistem de fișiere montabil pentru o aplicație tipică. Glacier este stocare ieftină de arhivă cu întârzieri la recuperare, nu acces partajat live.',
     },
+    optionExplanations: [
+      { en: 'Incorrect — EBS is block storage attached to a single instance in one AZ, so it cannot be shared across multiple AZs.', ro: 'Greșit — EBS este stocare block atașată la o singură instanță într-un singur AZ, deci nu poate fi partajat între mai multe AZ-uri.' },
+      { en: 'Correct — EFS is a managed, multi-AZ NFS file system that many Linux EC2 instances can mount and share at the same time.', ro: 'Corect — EFS este un sistem de fișiere NFS managed, multi-AZ pe care multe instanțe EC2 Linux îl pot monta și partaja simultan.' },
+      { en: 'Incorrect — S3 is object storage accessed via API, not a mountable shared file system for a typical application.', ro: 'Greșit — S3 este object storage accesat prin API, nu un sistem de fișiere partajat montabil pentru o aplicație tipică.' },
+      { en: 'Incorrect — S3 Glacier is cheap archival storage with retrieval delays, not live shared file access.', ro: 'Greșit — S3 Glacier este stocare ieftină de arhivă cu întârzieri la recuperare, nu acces partajat live la fișiere.' },
+    ],
+    references: [
+      { label: 'Amazon EFS', url: 'https://aws.amazon.com/efs/' },
+      { label: 'Amazon EBS', url: 'https://aws.amazon.com/ebs/' },
+    ],
     relatedServices: ['efs', 'ebs', 's3'],
   },
   {
@@ -53,6 +63,16 @@ export const practiceTechQuestions: QuizQuestion[] = [
       en: 'Spot Instances give up to 90% off On-Demand by using spare AWS capacity, but AWS can reclaim them with a 2-minute warning — ideal for fault-tolerant, interruptible work like batch processing. Reserved Instances (up to ~75% off) require a 1- or 3-year commitment and suit steady, always-on workloads, not the cheapest interruptible case. On-Demand has no discount and no commitment. Dedicated Hosts are the most expensive option, used for compliance or bring-your-own-license, not cost savings.',
       ro: 'Spot Instances oferă până la 90% reducere față de On-Demand folosind capacitate AWS liberă, dar AWS le poate recupera cu un avertisment de 2 minute — ideal pentru muncă tolerantă la erori și întreruptibilă, precum procesarea în batch. Reserved Instances (până la ~75% reducere) necesită un angajament de 1 sau 3 ani și se potrivesc workload-urilor constante, mereu pornite, nu cazului întreruptibil cel mai ieftin. On-Demand nu are reducere și nici angajament. Dedicated Hosts sunt opțiunea cea mai scumpă, folosită pentru compliance sau bring-your-own-license, nu pentru economii.',
     },
+    optionExplanations: [
+      { en: 'Incorrect — Reserved Instances need a 1- or 3-year commitment and suit steady always-on workloads, not the cheapest interruptible case.', ro: 'Greșit — Reserved Instances necesită un angajament de 1 sau 3 ani și se potrivesc workload-urilor constante, mereu pornite, nu cazului întreruptibil cel mai ieftin.' },
+      { en: 'Incorrect — On-Demand Instances have no discount and no commitment, so they are not the lowest-cost option here.', ro: 'Greșit — Instanțele On-Demand nu au reducere și nici angajament, deci nu sunt opțiunea cea mai ieftină aici.' },
+      { en: 'Correct — Spot Instances give up to 90% off using spare capacity and can be reclaimed with a 2-minute warning, ideal for fault-tolerant interruptible work.', ro: 'Corect — Spot Instances oferă până la 90% reducere folosind capacitate liberă și pot fi recuperate cu un avertisment de 2 minute, ideal pentru muncă tolerantă la erori și întreruptibilă.' },
+      { en: 'Incorrect — Dedicated Hosts are the most expensive option, used for compliance or bring-your-own-license, not cost savings.', ro: 'Greșit — Dedicated Hosts sunt opțiunea cea mai scumpă, folosită pentru compliance sau bring-your-own-license, nu pentru economii.' },
+    ],
+    references: [
+      { label: 'EC2 Instance Purchasing Options', url: 'https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/instance-purchasing-options.html' },
+      { label: 'Amazon EC2 Spot Instances', url: 'https://aws.amazon.com/ec2/spot/' },
+    ],
     relatedServices: ['ec2'],
   },
   {
@@ -77,6 +97,16 @@ export const practiceTechQuestions: QuizQuestion[] = [
       en: 'Multi-AZ keeps a synchronously-replicated standby in a different AZ and fails over automatically when the primary has a problem — this is the high-availability feature. Read Replicas are for SCALING read traffic (asynchronous copies you read from); they are not the automatic-failover HA mechanism. Storage Auto Scaling only grows disk space, not availability. Automated backups protect against data loss but do not provide instant failover. The classic exam trap is Multi-AZ (HA/failover) vs Read Replicas (read scaling).',
       ro: 'Multi-AZ menține un standby replicat sincron într-un alt AZ și face failover automat când primarul are o problemă — aceasta este funcția de înaltă disponibilitate. Read Replicas servesc la SCALAREA traficului de citire (copii asincrone din care citești); nu reprezintă mecanismul de failover automat HA. Storage Auto Scaling doar mărește spațiul pe disc, nu disponibilitatea. Backup-urile automate protejează împotriva pierderii de date dar nu oferă failover instant. Capcana clasică de examen este Multi-AZ (HA/failover) vs Read Replicas (scalare la citire).',
     },
+    optionExplanations: [
+      { en: 'Incorrect — Read Replicas are asynchronous copies for scaling read traffic, not the automatic-failover HA mechanism.', ro: 'Greșit — Read Replicas sunt copii asincrone pentru scalarea traficului de citire, nu mecanismul de failover automat HA.' },
+      { en: 'Correct — Multi-AZ keeps a synchronously-replicated standby in another AZ and fails over automatically when the primary fails.', ro: 'Corect — Multi-AZ menține un standby replicat sincron în alt AZ și face failover automat când primarul cade.' },
+      { en: 'Incorrect — Storage Auto Scaling only grows disk space, it does not provide availability or failover.', ro: 'Greșit — Storage Auto Scaling doar mărește spațiul pe disc, nu oferă disponibilitate sau failover.' },
+      { en: 'Incorrect — Automated backups protect against data loss but do not provide instant automatic failover.', ro: 'Greșit — Backup-urile automate protejează împotriva pierderii de date dar nu oferă failover automat instant.' },
+    ],
+    references: [
+      { label: 'Amazon RDS Multi-AZ', url: 'https://aws.amazon.com/rds/features/multi-az/' },
+      { label: 'Amazon RDS Read Replicas', url: 'https://aws.amazon.com/rds/features/read-replicas/' },
+    ],
     relatedServices: ['rds'],
   },
   {
@@ -101,6 +131,16 @@ export const practiceTechQuestions: QuizQuestion[] = [
       en: 'SNS is a pub/sub service that PUSHES a single published message to many subscribers at once (SQS queues, Lambda, email, HTTP) — the textbook fan-out, one-to-many pattern. SQS is the opposite model: a single queue that consumers PULL/poll from, used to decouple one producer and one consumer group, not to broadcast. Kinesis is for ordered real-time streaming/analytics, not simple notifications. Step Functions orchestrates sequential workflow steps, not message fan-out.',
       ro: 'SNS este un serviciu pub/sub care TRIMITE (push) un singur mesaj publicat către mulți abonați simultan (cozi SQS, Lambda, email, HTTP) — modelul fan-out, unu-la-mulți de manual. SQS este modelul opus: o singură coadă din care consumatorii TRAG (pull/poll), folosită pentru a decupla un producător și un grup de consumatori, nu pentru a difuza. Kinesis este pentru streaming/analiză în timp real ordonat, nu pentru notificări simple. Step Functions orchestrează pași secvențiali de workflow, nu fan-out de mesaje.',
     },
+    optionExplanations: [
+      { en: 'Incorrect — SQS is a pull/poll queue used to decouple a producer and one consumer group, not to broadcast to many subscribers.', ro: 'Greșit — SQS este o coadă de tip pull/poll folosită pentru a decupla un producător și un grup de consumatori, nu pentru a difuza către mulți abonați.' },
+      { en: 'Correct — SNS is a pub/sub service that pushes a single published message to many subscribers at once (SQS, Lambda, email), the fan-out pattern.', ro: 'Corect — SNS este un serviciu pub/sub care trimite un singur mesaj publicat către mulți abonați simultan (SQS, Lambda, email), modelul fan-out.' },
+      { en: 'Incorrect — Kinesis Data Streams is for ordered real-time streaming and analytics, not simple one-to-many notifications.', ro: 'Greșit — Kinesis Data Streams este pentru streaming și analiză în timp real ordonat, nu pentru notificări simple unu-la-mulți.' },
+      { en: 'Incorrect — Step Functions orchestrates sequential workflow steps, not message fan-out to multiple subscribers.', ro: 'Greșit — Step Functions orchestrează pași secvențiali de workflow, nu fan-out de mesaje către mai mulți abonați.' },
+    ],
+    references: [
+      { label: 'Amazon SNS', url: 'https://aws.amazon.com/sns/' },
+      { label: 'Amazon SQS', url: 'https://aws.amazon.com/sqs/' },
+    ],
     relatedServices: ['sns', 'sqs'],
   },
   {
@@ -125,6 +165,16 @@ export const practiceTechQuestions: QuizQuestion[] = [
       en: 'Athena is serverless and queries data directly in S3 using standard SQL, charging per TB scanned — perfect for occasional ad-hoc queries with no infrastructure to run. Redshift is a provisioned data-warehouse (OLAP) cluster you must size and manage, and you typically load data into it first; it suits sustained heavy analytics, not the serverless ad-hoc case. RDS is a relational OLTP database for transactional apps, not querying S3 files. EMR runs Hadoop/Spark clusters on EC2 that you provision and manage. The exam trap here is Athena (serverless query on S3) vs Redshift (managed warehouse).',
       ro: 'Athena este serverless și interoghează datele direct în S3 folosind SQL standard, taxând per TB scanat — perfect pentru interogări ad-hoc ocazionale, fără infrastructură de rulat. Redshift este un cluster de data-warehouse (OLAP) provisionat pe care trebuie să-l dimensionezi și să-l gestionezi, și de obicei încarci datele în el întâi; se potrivește analizelor grele susținute, nu cazului serverless ad-hoc. RDS este o bază de date relațională OLTP pentru aplicații tranzacționale, nu pentru interogarea fișierelor din S3. EMR rulează clustere Hadoop/Spark pe EC2 pe care le provisionezi și gestionezi. Capcana de examen aici este Athena (interogare serverless pe S3) vs Redshift (warehouse managed).',
     },
+    optionExplanations: [
+      { en: 'Incorrect — Redshift is a provisioned data-warehouse cluster you size and manage, suited to sustained heavy analytics, not the serverless ad-hoc case.', ro: 'Greșit — Redshift este un cluster de data-warehouse provisionat pe care îl dimensionezi și gestionezi, potrivit analizelor grele susținute, nu cazului serverless ad-hoc.' },
+      { en: 'Correct — Athena is serverless and queries data directly in S3 with standard SQL, charging per TB scanned, perfect for occasional ad-hoc queries.', ro: 'Corect — Athena este serverless și interoghează datele direct în S3 cu SQL standard, taxând per TB scanat, perfect pentru interogări ad-hoc ocazionale.' },
+      { en: 'Incorrect — RDS is a relational OLTP database for transactional apps, not for querying files already stored in S3.', ro: 'Greșit — RDS este o bază de date relațională OLTP pentru aplicații tranzacționale, nu pentru interogarea fișierelor deja stocate în S3.' },
+      { en: 'Incorrect — EMR runs Hadoop/Spark clusters on EC2 that you provision and manage, so it is not serverless.', ro: 'Greșit — EMR rulează clustere Hadoop/Spark pe EC2 pe care le provisionezi și gestionezi, deci nu este serverless.' },
+    ],
+    references: [
+      { label: 'Amazon Athena', url: 'https://aws.amazon.com/athena/' },
+      { label: 'Amazon Redshift', url: 'https://aws.amazon.com/redshift/' },
+    ],
     relatedServices: ['athena', 's3', 'redshift'],
   },
   {
@@ -149,6 +199,16 @@ export const practiceTechQuestions: QuizQuestion[] = [
       en: 'Lambda runs your function code in response to events with no servers to manage, scales automatically, and bills only for execution time (functions can run up to 15 minutes) — ideal for short, event-driven tasks like reacting to an S3 upload. EC2 is a full virtual machine where YOU manage the OS and pay while it runs idle or not. Fargate runs containers serverlessly but is meant for packaged container workloads, not tiny function snippets. Elastic Beanstalk is a PaaS for deploying full web apps onto EC2/ELB, more than this lightweight need requires.',
       ro: 'Lambda rulează codul funcției tale ca răspuns la evenimente fără servere de gestionat, scalează automat și taxează doar timpul de execuție (funcțiile pot rula până la 15 minute) — ideal pentru sarcini scurte orientate pe evenimente, precum reacția la un upload în S3. EC2 este o mașină virtuală completă unde TU gestionezi sistemul de operare și plătești cât rulează, fie idle, fie nu. Fargate rulează containere serverless, dar e gândit pentru workload-uri în containere, nu pentru fragmente mici de funcții. Elastic Beanstalk este un PaaS pentru a deploya aplicații web complete pe EC2/ELB, mai mult decât cere această nevoie ușoară.',
     },
+    optionExplanations: [
+      { en: 'Correct — Lambda runs event-driven function code with no servers to manage, scales automatically, and bills only for execution time.', ro: 'Corect — Lambda rulează cod orientat pe evenimente fără servere de gestionat, scalează automat și taxează doar timpul de execuție.' },
+      { en: 'Incorrect — EC2 is a full virtual machine where you manage the OS and pay while it runs, even when idle.', ro: 'Greșit — EC2 este o mașină virtuală completă unde tu gestionezi sistemul de operare și plătești cât rulează, chiar și idle.' },
+      { en: 'Incorrect — Fargate runs containers serverlessly but is meant for packaged container workloads, not tiny function snippets.', ro: 'Greșit — Fargate rulează containere serverless dar e gândit pentru workload-uri în containere, nu pentru fragmente mici de funcții.' },
+      { en: 'Incorrect — Elastic Beanstalk is a PaaS for deploying full web apps onto EC2/ELB, more than this lightweight need requires.', ro: 'Greșit — Elastic Beanstalk este un PaaS pentru a deploya aplicații web complete pe EC2/ELB, mai mult decât cere această nevoie ușoară.' },
+    ],
+    references: [
+      { label: 'AWS Lambda', url: 'https://aws.amazon.com/lambda/' },
+      { label: 'AWS Fargate', url: 'https://aws.amazon.com/fargate/' },
+    ],
     relatedServices: ['lambda', 'fargate', 'ec2'],
   },
   {
@@ -173,6 +233,16 @@ export const practiceTechQuestions: QuizQuestion[] = [
       en: 'A Security Group is a STATEFUL firewall at the instance (ENI) level: if you allow an inbound request, the response is automatically allowed out — no matching outbound rule needed. A NACL is STATELESS and operates at the subnet level, so you must explicitly allow both the inbound request AND the outbound response; this is the key exam distinction. A route table directs traffic between destinations but does not filter/allow it like a firewall. An Internet Gateway connects a VPC to the internet; it is not a firewall rule set. The trap is Security Group (stateful, instance) vs NACL (stateless, subnet).',
       ro: 'Un Security Group este un firewall STATEFUL la nivel de instanță (ENI): dacă permiți o cerere de intrare, răspunsul este permis automat la ieșire — fără a fi nevoie de o regulă de ieșire corespunzătoare. Un NACL este STATELESS și operează la nivel de subnet, deci trebuie să permiți explicit ATÂT cererea de intrare CÂT și răspunsul de ieșire; aceasta este distincția cheie de examen. Un tabel de rutare direcționează traficul între destinații dar nu îl filtrează/permite precum un firewall. Un Internet Gateway conectează un VPC la internet; nu este un set de reguli de firewall. Capcana este Security Group (stateful, instanță) vs NACL (stateless, subnet).',
     },
+    optionExplanations: [
+      { en: 'Incorrect — A NACL is stateless and operates at the subnet level, so you must explicitly allow both the inbound request and the outbound response.', ro: 'Greșit — Un NACL este stateless și operează la nivel de subnet, deci trebuie să permiți explicit atât cererea de intrare cât și răspunsul de ieșire.' },
+      { en: 'Correct — A Security Group is a stateful firewall at the instance (ENI) level: if you allow an inbound request, the response is automatically allowed out.', ro: 'Corect — Un Security Group este un firewall stateful la nivel de instanță (ENI): dacă permiți o cerere de intrare, răspunsul este permis automat la ieșire.' },
+      { en: 'Incorrect — A route table directs traffic between destinations but does not filter or allow it like a firewall.', ro: 'Greșit — Un tabel de rutare direcționează traficul între destinații dar nu îl filtrează sau permite precum un firewall.' },
+      { en: 'Incorrect — An Internet Gateway connects a VPC to the internet; it is not a firewall rule set.', ro: 'Greșit — Un Internet Gateway conectează un VPC la internet; nu este un set de reguli de firewall.' },
+    ],
+    references: [
+      { label: 'VPC Security Groups', url: 'https://docs.aws.amazon.com/vpc/latest/userguide/vpc-security-groups.html' },
+      { label: 'VPC Network ACLs', url: 'https://docs.aws.amazon.com/vpc/latest/userguide/vpc-network-acls.html' },
+    ],
     relatedServices: ['vpc', 'ec2'],
   },
   {
@@ -197,6 +267,16 @@ export const practiceTechQuestions: QuizQuestion[] = [
       en: 'An Application Load Balancer operates at Layer 7 (HTTP/HTTPS) and can route based on URL path, host header, and other content — exactly what path-based routing like /api vs /images requires. An NLB operates at Layer 4 (TCP/UDP) for ultra-low latency and cannot inspect URL paths. A GWLB is for inserting third-party network security appliances, not HTTP routing. The Classic Load Balancer is the legacy option and lacks modern path-based content routing. The exam trap is ALB (Layer 7 HTTP) vs NLB (Layer 4 TCP).',
       ro: 'Un Application Load Balancer operează la nivelul 7 (HTTP/HTTPS) și poate ruta în funcție de calea URL, host header și alt conținut — exact ce cere rutarea bazată pe cale, precum /api vs /images. Un NLB operează la nivelul 4 (TCP/UDP) pentru latență ultra-mică și nu poate inspecta căile URL. Un GWLB e pentru inserarea de appliance-uri de securitate de rețea terțe, nu pentru rutare HTTP. Classic Load Balancer este opțiunea moștenită și nu are rutare modernă de conținut bazată pe cale. Capcana de examen este ALB (nivelul 7 HTTP) vs NLB (nivelul 4 TCP).',
     },
+    optionExplanations: [
+      { en: 'Incorrect — An NLB operates at Layer 4 (TCP/UDP) for ultra-low latency and cannot inspect URL paths for routing.', ro: 'Greșit — Un NLB operează la nivelul 4 (TCP/UDP) pentru latență ultra-mică și nu poate inspecta căile URL pentru rutare.' },
+      { en: 'Correct — An Application Load Balancer operates at Layer 7 (HTTP/HTTPS) and can route based on URL path, host header, and other content.', ro: 'Corect — Un Application Load Balancer operează la nivelul 7 (HTTP/HTTPS) și poate ruta în funcție de calea URL, host header și alt conținut.' },
+      { en: 'Incorrect — A Gateway Load Balancer is for inserting third-party network security appliances, not HTTP path-based routing.', ro: 'Greșit — Un Gateway Load Balancer e pentru inserarea de appliance-uri de securitate de rețea terțe, nu pentru rutare HTTP bazată pe cale.' },
+      { en: 'Incorrect — The Classic Load Balancer is the legacy option and lacks modern path-based content routing.', ro: 'Greșit — Classic Load Balancer este opțiunea moștenită și nu are rutare modernă de conținut bazată pe cale.' },
+    ],
+    references: [
+      { label: 'Elastic Load Balancing', url: 'https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/what-is-load-balancing.html' },
+      { label: 'Application Load Balancer', url: 'https://aws.amazon.com/elasticloadbalancing/application-load-balancer/' },
+    ],
     relatedServices: ['elb'],
   },
   {
@@ -221,6 +301,16 @@ export const practiceTechQuestions: QuizQuestion[] = [
       en: 'S3 Glacier Deep Archive is the cheapest S3 storage class, built for long-term archival of rarely accessed data where retrieval times of hours are acceptable — exactly the compliance-record case. S3 Standard is the most expensive, meant for frequent access. Standard-IA is cheaper than Standard but still priced for occasional millisecond access, not deep archive. Intelligent-Tiering auto-moves objects between tiers when access patterns are unknown, adding monitoring cost; here the pattern is known (almost never accessed), so Deep Archive is cheaper.',
       ro: 'S3 Glacier Deep Archive este cea mai ieftină clasă de stocare S3, construită pentru arhivarea pe termen lung a datelor accesate rar, unde timpii de recuperare de ore sunt acceptabili — exact cazul înregistrărilor de conformitate. S3 Standard este cea mai scumpă, gândită pentru acces frecvent. Standard-IA este mai ieftină decât Standard dar tot tarifată pentru acces ocazional în milisecunde, nu pentru arhivă adâncă. Intelligent-Tiering mută automat obiectele între nivele când tiparele de acces sunt necunoscute, adăugând cost de monitorizare; aici tiparul este cunoscut (accesat aproape niciodată), deci Deep Archive este mai ieftin.',
     },
+    optionExplanations: [
+      { en: 'Incorrect — S3 Standard is the most expensive class, meant for frequently accessed data, not rarely accessed archives.', ro: 'Greșit — S3 Standard este cea mai scumpă clasă, gândită pentru date accesate frecvent, nu pentru arhive accesate rar.' },
+      { en: 'Incorrect — Standard-IA is cheaper than Standard but still priced for occasional millisecond access, not deep archival.', ro: 'Greșit — Standard-IA este mai ieftină decât Standard dar tot tarifată pentru acces ocazional în milisecunde, nu pentru arhivă adâncă.' },
+      { en: 'Correct — S3 Glacier Deep Archive is the cheapest class, built for long-term archival of rarely accessed data with retrieval times of hours.', ro: 'Corect — S3 Glacier Deep Archive este cea mai ieftină clasă, construită pentru arhivarea pe termen lung a datelor accesate rar, cu timpi de recuperare de ore.' },
+      { en: 'Incorrect — Intelligent-Tiering auto-moves objects when access patterns are unknown and adds monitoring cost; here the pattern is known.', ro: 'Greșit — Intelligent-Tiering mută automat obiectele când tiparele de acces sunt necunoscute și adaugă cost de monitorizare; aici tiparul este cunoscut.' },
+    ],
+    references: [
+      { label: 'S3 Storage Classes', url: 'https://aws.amazon.com/s3/storage-classes/' },
+      { label: 'Amazon S3 Glacier', url: 'https://aws.amazon.com/s3/storage-classes/glacier/' },
+    ],
     relatedServices: ['s3', 'glacier'],
   },
   {
@@ -245,6 +335,16 @@ export const practiceTechQuestions: QuizQuestion[] = [
       en: 'Amazon Redshift is a columnar, massively-parallel data warehouse purpose-built for OLAP — complex analytical queries and aggregations over very large datasets. RDS for MySQL is a row-based relational database optimized for OLTP (many small transactions), not petabyte-scale analytics. DynamoDB is a NoSQL key-value store for fast lookups, not complex joins and aggregations. ElastiCache is an in-memory cache (Redis/Memcached) for speeding up reads, not a warehouse. The exam trap is OLAP/data warehouse (Redshift) vs OLTP/transactional (RDS).',
       ro: 'Amazon Redshift este un data warehouse columnar, masiv-paralel, construit special pentru OLAP — interogări analitice complexe și agregări pe seturi de date foarte mari. RDS pentru MySQL este o bază de date relațională pe rânduri optimizată pentru OLTP (multe tranzacții mici), nu pentru analiză la scară de petabytes. DynamoDB este un magazin NoSQL cheie-valoare pentru căutări rapide, nu pentru join-uri și agregări complexe. ElastiCache este un cache în memorie (Redis/Memcached) pentru accelerarea citirilor, nu un warehouse. Capcana de examen este OLAP/data warehouse (Redshift) vs OLTP/tranzacțional (RDS).',
     },
+    optionExplanations: [
+      { en: 'Incorrect — RDS for MySQL is a row-based relational database optimized for OLTP, not petabyte-scale analytical queries.', ro: 'Greșit — RDS pentru MySQL este o bază de date relațională pe rânduri optimizată pentru OLTP, nu pentru interogări analitice la scară de petabytes.' },
+      { en: 'Incorrect — DynamoDB is a NoSQL key-value store for fast lookups, not complex joins and aggregations.', ro: 'Greșit — DynamoDB este un magazin NoSQL cheie-valoare pentru căutări rapide, nu pentru join-uri și agregări complexe.' },
+      { en: 'Correct — Amazon Redshift is a columnar, massively-parallel data warehouse purpose-built for OLAP analytics over very large datasets.', ro: 'Corect — Amazon Redshift este un data warehouse columnar, masiv-paralel, construit special pentru analiză OLAP pe seturi de date foarte mari.' },
+      { en: 'Incorrect — ElastiCache is an in-memory cache (Redis/Memcached) for speeding up reads, not a data warehouse.', ro: 'Greșit — ElastiCache este un cache în memorie (Redis/Memcached) pentru accelerarea citirilor, nu un data warehouse.' },
+    ],
+    references: [
+      { label: 'Amazon Redshift', url: 'https://aws.amazon.com/redshift/' },
+      { label: 'OLTP vs OLAP', url: 'https://aws.amazon.com/compare/the-difference-between-olap-and-oltp/' },
+    ],
     relatedServices: ['redshift', 'rds', 'dynamodb'],
   },
 ];

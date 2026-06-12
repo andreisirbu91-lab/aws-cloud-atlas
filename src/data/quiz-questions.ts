@@ -11,6 +11,7 @@ import { practiceCloudConceptsQuestions } from './questions/practice-cloud-conce
 import { practiceSecurityQuestions } from './questions/practice-security';
 import { practiceTechQuestions } from './questions/practice-tech';
 import { practiceBillingQuestions } from './questions/practice-billing';
+import { practiceExtraQuestions } from './questions/practice-extra';
 
 /**
  * AWS Certified Cloud Practitioner (CLF-C02) practice questions.
@@ -768,6 +769,7 @@ export const quizQuestions: QuizQuestion[] = [
   ...practiceSecurityQuestions,
   ...practiceTechQuestions,
   ...practiceBillingQuestions,
+  ...practiceExtraQuestions,
 ].map((q) => ({ ...q, examDomain: inferDomain(q) }));
 
 /**

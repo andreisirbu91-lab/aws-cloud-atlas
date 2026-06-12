@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { X, Check, ChevronRight, RefreshCw, Trophy, Target, Lightbulb, Clock, Bookmark } from 'lucide-react';
+import { X, Check, ChevronRight, RefreshCw, Trophy, Target, Lightbulb, Clock, Bookmark, ExternalLink } from 'lucide-react';
 import type { QuizQuestion, Language, Service } from '@/types';
 import { buildQuiz, buildWeightedExam, type QuizScope } from '@/data/quiz-questions';
 import { getServiceById } from '@/data/services';
@@ -362,6 +362,9 @@ export function QuizModalV2({
               stateClasses = 'border-accent bg-accent-soft';
             }
 
+            const optionReason =
+              q.optionExplanations?.[i]?.[language] ?? q.optionExplanations?.[i]?.en;
+
             return (
               <button
                 key={i}
@@ -387,8 +390,30 @@ export function QuizModalV2({
                     String.fromCharCode(65 + i)
                   )}
                 </span>
-                <span className="text-sm leading-relaxed text-text-primary">
-                  {opt[language] ?? opt.en}
+                <span className="min-w-0 flex-1">
+                  <span className="block text-sm leading-relaxed text-text-primary">
+                    {opt[language] ?? opt.en}
+                  </span>
+                  {/* Per-option rationale (Udemy-style), shown only after reveal. */}
+                  {reveal && optionReason && (
+                    <span
+                      className={`mt-1.5 flex items-start gap-1.5 text-2xs leading-relaxed ${
+                        isCorrectAnswer ? 'text-success' : 'text-text-tertiary'
+                      }`}
+                    >
+                      <span className="mt-px shrink-0 font-semibold uppercase tracking-wider">
+                        {isCorrectAnswer
+                          ? language === 'ro'
+                            ? 'Corect'
+                            : 'Correct'
+                          : language === 'ro'
+                          ? 'Greșit'
+                          : 'Incorrect'}
+                        :
+                      </span>
+                      <span>{optionReason}</span>
+                    </span>
+                  )}
                 </span>
               </button>
             );
@@ -400,11 +425,40 @@ export function QuizModalV2({
           <div className="mt-5 rounded-xl border border-accent/20 bg-accent-soft px-4 py-3 animate-fade-up">
             <h4 className="mb-1.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-accent">
               <Lightbulb className="h-3.5 w-3.5" />
-              {selected === q.correct ? 'Correct' : 'Explanation'}
+              {selected === q.correct
+                ? language === 'ro'
+                  ? 'Corect'
+                  : 'Correct'
+                : language === 'ro'
+                ? 'Explicație'
+                : 'Explanation'}
             </h4>
             <p className="text-sm leading-relaxed text-text-primary text-pretty">
               {q.explanation[language] ?? q.explanation.en}
             </p>
+            {/* Reference links (e.g. official AWS docs) */}
+            {q.references && q.references.length > 0 && (
+              <div className="mt-3 border-t border-accent/15 pt-3">
+                <p className="mb-1.5 text-2xs font-semibold uppercase tracking-wider text-text-tertiary">
+                  {language === 'ro' ? 'Referințe' : 'References'}
+                </p>
+                <ul className="space-y-1">
+                  {q.references.map((ref, ri) => (
+                    <li key={ri}>
+                      <a
+                        href={ref.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-start gap-1.5 text-2xs text-accent hover:underline"
+                      >
+                        <ExternalLink className="mt-px h-3 w-3 shrink-0" />
+                        <span className="break-all">{ref.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {q.relatedServices && q.relatedServices.length > 0 && (
               <div className="mt-3 flex flex-wrap gap-1.5">
                 {q.relatedServices.map((sid) => {
