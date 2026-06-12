@@ -78,6 +78,19 @@ export interface Service {
     steps: Array<Record<string, string>>;
     altText: Record<string, string>;
   };
+
+  /**
+   * OPTIONAL richer diagram rendered with Mermaid (dual coding). Use only where a real
+   * flow/branch/grouping clarifies the service (e.g. SNS fan-out, VPC subnets, RDS Multi-AZ).
+   * `code` is language-agnostic Mermaid syntax (no localized labels inside — keep nodes short/neutral).
+   * When present, this takes precedence over `diagram` in the modal.
+   */
+  mermaidDiagram?: {
+    /** Mermaid source, e.g. 'flowchart LR; A[Producer]-->B((SNS Topic)); B-->C[Email]; B-->D[SQS]'. */
+    code: string;
+    /** Bilingual caption shown under the diagram. */
+    caption: Record<string, string>;
+  };
 }
 
 export interface Category {

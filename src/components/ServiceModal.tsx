@@ -9,6 +9,7 @@ import {
 import type { Service, Language } from '@/types';
 import { useProgressStore } from '@/store/progress';
 import { getServiceById } from '@/data/services';
+import { MermaidDiagram } from '@/components/MermaidDiagram';
 
 interface ServiceModalProps {
   service: Service;
@@ -378,27 +379,39 @@ export function ServiceModal({ service, language, onClose, onServiceClick }: Ser
             </Section>
           )}
 
-          {/* Diagram — dual coding (collapsed) */}
-          {service.diagram && service.diagram.steps.length > 0 && (
+          {/* Diagram — dual coding (collapsed). Mermaid takes precedence over chip flow. */}
+          {(service.mermaidDiagram || (service.diagram && service.diagram.steps.length > 0)) && (
             <Section
               icon={<GitBranch className="h-3.5 w-3.5" />}
               label={language === 'ro' ? 'Diagramă' : 'Diagram'}
             >
-              <div
-                className="flex flex-wrap items-center gap-1.5"
-                aria-label={t(service.diagram.altText, language)}
-              >
-                {service.diagram.steps.map((step, i) => (
-                  <span key={i} className="flex items-center gap-1.5">
-                    <span className="rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-medium text-text-primary">
-                      {t(step, language)}
+              {service.mermaidDiagram ? (
+                <figure className="m-0">
+                  <MermaidDiagram
+                    code={service.mermaidDiagram.code}
+                    ariaLabel={t(service.mermaidDiagram.caption, language)}
+                  />
+                  <figcaption className="mt-2 text-center text-xs text-text-tertiary">
+                    {t(service.mermaidDiagram.caption, language)}
+                  </figcaption>
+                </figure>
+              ) : (
+                <div
+                  className="flex flex-wrap items-center gap-1.5"
+                  aria-label={t(service.diagram!.altText, language)}
+                >
+                  {service.diagram!.steps.map((step, i) => (
+                    <span key={i} className="flex items-center gap-1.5">
+                      <span className="rounded-md border border-border bg-surface px-2.5 py-1 text-xs font-medium text-text-primary">
+                        {t(step, language)}
+                      </span>
+                      {i < service.diagram!.steps.length - 1 && (
+                        <ChevronRight className="h-3.5 w-3.5 shrink-0 text-text-tertiary" aria-hidden />
+                      )}
                     </span>
-                    {i < service.diagram!.steps.length - 1 && (
-                      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-text-tertiary" aria-hidden />
-                    )}
-                  </span>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </Section>
           )}
 

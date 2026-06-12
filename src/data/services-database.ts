@@ -79,6 +79,14 @@ export const databaseServices: Service[] = [
       ],
       altText: { en: 'App sends SQL to a primary RDS instance; a synchronous standby provides automatic failover while asynchronous Read Replicas serve read traffic.', ro: 'Aplicația trimite SQL către instanța RDS primară; un standby sincron oferă failover automat, iar Read Replicas asincrone servesc traficul de citire.' },
     },
+    mermaidDiagram: {
+      code: `flowchart LR
+  App([App]) -->|writes| Primary[(Primary DB)]
+  Primary -->|synchronous| Standby[(Multi-AZ standby - failover)]
+  Primary -->|asynchronous| RR[(Read Replicas - scale reads)]
+  App -->|reads| RR`,
+      caption: { en: 'Multi-AZ standby = high availability (auto failover). Read Replicas = scaling reads. They solve different problems.', ro: 'Standby Multi-AZ = disponibilitate (failover automat). Read Replicas = scalarea citirilor. Rezolvă probleme diferite.' },
+    },
   },
   {
     id: 'aurora',

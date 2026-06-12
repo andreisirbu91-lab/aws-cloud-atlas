@@ -73,6 +73,14 @@ export const integrationServices: Service[] = [
       ],
       altText: { en: 'A publisher sends one message to an SNS topic, which fans it out by push to many subscribers.', ro: 'Un publisher trimite un mesaj către un topic SNS, care îl distribuie prin push către mulți subscriberi.' },
     },
+    mermaidDiagram: {
+      code: `flowchart LR
+  Pub([Publisher]) --> Topic((SNS Topic))
+  Topic -->|push| Email[Email]
+  Topic -->|push| SQS[SQS queue]
+  Topic -->|push| Lambda[Lambda]`,
+      caption: { en: 'One message is published once to the topic, which pushes a copy to every subscriber at the same time (fan-out).', ro: 'Un mesaj e publicat o singură dată în topic, care împinge o copie către fiecare subscriber în același timp (fan-out).' },
+    },
   },
   {
     id: 'sqs',
@@ -147,6 +155,13 @@ export const integrationServices: Service[] = [
         { en: 'Process & delete message', ro: 'Procesează și șterge mesajul' },
       ],
       altText: { en: 'A producer sends messages to an SQS queue that buffers them; a consumer polls the queue, processes each message and deletes it.', ro: 'Un producer trimite mesaje către o coadă SQS care le ține în buffer; un consumer face poll la coadă, procesează fiecare mesaj și îl șterge.' },
+    },
+    mermaidDiagram: {
+      code: `flowchart LR
+  Prod([Producer]) -->|send| Queue[SQS Queue - buffer]
+  Queue -->|poll / pull| Worker([Consumer])
+  Worker -->|process then delete| Done([Done])`,
+      caption: { en: 'The queue decouples producer and consumer: the consumer pulls messages at its own pace, processes each, then deletes it.', ro: 'Coada decuplează producer-ul de consumer: consumer-ul trage mesajele în ritmul lui, procesează fiecare, apoi îl șterge.' },
     },
   },
   {

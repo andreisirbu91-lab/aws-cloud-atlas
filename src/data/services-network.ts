@@ -79,6 +79,16 @@ export const networkServices: Service[] = [
       ],
       altText: { en: 'A regional VPC contains public subnets (via Internet Gateway) and private subnets (outbound via NAT), with Security Groups and NACLs filtering traffic.', ro: 'Un VPC regional conține subnets publice (prin Internet Gateway) și private (outbound prin NAT), cu Security Groups și NACL care filtrează traficul.' },
     },
+    mermaidDiagram: {
+      code: `flowchart LR
+  Net([Internet]) --> IGW[Internet Gateway]
+  subgraph VPC [VPC - one Region]
+    IGW --> Pub[Public subnet: web server]
+    Pub --> NAT[NAT Gateway]
+    NAT --> Priv[Private subnet: database]
+  end`,
+      caption: { en: 'Web servers sit in a public subnet reached via the Internet Gateway; the database stays private and reaches out only through NAT.', ro: 'Serverele web stau într-un subnet public accesibil prin Internet Gateway; baza de date rămâne privată și iese doar prin NAT.' },
+    },
   },
   {
     id: 'cloudfront',
@@ -154,6 +164,14 @@ export const networkServices: Service[] = [
         { en: 'Origin (S3 / EC2 / ALB)', ro: 'Origin (S3 / EC2 / ALB)' },
       ],
       altText: { en: 'A user request hits the nearest CloudFront edge location; on a cache hit it is served instantly, on a miss the edge fetches from the origin (S3, EC2 or ALB) and caches it.', ro: 'O cerere a utilizatorului ajunge la cea mai apropiată locație edge CloudFront; la cache hit e servită instant, la miss edge-ul aduce de la origin (S3, EC2 sau ALB) și o pune în cache.' },
+    },
+    mermaidDiagram: {
+      code: `flowchart LR
+  User([User]) --> Edge[Nearest Edge Location]
+  Edge -->|cache hit| User
+  Edge -->|cache miss| Origin[(Origin: S3 / ALB)]
+  Origin --> Edge`,
+      caption: { en: 'On a cache hit the edge serves instantly; on a miss it fetches once from the origin, then caches for the next users.', ro: 'La cache hit edge-ul servește instant; la miss aduce o dată de la origin, apoi pune în cache pentru următorii utilizatori.' },
     },
   },
   {
@@ -232,6 +250,13 @@ export const networkServices: Service[] = [
         { en: 'Best endpoint (ALB / CloudFront / S3)', ro: 'Cel mai bun endpoint (ALB / CloudFront / S3)' },
       ],
       altText: { en: 'A user DNS query reaches Route 53, which applies a routing policy and health checks to return the best healthy endpoint, such as an ALB, CloudFront distribution or S3 website.', ro: 'O interogare DNS a utilizatorului ajunge la Route 53, care aplică o politică de routing și health check-uri pentru a returna cel mai bun endpoint sănătos, ca un ALB, o distribuție CloudFront sau un site S3.' },
+    },
+    mermaidDiagram: {
+      code: `flowchart LR
+  User([User: app.com?]) --> R53{Route 53 - DNS + policy}
+  R53 -->|latency / failover / geo| Healthy[Healthy endpoint: ALB]
+  R53 -. health check .-> Down[Unhealthy endpoint]`,
+      caption: { en: 'Route 53 resolves the name and, using a routing policy + health checks, returns the best healthy endpoint and avoids the down one.', ro: 'Route 53 rezolvă numele și, cu o politică de routing + health check-uri, returnează cel mai bun endpoint sănătos și îl evită pe cel căzut.' },
     },
   },
   {
@@ -336,6 +361,14 @@ export const networkServices: Service[] = [
         { en: 'Healthy targets across AZs', ro: 'Target-uri sănătoase în mai multe AZ-uri' },
       ],
       altText: { en: 'Incoming traffic reaches an ELB (ALB for HTTP Layer 7 or NLB for TCP Layer 4), which health-checks targets and distributes requests only to healthy EC2/containers across multiple Availability Zones.', ro: 'Traficul de intrare ajunge la un ELB (ALB pentru HTTP Layer 7 sau NLB pentru TCP Layer 4), care verifică sănătatea target-urilor și distribuie cererile doar către EC2/containere sănătoase din mai multe Availability Zones.' },
+    },
+    mermaidDiagram: {
+      code: `flowchart LR
+  Users([Users]) --> ELB{{Load Balancer}}
+  ELB --> A[EC2 in AZ-a]
+  ELB --> B[EC2 in AZ-b]
+  ELB -. fails health check .-> C[EC2 in AZ-c down]`,
+      caption: { en: 'The load balancer spreads traffic across healthy instances in multiple AZs and stops sending to any that fail a health check.', ro: 'Load balancer-ul împarte traficul către instanțe sănătoase din mai multe AZ-uri și nu mai trimite către cele care pică health check-ul.' },
     },
   },
   {

@@ -102,6 +102,14 @@ const computeServices: Service[] = [
       ],
       altText: { en: 'An AMI launches an EC2 instance, which attaches an EBS volume and is protected by a Security Group.', ro: 'Un AMI lansează o instanță EC2, care atașează un volum EBS și e protejată de un Security Group.' },
     },
+    mermaidDiagram: {
+      code: `flowchart LR
+  AMI[AMI template] --> EC2(EC2 instance)
+  EC2 --- EBS[(EBS volume)]
+  User([User]) -->|HTTPS| SG{{Security Group}}
+  SG --> EC2`,
+      caption: { en: 'An AMI launches the instance; user traffic passes the Security Group; an EBS volume stores its data.', ro: 'Un AMI lansează instanța; traficul trece de Security Group; un volum EBS îi stochează datele.' },
+    },
   },
   {
     id: 'lambda',
@@ -180,6 +188,14 @@ const computeServices: Service[] = [
         { en: 'Output (DynamoDB)', ro: 'Rezultat (DynamoDB)' },
       ],
       altText: { en: 'An event triggers a Lambda function, which processes it and writes the result to another service.', ro: 'Un eveniment declanșează o funcție Lambda, care îl procesează și scrie rezultatul în alt serviciu.' },
+    },
+    mermaidDiagram: {
+      code: `flowchart LR
+  S3[S3 upload] --> L
+  API[API Gateway] --> L
+  Cron[EventBridge schedule] --> L
+  L(Lambda function) --> DB[(DynamoDB)]`,
+      caption: { en: 'Many event sources trigger the same function; it runs only when called and writes its result downstream.', ro: 'Mai multe surse de evenimente declanșează aceeași funcție; rulează doar când e chemată și scrie rezultatul mai departe.' },
     },
   },
   {
@@ -649,6 +665,13 @@ const storageServices: Service[] = [
       ],
       altText: { en: 'Objects live in a regional bucket under a storage class; lifecycle rules transition them to Glacier over time.', ro: 'Obiectele stau într-un bucket regional sub o clasă de stocare; regulile lifecycle le mută în Glacier în timp.' },
     },
+    mermaidDiagram: {
+      code: `flowchart LR
+  Up([Upload object]) --> B[S3 Standard]
+  B -->|30 days, lifecycle| IA[S3 Standard-IA]
+  IA -->|90 days, lifecycle| G[(Glacier Deep Archive)]`,
+      caption: { en: 'A lifecycle rule automatically moves objects to cheaper classes as they age — from Standard to IA to Glacier.', ro: 'O regulă lifecycle mută automat obiectele în clase mai ieftine pe măsură ce îmbătrânesc — din Standard în IA în Glacier.' },
+    },
   },
   {
     id: 'ebs',
@@ -801,6 +824,14 @@ const storageServices: Service[] = [
         { en: 'Lifecycle → EFS-IA', ro: 'Lifecycle → EFS-IA' },
       ],
       altText: { en: 'One EFS file system exposes mount targets in several AZs; many Linux EC2 instances mount it over NFS, and a lifecycle policy moves cold files to EFS-IA.', ro: 'Un singur file system EFS expune mount targets în mai multe AZ-uri; multe instanțe EC2 Linux îl montează prin NFS, iar o politică de lifecycle mută fișierele reci în EFS-IA.' },
+    },
+    mermaidDiagram: {
+      code: `flowchart LR
+  EC2a[EC2 in AZ-a] --> EFS
+  EC2b[EC2 in AZ-b] --> EFS
+  EC2c[EC2 in AZ-c] --> EFS
+  EFS[(EFS file system - shared, multi-AZ)]`,
+      caption: { en: 'Unlike EBS, one EFS file system is mounted at the same time by many EC2 instances across multiple AZs.', ro: 'Spre deosebire de EBS, un singur file system EFS e montat simultan de multe instanțe EC2 din mai multe AZ-uri.' },
     },
   },
   {
