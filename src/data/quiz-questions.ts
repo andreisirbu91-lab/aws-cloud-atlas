@@ -824,7 +824,7 @@ export function buildWeightedExam(exam: ExamId, total?: number): QuizQuestion[] 
     exact: weight * size,
     take: Math.floor(weight * size),
   }));
-  let remainder = size - raw.reduce((s, r) => s + r.take, 0);
+  const remainder = size - raw.reduce((s, r) => s + r.take, 0);
   [...raw]
     .sort((a, b) => (b.exact - b.take) - (a.exact - a.take))
     .slice(0, remainder)
