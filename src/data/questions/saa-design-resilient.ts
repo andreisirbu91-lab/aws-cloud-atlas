@@ -139,4 +139,97 @@ export const saaDesignResilientQuestions: Array<QuizQuestion & { examDomain: Exa
     relatedServices: ['route53', 's3'],
     source: 'exam-guide',
   },
+  {
+    id: 'saa-res-005',
+    type: 'multiple_choice', difficulty: 3,
+    categories: ['compute', 'resilience'], examDomain: 'design-resilient',
+    question: {
+      en: 'A stateless web application runs on two EC2 instances in one Availability Zone. It must remain available if an instance or the entire Availability Zone fails. Which design meets the requirement with the LEAST operational overhead?',
+      ro: 'O aplicație web stateless rulează pe două instanțe EC2 într-o singură Availability Zone. Trebuie să rămână disponibilă dacă o instanță sau întregul AZ cade. Ce design îndeplinește cerința cu efort operațional MINIM?',
+    },
+    options: [
+      { en: 'Place an Application Load Balancer and an Auto Scaling group across at least two Availability Zones', ro: 'Plasează un Application Load Balancer și un Auto Scaling group în cel puțin două Availability Zones' },
+      { en: 'Use one larger EC2 instance with EC2 automatic recovery enabled', ro: 'Folosește o singură instanță EC2 mai mare cu automatic recovery activat' },
+      { en: 'Create an AMI every hour and launch instances manually after a failure', ro: 'Creează un AMI în fiecare oră și pornește manual instanțe după un failure' },
+      { en: 'Keep both instances in one Availability Zone and add an EBS volume', ro: 'Păstrează ambele instanțe într-un singur AZ și adaugă un volum EBS' },
+    ],
+    correct: 0,
+    explanation: {
+      en: 'An ALB routes only to healthy targets, while a multi-AZ Auto Scaling group maintains desired capacity and replaces failed instances. Spreading capacity across AZs removes both instance and AZ single points of failure.',
+      ro: 'Un ALB rutează doar către target-uri healthy, iar un Auto Scaling group multi-AZ menține desired capacity și înlocuiește instanțele defecte. Distribuirea între AZ-uri elimină punctele unice de failure la nivel de instanță și AZ.',
+    },
+    optionExplanations: [
+      { en: 'Correct — ALB health checks plus a multi-AZ ASG provide automatic routing, replacement, and AZ fault isolation.', ro: 'Corect — health check-urile ALB plus un ASG multi-AZ oferă rutare, înlocuire și izolare la failure de AZ.' },
+      { en: 'Automatic recovery does not keep the service available during a complete AZ outage.', ro: 'Automatic recovery nu menține serviciul disponibil în timpul unui outage complet de AZ.' },
+      { en: 'Manual launching increases RTO and does not provide automatic availability.', ro: 'Pornirea manuală crește RTO și nu oferă disponibilitate automată.' },
+      { en: 'More storage in the same AZ does not remove the AZ single point of failure.', ro: 'Mai mult storage în același AZ nu elimină AZ-ul ca punct unic de failure.' },
+    ],
+    references: [
+      { label: 'Distribute Auto Scaling instances across Availability Zones', url: 'https://docs.aws.amazon.com/autoscaling/ec2/userguide/ec2-auto-scaling-availability-zone-balanced.html' },
+      { label: 'Application Load Balancer target health', url: 'https://docs.aws.amazon.com/elasticloadbalancing/latest/application/target-group-health-checks.html' },
+    ],
+    relatedServices: ['ec2', 'elb', 'autoscaling'], source: 'exam-guide',
+  },
+  {
+    id: 'saa-res-006',
+    type: 'multiple_choice', difficulty: 4,
+    categories: ['integration', 'resilience'], examDomain: 'design-resilient',
+    question: {
+      en: 'Workers process messages from an Amazon SQS standard queue. Some jobs take 4 minutes, but the visibility timeout is 30 seconds. The same job is frequently processed by multiple workers. What should a solutions architect do?',
+      ro: 'Worker-ele procesează mesaje dintr-o coadă Amazon SQS standard. Unele job-uri durează 4 minute, dar visibility timeout-ul este 30 de secunde. Același job este procesat frecvent de mai multe worker-e. Ce trebuie făcut?',
+    },
+    options: [
+      { en: 'Extend the visibility timeout beyond expected processing time and keep consumers idempotent', ro: 'Extinde visibility timeout-ul peste timpul estimat de procesare și păstrează consumatorii idempotent' },
+      { en: 'Set the message retention period to 30 seconds', ro: 'Setează retenția mesajelor la 30 de secunde' },
+      { en: 'Replace the queue with an SNS topic', ro: 'Înlocuiește coada cu un topic SNS' },
+      { en: 'Increase the long-polling wait time to 20 seconds', ro: 'Mărește timpul de long polling la 20 de secunde' },
+    ],
+    correct: 0,
+    explanation: {
+      en: 'A received message becomes visible again when its visibility timeout expires. The timeout should cover processing or be extended with ChangeMessageVisibility. Standard queues are at-least-once, so consumers must remain idempotent.',
+      ro: 'Un mesaj primit devine din nou vizibil când expiră visibility timeout-ul. Timeout-ul trebuie să acopere procesarea sau să fie extins cu ChangeMessageVisibility. Cozile standard sunt at-least-once, deci consumatorii trebuie să rămână idempotent.',
+    },
+    optionExplanations: [
+      { en: 'Correct — visibility controls redelivery of in-flight messages; idempotency handles remaining at-least-once duplicates.', ro: 'Corect — visibility controlează relivrarea mesajelor in-flight; idempotency tratează duplicatele at-least-once rămase.' },
+      { en: 'Retention controls how long unconsumed messages stay, not in-flight visibility.', ro: 'Retenția controlează cât rămân mesajele neconsumate, nu vizibilitatea in-flight.' },
+      { en: 'SNS does not by itself solve durable long-running work or duplicate processing.', ro: 'SNS nu rezolvă singur procesarea durabilă de lungă durată sau duplicatele.' },
+      { en: 'Long polling reduces empty receives; it does not change visibility after receipt.', ro: 'Long polling reduce empty receives; nu schimbă vizibilitatea după primire.' },
+    ],
+    references: [
+      { label: 'Amazon SQS visibility timeout', url: 'https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html' },
+      { label: 'Amazon SQS standard queues', url: 'https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues.html' },
+    ],
+    relatedServices: ['sqs'], source: 'exam-guide',
+  },
+  {
+    id: 'saa-res-007',
+    type: 'multiple_choice', difficulty: 4,
+    categories: ['integration', 'resilience'], examDomain: 'design-resilient',
+    question: {
+      en: 'An order event must be delivered independently to billing, fulfillment, and analytics. A temporary analytics failure must not delay or lose messages for the other consumers. Which architecture is MOST resilient?',
+      ro: 'Un eveniment de comandă trebuie livrat independent către billing, fulfillment și analytics. Un failure temporar în analytics nu trebuie să întârzie sau să piardă mesajele celorlalți consumatori. Care arhitectură este CEA MAI rezilientă?',
+    },
+    options: [
+      { en: 'Publish to SNS with a separate SQS queue and dead-letter queue for each consumer', ro: 'Publică în SNS cu o coadă SQS și un dead-letter queue separat pentru fiecare consumator' },
+      { en: 'Put all events in one SQS queue polled by all three consumers', ro: 'Pune evenimentele într-o singură coadă SQS citită de toți cei trei consumatori' },
+      { en: 'Invoke all consumers sequentially from one Lambda function', ro: 'Invocă secvențial toți consumatorii dintr-o singură funcție Lambda' },
+      { en: 'Send synchronous HTTP requests to each consumer', ro: 'Trimite request-uri HTTP sincrone către fiecare consumator' },
+    ],
+    correct: 0,
+    explanation: {
+      en: 'SNS fan-out sends every event to each subscribed SQS queue. Each consumer gets independent buffering, retries, scaling, and a DLQ, so one failure cannot block the others. A shared queue load-balances rather than broadcasts messages.',
+      ro: 'SNS fan-out trimite fiecare eveniment către fiecare coadă SQS abonată. Fiecare consumator are buffering, retry, scaling și DLQ independente, astfel încât un failure nu îi blochează pe ceilalți. O coadă comună face load balancing, nu broadcast.',
+    },
+    optionExplanations: [
+      { en: 'Correct — one queue per subscriber provides durable, isolated fan-out and independent failure handling.', ro: 'Corect — câte o coadă per subscriber oferă fan-out durabil și izolat, cu failure handling independent.' },
+      { en: 'Competing consumers receive different messages; all three will not receive every event.', ro: 'Consumatorii concurenți primesc mesaje diferite; nu toți trei primesc fiecare eveniment.' },
+      { en: 'Sequential invocation couples availability and creates one orchestration bottleneck.', ro: 'Invocarea secvențială cuplează disponibilitatea și creează un bottleneck unic.' },
+      { en: 'Synchronous calls propagate latency and failures and provide no durable buffer.', ro: 'Apelurile sincrone propagă latența și failure-urile și nu oferă buffer durabil.' },
+    ],
+    references: [
+      { label: 'Fanout SNS notifications to SQS queues', url: 'https://docs.aws.amazon.com/sns/latest/dg/sns-sqs-as-subscriber.html' },
+      { label: 'Amazon SQS dead-letter queues', url: 'https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html' },
+    ],
+    relatedServices: ['sns', 'sqs'], source: 'exam-guide',
+  },
 ];
