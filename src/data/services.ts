@@ -7,6 +7,9 @@ import { integrationServices } from './services-integration';
 import { analyticsServices } from './services-analytics';
 import { migrationServices, billingServices, enduserServices } from './services-rest';
 import { saaServices } from './services-saa';
+import { saaSecurityServices } from './services-saa-security';
+import { saaDatabaseServices } from './services-saa-database';
+import { saaAnalyticsServices } from './services-saa-analytics';
 
 /**
  * AWS Certified Cloud Practitioner (CLF-C02) services.
@@ -1034,6 +1037,9 @@ export const services: Service[] = [
   ...billingServices,
   ...enduserServices,
   ...saaServices,
+  ...saaSecurityServices,
+  ...saaDatabaseServices,
+  ...saaAnalyticsServices,
 ];
 
 /** Services visible on the given exam (no `exams` field = visible on both). */

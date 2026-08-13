@@ -425,26 +425,89 @@ export const networkServices: Service[] = [
   {
     id: 'privatelink',
     abbreviation: 'PrivateLink',
-    fullName: 'AWS PrivateLink',
+    fullName: 'AWS PrivateLink & VPC Endpoints',
     category: 'network',
     level: 'clf',
     difficulty: 3,
-    examFrequency: 'low',
+    examFrequency: 'high',
     description: {
-      en: 'Private connectivity between VPCs and AWS services without using public internet.',
-      ro: 'Conectivitate privată între VPC-uri și servicii AWS fără internet public.',
+      en: 'Private connectivity from your VPC to AWS services (or other VPCs’ services) without touching the public internet — via gateway endpoints (S3/DynamoDB, free) or interface endpoints (PrivateLink, most services).',
+      ro: 'Conectivitate privată din VPC-ul tău către servicii AWS (sau servicii din alte VPC-uri) fără a atinge internetul public — prin gateway endpoints (S3/DynamoDB, gratuite) sau interface endpoints (PrivateLink, majoritatea serviciilor).',
     },
     analogy: {
-      en: 'Like a private tunnel between your VPC and AWS services — never leaves AWS.',
-      ro: 'Ca un tunel privat între VPC-ul tău și servicii AWS — nu părăsește AWS.',
+      en: 'Private corridors inside a building complex: instead of going out on the street (internet) to reach another department, you use an internal hallway — some hallways are free (gateway), others are premium doors installed in your office (interface ENI).',
+      ro: 'Coridoare private într-un complex de clădiri: în loc să ieși pe stradă (internet) ca să ajungi la alt departament, folosești un hol interior — unele holuri sunt gratuite (gateway), altele sunt uși premium instalate chiar în biroul tău (ENI interface).',
     },
     examTips: [
-      { key: 'endpoints', content: { en: 'VPC Endpoints: Interface (privatelink) or Gateway (S3, DynamoDB).', ro: 'VPC Endpoints: Interface (privatelink) sau Gateway (S3, DynamoDB).' } },
-      { key: 'private', content: { en: 'Traffic stays on AWS network, never traverses internet.', ro: 'Traficul rămâne în rețeaua AWS, nu trece prin internet.' } },
+      {
+        key: 'gateway-vs-interface',
+        content: {
+          en: 'Memorize cold: GATEWAY endpoint = only S3 + DynamoDB, FREE, a route-table entry. INTERFACE endpoint = an ENI with a private IP, hourly + per-GB cost, nearly all other services.',
+          ro: 'Memorează la rece: GATEWAY endpoint = doar S3 + DynamoDB, GRATUIT, o intrare în route table. INTERFACE endpoint = un ENI cu IP privat, cost orar + per GB, aproape toate celelalte servicii.',
+        },
+      },
+      {
+        key: 'expose-service',
+        content: {
+          en: 'Trigger phrase: "expose OUR service privately to other VPCs/accounts without peering" → PrivateLink endpoint service (your NLB + their interface endpoint).',
+          ro: 'Formulare-declanșator: „expune serviciul NOSTRU privat către alte VPC-uri/conturi fără peering" → PrivateLink endpoint service (NLB-ul tău + interface endpoint-ul lor).',
+        },
+      },
     ],
-    pricing: { en: '$0.01/h per endpoint + $0.01/GB processed', ro: '$0.01/h per endpoint + $0.01/GB procesat' },
-    connections: ['vpc', 's3', 'dynamodb'],
+    pricing: {
+      en: 'Gateway endpoints: FREE. Interface endpoints: ~$0.01/h per AZ + per-GB processed — still usually cheaper than NAT Gateway data processing.',
+      ro: 'Gateway endpoints: GRATUITE. Interface endpoints: ~$0.01/h per AZ + per GB procesat — de obicei tot mai ieftin decât procesarea de date prin NAT Gateway.',
+    },
+    connections: ['vpc', 's3', 'dynamodb', 'natgateway', 'elb'],
     docsUrl: 'https://docs.aws.amazon.com/vpc/latest/privatelink/',
     visual: { color: 'hsl(190, 90%, 50%)', icon: 'network' },
+    examDomains: ['design-secure', 'design-cost'],
+    howItWorks: [
+      { en: 'Gateway endpoint: you add it to the VPC and select route tables — traffic to S3/DynamoDB is routed privately inside AWS.', ro: 'Gateway endpoint: îl adaugi în VPC și selectezi route table-urile — traficul către S3/DynamoDB e rutat privat în interiorul AWS.' },
+      { en: 'Interface endpoint: AWS places an ENI with a private IP in your subnet; DNS for the service resolves to that private IP.', ro: 'Interface endpoint: AWS pune un ENI cu IP privat în subnetul tău; DNS-ul serviciului se rezolvă la acel IP privat.' },
+      { en: 'Endpoint policies restrict WHAT can be accessed through the endpoint (e.g., only specific S3 buckets).', ro: 'Endpoint policies restricționează CE poate fi accesat prin endpoint (ex. doar anumite bucket-uri S3).' },
+      { en: 'Endpoint service (PrivateLink): you put your app behind an NLB; consumer VPCs create interface endpoints to it — no peering, no route sharing.', ro: 'Endpoint service (PrivateLink): îți pui aplicația în spatele unui NLB; VPC-urile consumatoare creează interface endpoints către ea — fără peering, fără partajare de rute.' },
+    ],
+    keyFacts: [
+      { en: 'Gateway endpoints exist for exactly TWO services: S3 and DynamoDB — and they are free.', ro: 'Gateway endpoints există pentru exact DOUĂ servicii: S3 și DynamoDB — și sunt gratuite.' },
+      { en: 'Interface endpoints (PrivateLink) cover nearly all other AWS services, plus SaaS and your own services.', ro: 'Interface endpoints (PrivateLink) acoperă aproape toate celelalte servicii AWS, plus SaaS și serviciile tale proprii.' },
+      { en: 'Traffic never leaves the AWS network — instances need no internet path (no NAT, no IGW) to reach the service.', ro: 'Traficul nu părăsește niciodată rețeaua AWS — instanțele nu au nevoie de drum spre internet (fără NAT, fără IGW) ca să ajungă la serviciu.' },
+      { en: 'Interface endpoints are reachable from on-premises over Direct Connect/VPN; gateway endpoints are NOT (VPC-only).', ro: 'Interface endpoints sunt accesibile din on-premises prin Direct Connect/VPN; gateway endpoints NU sunt (doar din VPC).' },
+      { en: 'PrivateLink exposes ONE service point-to-point; it is not network-to-network connectivity (that is peering/TGW).', ro: 'PrivateLink expune UN serviciu punct-la-punct; nu e conectivitate rețea-la-rețea (aceea e peering/TGW).' },
+    ],
+    whenToUse: [
+      { en: 'Private subnets need S3/DynamoDB → gateway endpoint (free, kills NAT data-processing costs).', ro: 'Subneturile private au nevoie de S3/DynamoDB → gateway endpoint (gratuit, elimină costurile de procesare NAT).' },
+      { en: 'Compliance: "traffic to AWS APIs must not traverse the internet" → interface endpoints for those services.', ro: 'Conformitate: „traficul către API-urile AWS nu trebuie să treacă prin internet" → interface endpoints pentru acele servicii.' },
+      { en: 'A SaaS/shared service must be consumed privately by many customer VPCs with overlapping CIDRs → PrivateLink (peering would fail on overlaps).', ro: 'Un serviciu SaaS/partajat trebuie consumat privat de multe VPC-uri client cu CIDR-uri suprapuse → PrivateLink (peering-ul ar eșua la suprapuneri).' },
+    ],
+    whenNotToUse: [
+      { en: 'Full network-to-network connectivity between VPCs → VPC peering (2 VPCs) or Transit Gateway (many).', ro: 'Conectivitate completă rețea-la-rețea între VPC-uri → VPC peering (2 VPC-uri) sau Transit Gateway (multe).' },
+      { en: 'General outbound internet access for private instances → NAT Gateway (endpoints only reach specific services).', ro: 'Acces general outbound la internet pentru instanțe private → NAT Gateway (endpoint-urile ajung doar la servicii specifice).' },
+    ],
+    examTraps: [
+      { en: 'Scenario: "private EC2 instances access S3, minimize cost" → GATEWAY endpoint. Answers routing S3 through NAT Gateway are the cost trap.', ro: 'Scenariu: „instanțe EC2 private accesează S3, minimizează costul" → GATEWAY endpoint. Răspunsurile care rutează S3 prin NAT Gateway sunt capcana de cost.' },
+      { en: 'On-premises access to S3 privately: gateway endpoints do NOT work from on-prem — the answer is an interface endpoint for S3 (or DX + interface endpoint).', ro: 'Acces on-premises privat la S3: gateway endpoints NU funcționează din on-prem — răspunsul e un interface endpoint pentru S3 (sau DX + interface endpoint).' },
+      { en: 'PrivateLink vs peering/TGW: PrivateLink = one service, unidirectional consumption, overlapping CIDRs OK; peering/TGW = whole networks, CIDRs must not overlap.', ro: 'PrivateLink vs peering/TGW: PrivateLink = un serviciu, consum unidirecțional, CIDR-uri suprapuse OK; peering/TGW = rețele întregi, CIDR-urile nu trebuie să se suprapună.' },
+      { en: 'The endpoint service side must sit behind a NETWORK Load Balancer (NLB), not an ALB — a favorite detail question.', ro: 'Partea de endpoint service trebuie să stea în spatele unui NETWORK Load Balancer (NLB), nu al unui ALB — un detaliu favorit la examen.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Services with gateway endpoints', ro: 'Servicii cu gateway endpoints' }, value: { en: '2 (S3, DynamoDB)', ro: '2 (S3, DynamoDB)' } },
+      { label: { en: 'Gateway endpoint cost', ro: 'Costul gateway endpoint' }, value: { en: '$0 (free)', ro: '$0 (gratuit)' } },
+      { label: { en: 'Load balancer required for endpoint services', ro: 'Load balancer necesar pentru endpoint services' }, value: { en: 'NLB', ro: 'NLB' } },
+    ],
+    retrievalQuestions: [
+      {
+        q: { en: 'Gateway vs interface endpoint — name three differences.', ro: 'Gateway vs interface endpoint — numește trei diferențe.' },
+        a: { en: 'Gateway: only S3/DynamoDB, free, works via route tables, VPC-only. Interface: almost all services, hourly + per-GB cost, an ENI with private IP, reachable from on-prem via DX/VPN.', ro: 'Gateway: doar S3/DynamoDB, gratuit, funcționează prin route tables, doar din VPC. Interface: aproape toate serviciile, cost orar + per GB, un ENI cu IP privat, accesibil din on-prem via DX/VPN.' },
+      },
+      {
+        q: { en: 'How do you expose an internal API to 50 customer VPCs, some with overlapping CIDRs?', ro: 'Cum expui un API intern către 50 de VPC-uri client, unele cu CIDR-uri suprapuse?' },
+        a: { en: 'PrivateLink endpoint service: put the API behind an NLB and let each customer create an interface endpoint. Peering/TGW would fail because of CIDR overlaps and would expose whole networks.', ro: 'PrivateLink endpoint service: pui API-ul în spatele unui NLB și fiecare client creează un interface endpoint. Peering/TGW ar eșua din cauza CIDR-urilor suprapuse și ar expune rețele întregi.' },
+      },
+    ],
+    mermaidDiagram: {
+      code: 'flowchart LR; subgraph Consumer VPC; EC2[Private EC2]; GE[Gateway endpoint]; IE[Interface endpoint ENI]; end; EC2 -->|route table| GE; GE --> S3[(S3 / DynamoDB)]; EC2 -->|private IP| IE; IE --> NLB[NLB]; NLB --> SVC[Service in provider VPC]',
+      caption: { en: 'Two private paths: gateway endpoint (free, S3/DynamoDB) and interface endpoint via PrivateLink to any service behind an NLB.', ro: 'Două căi private: gateway endpoint (gratuit, S3/DynamoDB) și interface endpoint prin PrivateLink către orice serviciu din spatele unui NLB.' },
+    },
   },
 ];

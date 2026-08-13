@@ -32,7 +32,7 @@ export const categories: Category[] = [
       ro: 'Baze de date gestionate: relaționale, NoSQL și în memorie.',
     },
     color: 'hsl(280, 75%, 60%)',
-    services: ['rds', 'aurora', 'dynamodb', 'elasticache', 'redshift', 'documentdb', 'neptune'],
+    services: ['rds', 'aurora', 'dynamodb', 'elasticache', 'redshift', 'documentdb', 'neptune', 'rdsproxy', 'dax'],
   },
   {
     id: 'network',
@@ -58,7 +58,7 @@ export const categories: Category[] = [
     services: [
       'iam', 'cognito', 'kms', 'waf', 'shield', 'guardduty', 'inspector',
       'secretsmanager', 'macie', 'securityhub', 'detective', 'acm',
-      'directoryservice', 'iamic',
+      'directoryservice', 'iamic', 'sts', 'cloudhsm', 'networkfirewall',
     ],
   },
   {
@@ -96,7 +96,7 @@ export const categories: Category[] = [
     services: [
       'athena', 'quicksight', 'kinesis', 'glue', 'emr', 'sagemaker', 'rekognition',
       'comprehend', 'lex', 'polly', 'translate', 'transcribe', 'textract',
-      'kendra', 'bedrock', 'personalize',
+      'kendra', 'bedrock', 'personalize', 'opensearch', 'msk',
     ],
   },
   {
