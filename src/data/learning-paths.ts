@@ -159,6 +159,7 @@ export const learningPaths: LearningPath[] = [
     },
     estimatedMinutes: 30,
     difficulty: 'beginner',
+    exams: ['clf'],
     steps: [
       { kind: 'concept', refId: 'pricing-fundamentals',
         note: { en: 'Pay-as-you-go, reserved discounts, spot, savings plans.', ro: 'Pay-as-you-go, RI, spot, savings plans.' } },

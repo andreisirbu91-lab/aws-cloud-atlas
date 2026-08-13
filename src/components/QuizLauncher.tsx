@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { X, Sparkles, Zap, Target, Trophy, Boxes, Shield, Cloud, DollarSign, Layers, ChevronRight, Check, Bookmark, AlertTriangle } from 'lucide-react';
-import type { Language, ExamDomain } from '@/types';
+import { X, Sparkles, Zap, Target, Trophy, Boxes, Shield, Cloud, DollarSign, Layers, ChevronRight, Check, Bookmark, AlertTriangle, Lock, LifeBuoy, Gauge, PiggyBank } from 'lucide-react';
+import type { Language, ExamDomain, ExamId } from '@/types';
 import type { QuizScope } from '@/data/quiz-questions';
-import { quizQuestions, getQuestionsByDomain, DOMAIN_WEIGHTS } from '@/data/quiz-questions';
+import { getQuestionsByDomain, getQuestionsForExam } from '@/data/quiz-questions';
+import { EXAMS, DOMAIN_LABELS } from '@/data/exams';
 import { categories } from '@/data/categories';
 import { useProgressStore } from '@/store/progress';
 
@@ -27,6 +28,8 @@ export type QuizLaunchConfig = {
 
 interface QuizLauncherProps {
   language: Language;
+  /** Which exam's bank/domains/exam-simulation to offer. */
+  exam: ExamId;
   onClose: () => void;
   onLaunch: (config: QuizLaunchConfig) => void;
 }
@@ -42,7 +45,11 @@ type Mode = {
   description: { en: string; ro: string };
 };
 
-const MODES: Mode[] = [
+/** Modes are exam-dependent: the Practice Exam mirrors the active exam's size/timer. */
+function buildModes(exam: ExamId): Mode[] {
+  const cfg = EXAMS[exam];
+  const timerMin = Math.round(cfg.examTimerSeconds / 60);
+  return [
   {
     id: 'quick',
     label: { en: 'Quick Drill', ro: 'Drill Rapid' },
@@ -79,17 +86,21 @@ const MODES: Mode[] = [
   {
     id: 'exam',
     label: { en: 'Practice Exam', ro: 'Examen Simulat' },
-    count: 65,
+    count: cfg.examQuestionCount,
     examMode: true,
-    timerSeconds: 90 * 60,
-    badge: { en: '65 questions · 90 min · timed', ro: '65 întrebări · 90 min · contorizat' },
+    timerSeconds: cfg.examTimerSeconds,
+    badge: {
+      en: `${cfg.examQuestionCount} questions · ${timerMin} min · timed`,
+      ro: `${cfg.examQuestionCount} întrebări · ${timerMin} min · contorizat`,
+    },
     icon: Trophy,
     description: {
-      en: 'Full CLF-C02 simulation: domain-weighted, no hints, results at end.',
-      ro: 'Simulare CLF-C02 completă: ponderat pe domenii, fără hint-uri, rezultat la final.',
+      en: `Full ${cfg.code} simulation: domain-weighted, no hints, results at end.`,
+      ro: `Simulare ${cfg.code} completă: ponderat pe domenii, fără hint-uri, rezultat la final.`,
     },
   },
-];
+  ];
+}
 
 type ScopeOption = {
   id: QuizScope;
@@ -105,20 +116,20 @@ const DOMAIN_ICONS: Record<ExamDomain, React.ElementType> = {
   security: Shield,
   'tech-services': Boxes,
   'billing-support': DollarSign,
+  'design-secure': Lock,
+  'design-resilient': LifeBuoy,
+  'design-performant': Gauge,
+  'design-cost': PiggyBank,
 };
 
-const DOMAIN_LABELS: Record<ExamDomain, { en: string; ro: string }> = {
-  'cloud-concepts': { en: 'Cloud Concepts', ro: 'Cloud Concepts' },
-  security: { en: 'Security & Compliance', ro: 'Security & Compliance' },
-  'tech-services': { en: 'Tech & Services', ro: 'Tech & Services' },
-  'billing-support': { en: 'Billing & Support', ro: 'Billing & Support' },
-};
-
-export function QuizLauncher({ language, onClose, onLaunch }: QuizLauncherProps) {
+export function QuizLauncher({ language, exam, onClose, onLaunch }: QuizLauncherProps) {
   const [modeId, setModeId] = useState<Mode['id']>('standard');
   const [scope, setScope] = useState<QuizScope>('all');
   const bookmarkedCount = useProgressStore((s) => s.bookmarkedQuestions.length);
   const mistakeCount = useProgressStore((s) => Object.keys(s.wrongAnswerCounts).length);
+  const examCfg = EXAMS[exam];
+  const examBank = useMemo(() => getQuestionsForExam(exam), [exam]);
+  const MODES = useMemo(() => buildModes(exam), [exam]);
 
   // Lock body scroll + ESC close
   useEffect(() => {
@@ -173,25 +184,25 @@ export function QuizLauncher({ language, onClose, onLaunch }: QuizLauncherProps)
     out.push({
       id: 'all',
       label: { en: 'Mixed (all topics)', ro: 'Mix (toate topicurile)' },
-      badge: { en: `${quizQuestions.length} questions`, ro: `${quizQuestions.length} întrebări` },
+      badge: { en: `${examBank.length} questions`, ro: `${examBank.length} întrebări` },
       icon: Sparkles,
     });
 
-    // Domain options
-    (Object.keys(DOMAIN_WEIGHTS) as ExamDomain[]).forEach((d) => {
+    // Domain options — only the active exam's domains
+    examCfg.domains.forEach(({ domain: d, weight }) => {
       const count = getQuestionsByDomain(d).length;
-      const weight = Math.round(DOMAIN_WEIGHTS[d] * 100);
+      const pct = Math.round(weight * 100);
       out.push({
         id: d,
-        label: DOMAIN_LABELS[d],
-        badge: { en: `${count} q · ${weight}% of exam`, ro: `${count} întrebări · ${weight}% examen` },
+        label: DOMAIN_LABELS[d] as { en: string; ro: string },
+        badge: { en: `${count} q · ${pct}% of exam`, ro: `${count} întrebări · ${pct}% examen` },
         icon: DOMAIN_ICONS[d],
       });
     });
 
-    // Top categories (only those with >= 3 questions)
+    // Top categories (only those with >= 3 questions in the active exam's bank)
     const catCounts = new Map<string, number>();
-    for (const q of quizQuestions) {
+    for (const q of examBank) {
       for (const c of q.categories) catCounts.set(c, (catCounts.get(c) ?? 0) + 1);
     }
     for (const cat of categories) {
@@ -207,7 +218,7 @@ export function QuizLauncher({ language, onClose, onLaunch }: QuizLauncherProps)
       }
     }
     return out;
-  }, [bookmarkedCount, mistakeCount]);
+  }, [bookmarkedCount, mistakeCount, examBank, examCfg]);
 
   function launch() {
     onLaunch({
@@ -248,8 +259,8 @@ export function QuizLauncher({ language, onClose, onLaunch }: QuizLauncherProps)
             </h2>
             <p className="mt-1 text-xs text-text-tertiary">
               {language === 'ro'
-                ? 'Banca are 145 de întrebări — combinații mereu diferite.'
-                : `${quizQuestions.length} questions in the bank — combinations always different.`}
+                ? `Banca ${examCfg.code} are ${examBank.length} întrebări — combinații mereu diferite.`
+                : `${examBank.length} ${examCfg.code} questions in the bank — combinations always different.`}
             </p>
           </div>
           <button

@@ -1,12 +1,14 @@
 'use client';
 
 import { Map, Clock, ArrowRight, Lock } from 'lucide-react';
-import type { LearningPath, Language } from '@/types';
+import type { ExamId, LearningPath, Language } from '@/types';
 import { learningPaths } from '@/data/learning-paths';
+import { isOnExam } from '@/data/exams';
 import { useProgressStore } from '@/store/progress';
 
 interface LearningPathsSectionProps {
   language: Language;
+  exam: ExamId;
   onPathClick: (path: LearningPath) => void;
 }
 
@@ -21,8 +23,9 @@ const DIFFICULTY_LABELS: Record<LearningPath['difficulty'], { en: string; ro: st
   advanced: { en: 'Advanced', ro: 'Avansat', color: 'var(--danger)' },
 };
 
-export function LearningPathsSection({ language, onPathClick }: LearningPathsSectionProps) {
+export function LearningPathsSection({ language, exam, onPathClick }: LearningPathsSectionProps) {
   const serviceProgress = useProgressStore((s) => s.progress.serviceProgress);
+  const visiblePaths = learningPaths.filter((p) => isOnExam(p, exam));
 
   // Compute progress per path (% of service steps mastered)
   function pathProgress(path: LearningPath): { done: number; total: number } {
@@ -53,12 +56,12 @@ export function LearningPathsSection({ language, onPathClick }: LearningPathsSec
           </p>
         </div>
         <span className="hidden font-mono text-2xs uppercase tracking-wider text-text-tertiary sm:block">
-          {learningPaths.length} {language === 'ro' ? 'trasee' : 'paths'}
+          {visiblePaths.length} {language === 'ro' ? 'trasee' : 'paths'}
         </span>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {learningPaths.map((path) => {
+        {visiblePaths.map((path) => {
           const prog = pathProgress(path);
           const pct = prog.total > 0 ? Math.round((prog.done / prog.total) * 100) : 0;
           const diff = DIFFICULTY_LABELS[path.difficulty];

@@ -311,6 +311,7 @@ export const analyticsServices: Service[] = [
     fullName: 'Amazon Bedrock',
     category: 'analytics',
     level: 'clf',
+    exams: ['clf'], // out of scope / not in SAA-C03 appendix
     difficulty: 2,
     examFrequency: 'medium',
     description: { en: 'Managed access to generative AI models (Claude, Titan, Llama, Stable Diffusion).', ro: 'Acces managed la modele AI generative (Claude, Titan, Llama, Stable Diffusion).' },
@@ -332,6 +333,7 @@ export const analyticsServices: Service[] = [
     fullName: 'Amazon Personalize',
     category: 'analytics',
     level: 'clf',
+    exams: ['clf'], // out of scope / not in SAA-C03 appendix
     difficulty: 2,
     examFrequency: 'low',
     description: { en: 'Real-time personalization and recommendations using ML.', ro: 'Personalizare și recomandări real-time cu ML.' },

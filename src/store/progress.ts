@@ -1,9 +1,16 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Service, UserProgress } from '@/types';
+import { ExamId, Service, UserProgress } from '@/types';
 
 interface ProgressState {
   progress: UserProgress;
+  /**
+   * Which certification the user is currently studying (drives all filtering).
+   * Per-service progress stays SHARED across exams on purpose: knowing S3 for
+   * CLF is knowing S3 for SAA.
+   */
+  activeExam: ExamId;
+  setActiveExam: (exam: ExamId) => void;
   markServiceLearned: (serviceId: string) => void;
   updateServiceConfidence: (serviceId: string, level: number) => void;
   recordQuizAttempt: (serviceId: string, correct: boolean) => void;
@@ -51,6 +58,9 @@ export const useProgressStore = create<ProgressState>()(
   persist(
     (set, get) => ({
       progress: initialProgress,
+
+      activeExam: 'clf',
+      setActiveExam: (exam: ExamId) => set({ activeExam: exam }),
 
       markServiceLearned: (serviceId: string) => {
         set((state) => ({
@@ -189,7 +199,7 @@ export const useProgressStore = create<ProgressState>()(
     }),
     {
       name: 'aws-learning-progress',
-      version: 4,
+      version: 5,
       migrate: (persistedState, fromVersion) => {
         let state = (persistedState ?? {}) as Partial<ProgressState>;
         if (fromVersion < 2) {
@@ -200,6 +210,9 @@ export const useProgressStore = create<ProgressState>()(
         }
         if (fromVersion < 4) {
           state = { ...state, bookmarkedQuestions: [], wrongAnswerCounts: {} };
+        }
+        if (fromVersion < 5) {
+          state = { ...state, activeExam: 'clf' };
         }
         return state as ProgressState;
       },

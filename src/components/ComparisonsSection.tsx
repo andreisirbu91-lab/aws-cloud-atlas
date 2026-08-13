@@ -1,12 +1,14 @@
 'use client';
 
 import { GitCompare, ArrowRight, Flame } from 'lucide-react';
-import type { Comparison, Language } from '@/types';
+import type { Comparison, ExamId, Language } from '@/types';
 import { comparisons } from '@/data/comparisons';
+import { isOnExam } from '@/data/exams';
 import { getServiceById } from '@/data/services';
 
 interface ComparisonsSectionProps {
   language: Language;
+  exam: ExamId;
   onComparisonClick: (c: Comparison) => void;
 }
 
@@ -15,7 +17,8 @@ function t(rec: Record<string, string> | undefined, lang: Language): string {
   return rec[lang] ?? rec.en ?? Object.values(rec)[0] ?? '';
 }
 
-export function ComparisonsSection({ language, onComparisonClick }: ComparisonsSectionProps) {
+export function ComparisonsSection({ language, exam, onComparisonClick }: ComparisonsSectionProps) {
+  const visible = comparisons.filter((c) => isOnExam(c, exam));
   return (
     <section id="comparisons" className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
       <div className="mb-6 flex items-end justify-between">
@@ -31,12 +34,12 @@ export function ComparisonsSection({ language, onComparisonClick }: ComparisonsS
           </p>
         </div>
         <span className="hidden font-mono text-2xs uppercase tracking-wider text-text-tertiary sm:block">
-          {comparisons.length} {language === 'ro' ? 'tabele' : 'tables'}
+          {visible.length} {language === 'ro' ? 'tabele' : 'tables'}
         </span>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {comparisons.map((c) => (
+        {visible.map((c) => (
           <ComparisonCard
             key={c.id}
             comparison={c}

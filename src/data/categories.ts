@@ -11,7 +11,7 @@ export const categories: Category[] = [
     color: 'hsl(217, 91%, 60%)',
     services: [
       'ec2', 'lambda', 'ecs', 'eks', 'fargate', 'beanstalk', 'lightsail',
-      'batch', 'apprunner', 'ecr', 'outposts',
+      'batch', 'apprunner', 'ecr', 'outposts', 'autoscaling',
     ],
   },
   {
@@ -44,7 +44,7 @@ export const categories: Category[] = [
     color: 'hsl(190, 90%, 50%)',
     services: [
       'vpc', 'cloudfront', 'route53', 'apigateway', 'elb', 'directconnect',
-      'globalaccelerator', 'privatelink',
+      'globalaccelerator', 'privatelink', 'transitgateway', 'natgateway',
     ],
   },
   {

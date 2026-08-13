@@ -239,6 +239,7 @@ export const billingServices: Service[] = [
     fullName: 'AWS Pricing Calculator',
     category: 'billing',
     level: 'clf',
+    exams: ['clf'], // out of scope / not in SAA-C03 appendix
     difficulty: 1,
     examFrequency: 'medium',
     description: { en: 'Estimate costs before deploying — plan budgets for your architecture.', ro: 'Estimezi costuri înainte de deploy — planificare buget pentru arhitectură.' },
@@ -258,6 +259,7 @@ export const billingServices: Service[] = [
     fullName: 'AWS Support Plans',
     category: 'billing',
     level: 'clf',
+    exams: ['clf'], // out of scope / not in SAA-C03 appendix
     difficulty: 1,
     examFrequency: 'high',
     description: { en: 'Tiers of AWS technical support — from docs to dedicated 24/7 engineer.', ro: 'Niveluri de suport tehnic AWS — de la docs la inginer dedicat 24/7.' },
@@ -280,6 +282,7 @@ export const billingServices: Service[] = [
     fullName: 'AWS Marketplace',
     category: 'billing',
     level: 'clf',
+    exams: ['clf'], // out of scope / not in SAA-C03 appendix
     difficulty: 1,
     examFrequency: 'medium',
     description: { en: 'Curated digital catalog with thousands of software products from independent vendors.', ro: 'Catalog digital cu mii de produse software de la vendori independenți.' },
@@ -301,6 +304,7 @@ export const enduserServices: Service[] = [
     fullName: 'Amazon WorkSpaces',
     category: 'enduser',
     level: 'clf',
+    exams: ['clf'], // out of scope / not in SAA-C03 appendix
     difficulty: 1,
     examFrequency: 'medium',
     description: { en: 'Managed cloud desktops (DaaS) — Windows or Linux desktops accessed remotely.', ro: 'Desktop-uri cloud managed (DaaS) — desktops Windows sau Linux accesate remote.' },
@@ -320,6 +324,7 @@ export const enduserServices: Service[] = [
     fullName: 'Amazon AppStream 2.0',
     category: 'enduser',
     level: 'clf',
+    exams: ['clf'], // out of scope / not in SAA-C03 appendix
     difficulty: 1,
     examFrequency: 'low',
     description: { en: 'Stream desktop applications to any device — like Citrix on AWS.', ro: 'Streaming aplicații desktop pe orice dispozitiv — ca Citrix pe AWS.' },
@@ -356,6 +361,7 @@ export const enduserServices: Service[] = [
     fullName: 'AWS IoT Core',
     category: 'enduser',
     level: 'clf',
+    exams: ['clf'], // out of scope / not in SAA-C03 appendix
     difficulty: 2,
     examFrequency: 'low',
     description: { en: 'Connect IoT devices to AWS — secure communication, message routing, device management.', ro: 'Conectezi dispozitive IoT la AWS — comunicare securizată, routing mesaje, management.' },
@@ -375,6 +381,7 @@ export const enduserServices: Service[] = [
     fullName: 'Amazon Connect',
     category: 'enduser',
     level: 'clf',
+    exams: ['clf'], // out of scope / not in SAA-C03 appendix
     difficulty: 1,
     examFrequency: 'low',
     description: { en: 'Cloud-based contact center — receive calls, route to agents, integrate with CRM.', ro: 'Contact center cloud — primești apeluri, rutezi la agenți, integrare CRM.' },

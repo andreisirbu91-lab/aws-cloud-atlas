@@ -2,13 +2,16 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { X, Check, ChevronRight, RefreshCw, Trophy, Target, Lightbulb, Clock, Bookmark, ExternalLink } from 'lucide-react';
-import type { QuizQuestion, Language, Service } from '@/types';
+import type { ExamId, QuizQuestion, Language, Service } from '@/types';
 import { buildQuiz, buildWeightedExam, type QuizScope } from '@/data/quiz-questions';
+import { EXAMS, DOMAIN_LABELS } from '@/data/exams';
 import { getServiceById } from '@/data/services';
 import { useProgressStore } from '@/store/progress';
 
 interface QuizModalV2Props {
   language: Language;
+  /** Exam whose bank, weighting, and pass threshold apply. Defaults to CLF. */
+  exam?: ExamId;
   onClose: () => void;
   onServiceClick: (s: Service) => void;
   /** Pool to draw from. Defaults to 'all'. */
@@ -42,6 +45,7 @@ function fmtTime(sec: number): string {
 
 export function QuizModalV2({
   language,
+  exam = 'clf',
   onClose,
   onServiceClick,
   scope = 'all',
@@ -69,13 +73,13 @@ export function QuizModalV2({
     if (presetQuestions && presetQuestions.length > 0) {
       return presetQuestions;
     }
-    // Practice Exam: domain-weighted pool
+    // Practice Exam: domain-weighted pool for the active exam
     if (examMode && questionCount >= 50) {
-      return buildWeightedExam(questionCount);
+      return buildWeightedExam(exam, questionCount);
     }
     // Legacy filterCategoryIds support
     if (filterCategoryIds && filterCategoryIds.length > 0) {
-      return buildQuiz(questionCount, `category:${filterCategoryIds[0]}` as QuizScope, recentlySeen);
+      return buildQuiz(questionCount, `category:${filterCategoryIds[0]}` as QuizScope, recentlySeen, undefined, exam);
     }
     // Bookmarks / mistakes scopes need an id filter from the store
     if (scope === 'bookmarks') {
@@ -84,7 +88,7 @@ export function QuizModalV2({
     if (scope === 'mistakes') {
       return buildQuiz(questionCount, scope, recentlySeen, Object.keys(wrongCounts));
     }
-    return buildQuiz(questionCount, scope, recentlySeen);
+    return buildQuiz(questionCount, scope, recentlySeen, undefined, exam);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -210,8 +214,9 @@ export function QuizModalV2({
 
   // ============ DONE SCREEN ============
   if (done) {
+    const passPct = EXAMS[exam].passPct;
     const pct = Math.round((correctCount / questions.length) * 100);
-    const passed = pct >= 70;
+    const passed = pct >= passPct;
     return (
       <Shell onClose={onClose}>
         <div className="px-6 py-8 text-center">
@@ -226,7 +231,7 @@ export function QuizModalV2({
             <span className="font-mono font-semibold text-text-primary">
               {correctCount}/{questions.length}
             </span>{' '}
-            ({pct}%) · {passed ? 'pass-level' : 'below 70% pass-level'}
+            ({pct}%) · {passed ? 'pass-level' : `below ${passPct}% pass-level`}
           </p>
 
           <div className="mt-6 grid grid-cols-3 gap-3">
@@ -287,7 +292,9 @@ export function QuizModalV2({
               Q {idx + 1} / {questions.length}
             </span>
             <span className="hidden rounded bg-muted px-1.5 py-0.5 font-mono text-2xs text-text-secondary sm:inline">
-              {q.examDomain ?? q.categories[0]}
+              {q.examDomain
+                ? DOMAIN_LABELS[q.examDomain][language] ?? DOMAIN_LABELS[q.examDomain].en
+                : q.categories[0]}
             </span>
           </div>
           <div className="flex shrink-0 items-center gap-3">

@@ -1,4 +1,5 @@
-import type { QuizQuestion, ExamDomain } from '@/types';
+import type { QuizQuestion, ExamDomain, ExamId } from '@/types';
+import { EXAMS, DOMAIN_EXAM } from './exams';
 import { cloudConceptsQuestions } from './questions/cloud-concepts';
 import { securityQuestions } from './questions/security';
 import { techServicesQuestions } from './questions/tech-services';
@@ -12,6 +13,10 @@ import { practiceSecurityQuestions } from './questions/practice-security';
 import { practiceTechQuestions } from './questions/practice-tech';
 import { practiceBillingQuestions } from './questions/practice-billing';
 import { practiceExtraQuestions } from './questions/practice-extra';
+import { saaDesignSecureQuestions } from './questions/saa-design-secure';
+import { saaDesignResilientQuestions } from './questions/saa-design-resilient';
+import { saaDesignPerformantQuestions } from './questions/saa-design-performant';
+import { saaDesignCostQuestions } from './questions/saa-design-cost';
 
 /**
  * AWS Certified Cloud Practitioner (CLF-C02) practice questions.
@@ -752,10 +757,11 @@ function inferDomain(q: QuizQuestion): ExamDomain {
 }
 
 /**
- * The full quiz bank: 30 legacy + ~67 domain-tagged questions = ~97 total.
- * Every question gets a guaranteed `examDomain` (inferred for legacy ones).
+ * CLF-C02 bank. `inferDomain` runs ONLY here — its category→domain heuristic
+ * (with the 'tech-services' fallback) is CLF-specific and must never touch
+ * SAA questions, which are required to carry an explicit `examDomain`.
  */
-export const quizQuestions: QuizQuestion[] = [
+const clfQuestions: QuizQuestion[] = [
   ...legacyQuestions,
   ...cloudConceptsQuestions,
   ...securityQuestions,
@@ -772,16 +778,21 @@ export const quizQuestions: QuizQuestion[] = [
   ...practiceExtraQuestions,
 ].map((q) => ({ ...q, examDomain: inferDomain(q) }));
 
-/**
- * Official CLF-C02 domain weights (percentages of the 65-question exam).
- * Used to build a properly-weighted Practice Exam.
- */
-export const DOMAIN_WEIGHTS: Record<ExamDomain, number> = {
-  'cloud-concepts': 0.24,
-  security: 0.30,
-  'tech-services': 0.34,
-  'billing-support': 0.12,
-};
+/** SAA-C03 bank — every question has an explicit SAA `examDomain` (typed as required). */
+const saaQuestions: QuizQuestion[] = [
+  ...saaDesignSecureQuestions,
+  ...saaDesignResilientQuestions,
+  ...saaDesignPerformantQuestions,
+  ...saaDesignCostQuestions,
+];
+
+/** The full question bank across both exams. */
+export const quizQuestions: QuizQuestion[] = [...clfQuestions, ...saaQuestions];
+
+/** Questions belonging to one exam (derived from each domain's owning exam). */
+export function getQuestionsForExam(exam: ExamId): QuizQuestion[] {
+  return quizQuestions.filter((q) => q.examDomain && DOMAIN_EXAM[q.examDomain] === exam);
+}
 
 export function getQuestionsByCategory(categoryIds: string[]): QuizQuestion[] {
   return quizQuestions.filter((q) => q.categories.some((c) => categoryIds.includes(c)));
@@ -797,19 +808,45 @@ export function getRandomQuestions(count: number): QuizQuestion[] {
 }
 
 /**
- * Build a domain-weighted random sample (e.g., for the 65-question Practice Exam).
- * Picks ceil(weight * total) per domain, shuffles the union, trims to `total`.
+ * Build a domain-weighted random sample for one exam's Practice Exam.
+ * Exact allocation via largest remainder (floor + distribute leftovers by
+ * fractional part) — the previous ceil-then-trim approach overshot and then
+ * randomly skewed whichever domain got cut. Domains with too few questions
+ * spill their unmet quota to the exam's other domains.
  */
-export function buildWeightedExam(total = 65): QuizQuestion[] {
+export function buildWeightedExam(exam: ExamId, total?: number): QuizQuestion[] {
+  const cfg = EXAMS[exam];
+  const size = total ?? cfg.examQuestionCount;
+
+  // 1. Exact per-domain targets (sum = size)
+  const raw = cfg.domains.map(({ domain, weight }) => ({
+    domain,
+    exact: weight * size,
+    take: Math.floor(weight * size),
+  }));
+  let remainder = size - raw.reduce((s, r) => s + r.take, 0);
+  [...raw]
+    .sort((a, b) => (b.exact - b.take) - (a.exact - a.take))
+    .slice(0, remainder)
+    .forEach((r) => { r.take += 1; });
+
+  // 2. Draw per domain; track shortfall when a pool is too small
   const out: QuizQuestion[] = [];
-  (Object.keys(DOMAIN_WEIGHTS) as ExamDomain[]).forEach((d) => {
-    const target = Math.ceil(DOMAIN_WEIGHTS[d] * total);
-    const pool = getQuestionsByDomain(d);
-    const shuffled = [...pool].sort(() => Math.random() - 0.5);
-    out.push(...shuffled.slice(0, Math.min(target, shuffled.length)));
-  });
+  const leftovers: QuizQuestion[] = [];
+  for (const r of raw) {
+    const shuffled = [...getQuestionsByDomain(r.domain)].sort(() => Math.random() - 0.5);
+    out.push(...shuffled.slice(0, Math.min(r.take, shuffled.length)));
+    leftovers.push(...shuffled.slice(r.take));
+  }
+
+  // 3. Fill any shortfall from the same exam's remaining questions
+  if (out.length < size && leftovers.length > 0) {
+    const fill = leftovers.sort(() => Math.random() - 0.5).slice(0, size - out.length);
+    out.push(...fill);
+  }
+
   // Final shuffle so domains don't appear in clusters
-  return out.sort(() => Math.random() - 0.5).slice(0, total);
+  return out.sort(() => Math.random() - 0.5).slice(0, size);
 }
 
 /**
@@ -838,17 +875,20 @@ export function buildQuiz(
   recentlySeen: string[] = [],
   /** Required when scope is 'bookmarks' or 'mistakes': list of qualifying question IDs. */
   idFilter?: string[],
+  /** Restricts 'all' / 'category:*' scopes to one exam's bank. Domain scopes imply their exam. */
+  exam?: ExamId,
 ): QuizQuestion[] {
+  const bank = exam ? getQuestionsForExam(exam) : quizQuestions;
   // 1. filter by scope
   let pool: QuizQuestion[];
   if (scope === 'all') {
-    pool = quizQuestions;
+    pool = bank;
   } else if (scope === 'bookmarks' || scope === 'mistakes') {
     const allowed = new Set(idFilter ?? []);
     pool = quizQuestions.filter((q) => allowed.has(q.id));
   } else if (scope.startsWith('category:')) {
     const cat = scope.slice('category:'.length);
-    pool = quizQuestions.filter((q) => q.categories.includes(cat));
+    pool = bank.filter((q) => q.categories.includes(cat));
   } else {
     pool = getQuestionsByDomain(scope as ExamDomain);
   }
@@ -870,7 +910,7 @@ export function buildQuiz(
  * For the home Daily Challenge: deterministic-ish random based on date,
  * so all visits today see the same 5 questions. Different each day.
  */
-export function getDailyChallengeQuestions(date: string, count = 5): QuizQuestion[] {
+export function getDailyChallengeQuestions(date: string, count = 5, exam: ExamId = 'clf'): QuizQuestion[] {
   // Cheap hash of the date string → seed
   let seed = 0;
   for (let i = 0; i < date.length; i++) seed = (seed * 31 + date.charCodeAt(i)) >>> 0;
@@ -882,7 +922,7 @@ export function getDailyChallengeQuestions(date: string, count = 5): QuizQuestio
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
-  const pool = [...quizQuestions];
+  const pool = getQuestionsForExam(exam);
   // Fisher-Yates with seeded rand
   for (let i = pool.length - 1; i > 0; i--) {
     const j = Math.floor(rand() * (i + 1));

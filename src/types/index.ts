@@ -1,12 +1,25 @@
 /**
- * CLF-C02 official exam domains with their published weights.
+ * Which certification exam a piece of content belongs to.
+ * 'clf' = CLF-C02 Cloud Practitioner, 'saa' = SAA-C03 Solutions Architect Associate.
+ */
+export type ExamId = 'clf' | 'saa';
+
+/**
+ * Official exam domains with their published weights.
+ * Each domain belongs to exactly ONE exam (see src/data/exams.ts for the mapping).
  * Used to weight question pools and report per-domain scores.
  */
 export type ExamDomain =
+  // ── CLF-C02 ──
   | 'cloud-concepts'      // 24%
   | 'security'            // 30%
   | 'tech-services'       // 34%
-  | 'billing-support';    // 12%
+  | 'billing-support'     // 12%
+  // ── SAA-C03 ──
+  | 'design-secure'       // 30% Design Secure Architectures
+  | 'design-resilient'    // 26% Design Resilient Architectures
+  | 'design-performant'   // 24% Design High-Performing Architectures
+  | 'design-cost';        // 20% Design Cost-Optimized Architectures
 
 /** Where a piece of content was sourced from (for transparency). */
 export type ContentSource =
@@ -22,6 +35,13 @@ export interface Service {
   fullName: string;
   category: string;
   level: 'clf' | 'saa' | 'sap';
+  /**
+   * Which exams this service appears on. ABSENT = visible on BOTH exams
+   * (most CLF services are also SAA-relevant). Tag CLF-only services
+   * (e.g. Lightsail — explicitly out-of-scope on SAA-C03) with `['clf']`,
+   * and SAA-only services with `['saa']`.
+   */
+  exams?: ExamId[];
   /** 1=easy, 2=medium, 3=hard. Maps to importance in CLF-C02 exam. */
   difficulty: 1 | 2 | 3;
   /** How frequently this service appears in exam questions. */
@@ -139,6 +159,8 @@ export interface Concept {
   docsUrl?: string;
   /** Importance for the exam — drives sort order in concept list. */
   examFrequency: 'high' | 'medium' | 'low';
+  /** Exams this concept is shown for. ABSENT = both exams. */
+  exams?: ExamId[];
 }
 
 export interface QuizQuestion {
@@ -265,6 +287,8 @@ export interface Comparison {
   /** Memorable rule-of-thumb shown at bottom of the table. */
   rulesOfThumb?: Array<Record<string, string>>;
   examFrequency: 'high' | 'medium' | 'low';
+  /** Exams this comparison is shown for. ABSENT = both exams. */
+  exams?: ExamId[];
 }
 
 /**
@@ -289,4 +313,6 @@ export interface LearningPath {
   }>;
   /** Prerequisite path IDs (e.g., must complete "Foundations" before "Storage Deep Dive"). */
   prerequisites?: string[];
+  /** Exams this path is shown for. ABSENT = both exams. */
+  exams?: ExamId[];
 }

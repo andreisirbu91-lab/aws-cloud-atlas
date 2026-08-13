@@ -1,11 +1,13 @@
 'use client';
 
-import type { Concept, Language } from '@/types';
+import type { Concept, ExamId, Language } from '@/types';
 import { concepts, TOPIC_LABELS } from '@/data/concepts';
+import { isOnExam } from '@/data/exams';
 import { BookOpen, Star } from 'lucide-react';
 
 interface ConceptsSectionProps {
   language: Language;
+  exam: ExamId;
   onConceptClick: (c: Concept) => void;
 }
 
@@ -15,9 +17,10 @@ const FREQ_DOTS: Record<Concept['examFrequency'], number> = {
   low: 1,
 };
 
-export function ConceptsSection({ language, onConceptClick }: ConceptsSectionProps) {
+export function ConceptsSection({ language, exam, onConceptClick }: ConceptsSectionProps) {
+  const visible = concepts.filter((c) => isOnExam(c, exam));
   // Group by topic, preserving order from data file
-  const grouped = concepts.reduce<Record<string, Concept[]>>((acc, c) => {
+  const grouped = visible.reduce<Record<string, Concept[]>>((acc, c) => {
     (acc[c.topic] ??= []).push(c);
     return acc;
   }, {});
@@ -34,7 +37,7 @@ export function ConceptsSection({ language, onConceptClick }: ConceptsSectionPro
             Core Concepts
           </h2>
           <span className="font-mono text-2xs text-text-tertiary">
-            {concepts.length} topics
+            {visible.length} topics
           </span>
         </div>
         <span className="text-xs text-text-tertiary">

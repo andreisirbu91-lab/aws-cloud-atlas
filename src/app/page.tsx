@@ -2,11 +2,12 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { Flame, Trophy, Target, BookOpen, Sparkles, Brain } from 'lucide-react';
-import type { Service, Concept, Language, Comparison, QuizQuestion, LearningPath } from '@/types';
-import { services } from '@/data/services';
+import type { Service, Concept, Language, Comparison, QuizQuestion, LearningPath, ExamId } from '@/types';
+import { getServicesForExam } from '@/data/services';
 import { categories } from '@/data/categories';
 import { concepts } from '@/data/concepts';
-import { quizQuestions } from '@/data/quiz-questions';
+import { getQuestionsForExam } from '@/data/quiz-questions';
+import { EXAMS, EXAM_IDS, isOnExam } from '@/data/exams';
 import { useProgressStore } from '@/store/progress';
 import { CategorySection } from '@/components/CategorySection';
 import { ConceptsSection } from '@/components/ConceptsSection';
@@ -23,6 +24,7 @@ import { QuizModalV2 } from '@/components/QuizModalV2';
 import { QuizLauncher, type QuizLaunchConfig } from '@/components/QuizLauncher';
 import { GlobalSearch } from '@/components/GlobalSearch';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { ArchitectureScenariosSection } from '@/components/ArchitectureScenariosSection';
 
 const LANGUAGES: { code: Language; label: string }[] = [
   { code: 'en', label: 'EN' },
@@ -42,8 +44,11 @@ export default function Home() {
   const [dailyQuiz, setDailyQuiz] = useState<{ date: string; questions: QuizQuestion[]; sessionId: number } | null>(null);
   const [language, setLanguage] = useState<Language>('en');
 
-  const { progress, getTotalLearned, getStreak } = useProgressStore();
+  const { progress, getStreak } = useProgressStore();
   const recordDailyChallenge = useProgressStore((s) => s.recordDailyChallenge);
+  const activeExam = useProgressStore((s) => s.activeExam);
+  const setActiveExam = useProgressStore((s) => s.setActiveExam);
+  const examCfg = EXAMS[activeExam];
 
   const handleServiceSelect = useCallback((s: Service) => {
     setSelectedConcept(null);
@@ -54,22 +59,30 @@ export default function Home() {
     setSelectedConcept(c);
   }, []);
 
+  // Everything below is scoped to the exam the user is currently studying.
+  const examServices = useMemo(() => getServicesForExam(activeExam), [activeExam]);
+  const examConcepts = useMemo(() => concepts.filter((c) => isOnExam(c, activeExam)), [activeExam]);
+  const examQuestions = useMemo(() => getQuestionsForExam(activeExam), [activeExam]);
+
   // Group services by category (no client-side search filter — search has its own dropdown)
   const grouped = useMemo(
     () =>
       categories
         .map((cat) => ({
           category: cat,
-          items: services.filter((s) => s.category === cat.id),
+          items: examServices.filter((s) => s.category === cat.id),
         }))
         .filter((g) => g.items.length > 0),
-    [],
+    [examServices],
   );
 
+  // Progress is shared per service, but the header stats count only the active exam's services.
+  const examServiceIds = useMemo(() => new Set(examServices.map((s) => s.id)), [examServices]);
   const stats = {
-    total: services.length,
-    learned: getTotalLearned(),
-    mastered: Object.values(progress.serviceProgress).filter((p) => p.status === 'mastered').length,
+    total: examServices.length,
+    mastered: Object.entries(progress.serviceProgress).filter(
+      ([id, p]) => p.status === 'mastered' && examServiceIds.has(id),
+    ).length,
     streak: getStreak(),
     xp: progress.totalXp,
   };
@@ -90,9 +103,28 @@ export default function Home() {
               <span className="text-sm font-bold tracking-tight text-text-primary">
                 Cloud Atlas
               </span>
-              <span className="font-mono text-2xs text-text-tertiary">CLF-C02</span>
+              <span className="font-mono text-2xs text-text-tertiary">{examCfg.code}</span>
             </div>
           </a>
+
+          {/* Exam switcher */}
+          <div className="flex shrink-0 items-center rounded-lg border border-border bg-surface-elevated p-0.5">
+            {EXAM_IDS.map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setActiveExam(id)}
+                title={EXAMS[id].title[language] ?? EXAMS[id].title.en}
+                className={`rounded-md px-2.5 py-1 font-mono text-2xs font-semibold transition-colors ${
+                  activeExam === id
+                    ? 'bg-accent text-accent-foreground shadow-xs'
+                    : 'text-text-tertiary hover:text-text-primary'
+                }`}
+              >
+                {EXAMS[id].code}
+              </button>
+            ))}
+          </div>
 
           {/* Universal search */}
           <GlobalSearch
@@ -162,10 +194,10 @@ export default function Home() {
       <section className="border-b border-border bg-surface">
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14">
           <p className="font-mono text-2xs uppercase tracking-[0.2em] text-accent">
-            CLF-C02 · {services.length} services · {concepts.length} concepts · {quizQuestions.length} practice questions
+            {examCfg.code} · {examServices.length} services · {examConcepts.length} concepts · {examQuestions.length} practice questions
           </p>
           <h1 className="mt-3 max-w-3xl text-3xl font-bold tracking-tight text-text-primary text-balance sm:text-4xl">
-            Master AWS Cloud Practitioner —{' '}
+            {examCfg.heroTitle[language] ?? examCfg.heroTitle.en} —{' '}
             <span className="text-text-secondary">one service at a time.</span>
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-relaxed text-text-secondary text-pretty">
@@ -181,7 +213,7 @@ export default function Home() {
               className="inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-foreground shadow-sm hover:opacity-90"
             >
               <Sparkles className="h-4 w-4" />
-              Start a quiz · {quizQuestions.length} questions
+              Start a quiz · {examQuestions.length} questions
             </button>
             <button
               type="button"
@@ -214,6 +246,7 @@ export default function Home() {
       <div className="mx-auto max-w-7xl space-y-12 px-4 py-10 sm:px-6 sm:py-14">
         <DailyChallenge
           language={language}
+          exam={activeExam}
           onLaunch={(qs, date) =>
             setDailyQuiz({ date, questions: qs, sessionId: Date.now() })
           }
@@ -221,15 +254,19 @@ export default function Home() {
 
         <LearningPathsSection
           language={language}
+          exam={activeExam}
           onPathClick={setSelectedPath}
         />
 
+        <ArchitectureScenariosSection language={language} />
+
         <div id="concepts">
-          <ConceptsSection language={language} onConceptClick={handleConceptSelect} />
+          <ConceptsSection language={language} exam={activeExam} onConceptClick={handleConceptSelect} />
         </div>
 
         <ComparisonsSection
           language={language}
+          exam={activeExam}
           onComparisonClick={setSelectedComparison}
         />
 
@@ -247,9 +284,9 @@ export default function Home() {
       {/* ===== Footer ===== */}
       <footer className="border-t border-border bg-surface">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-2 px-4 py-6 text-xs text-text-tertiary sm:flex-row sm:items-center sm:px-6">
-          <p>Built for the AWS CLF-C02 exam · Sources: AWS docs, Stephane Maarek course</p>
+          <p>Built for the AWS {examCfg.code} exam · Sources: AWS docs, Stephane Maarek course</p>
           <p className="font-mono">
-            v0.2 · {services.length} services · {concepts.length} concepts · {quizQuestions.length} questions
+            v0.3 · {examServices.length} services · {examConcepts.length} concepts · {examQuestions.length} questions
           </p>
         </div>
       </footer>
@@ -318,6 +355,7 @@ export default function Home() {
       {launcherOpen && (
         <QuizLauncher
           language={language}
+          exam={activeExam}
           onClose={() => setLauncherOpen(false)}
           onLaunch={(cfg) => {
             setLauncherOpen(false);
@@ -330,6 +368,7 @@ export default function Home() {
         <QuizModalV2
           key={activeQuiz.sessionId}
           language={language}
+          exam={activeExam}
           onClose={() => setActiveQuiz(null)}
           onServiceClick={handleServiceSelect}
           scope={activeQuiz.scope}
@@ -343,6 +382,7 @@ export default function Home() {
         <QuizModalV2
           key={`daily-${dailyQuiz.sessionId}`}
           language={language}
+          exam={activeExam}
           onClose={() => setDailyQuiz(null)}
           onServiceClick={handleServiceSelect}
           presetQuestions={dailyQuiz.questions}

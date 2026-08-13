@@ -2,12 +2,14 @@
 
 import { useMemo } from 'react';
 import { Calendar, Sparkles, Trophy, Check, ArrowRight, Flame } from 'lucide-react';
-import type { Language, QuizQuestion } from '@/types';
+import type { ExamId, Language, QuizQuestion } from '@/types';
 import { getDailyChallengeQuestions } from '@/data/quiz-questions';
 import { useProgressStore } from '@/store/progress';
 
 interface DailyChallengeProps {
   language: Language;
+  /** Exam whose bank feeds today's set. */
+  exam: ExamId;
   onLaunch: (questions: QuizQuestion[], dateStr: string) => void;
 }
 
@@ -29,9 +31,9 @@ function formatDateHuman(dateStr: string, lang: Language): string {
   });
 }
 
-export function DailyChallenge({ language, onLaunch }: DailyChallengeProps) {
+export function DailyChallenge({ language, exam, onLaunch }: DailyChallengeProps) {
   const today = useMemo(() => todayLocalIsoDate(), []);
-  const questions = useMemo(() => getDailyChallengeQuestions(today, 5), [today]);
+  const questions = useMemo(() => getDailyChallengeQuestions(today, 5, exam), [today, exam]);
   const dailyChallenge = useProgressStore((s) => s.dailyChallenge);
 
   const completed = dailyChallenge?.date === today;

@@ -314,6 +314,7 @@ const cloudFundamentals: Concept[] = [
     ],
     docsUrl: 'https://aws.amazon.com/what-is-cloud-computing/',
     examFrequency: 'high',
+    exams: ['clf'],
   },
   {
     id: 'cloud-types',
@@ -346,6 +347,7 @@ const cloudFundamentals: Concept[] = [
     ],
     relatedConcepts: ['cloud-advantages', 'shared-responsibility'],
     examFrequency: 'medium',
+    exams: ['clf'],
   },
 ];
 
@@ -393,6 +395,7 @@ const pricing: Concept[] = [
     relatedServices: ['costexplorer', 'budgets', 'calculator'],
     docsUrl: 'https://aws.amazon.com/pricing/',
     examFrequency: 'high',
+    exams: ['clf'],
   },
   {
     id: 'support-plans',
@@ -430,6 +433,7 @@ const pricing: Concept[] = [
     relatedServices: ['supportplans', 'trustedadvisor'],
     docsUrl: 'https://aws.amazon.com/premiumsupport/plans/',
     examFrequency: 'high',
+    exams: ['clf'],
   },
 ];
 
@@ -535,6 +539,7 @@ const caf: Concept[] = [
     relatedServices: ['migrationhub', 'dms', 'applicationmigrationservice'],
     docsUrl: 'https://aws.amazon.com/professional-services/CAF/',
     examFrequency: 'medium',
+    exams: ['clf'],
   },
 ];
 

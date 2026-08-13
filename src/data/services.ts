@@ -6,6 +6,7 @@ import { managementServices } from './services-management';
 import { integrationServices } from './services-integration';
 import { analyticsServices } from './services-analytics';
 import { migrationServices, billingServices, enduserServices } from './services-rest';
+import { saaServices } from './services-saa';
 
 /**
  * AWS Certified Cloud Practitioner (CLF-C02) services.
@@ -457,6 +458,7 @@ const computeServices: Service[] = [
     fullName: 'Amazon Lightsail',
     category: 'compute',
     level: 'clf',
+    exams: ['clf'], // out of scope / not in SAA-C03 appendix
     difficulty: 1,
     examFrequency: 'low',
     description: {
@@ -1031,7 +1033,13 @@ export const services: Service[] = [
   ...migrationServices,
   ...billingServices,
   ...enduserServices,
+  ...saaServices,
 ];
+
+/** Services visible on the given exam (no `exams` field = visible on both). */
+export function getServicesForExam(exam: 'clf' | 'saa'): Service[] {
+  return services.filter((s) => !s.exams || s.exams.includes(exam));
+}
 
 export function getServiceById(id: string): Service | undefined {
   return services.find((s) => s.id === id);
