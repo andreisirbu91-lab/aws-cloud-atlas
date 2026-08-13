@@ -268,7 +268,7 @@ export const databaseServices: Service[] = [
     category: 'database',
     level: 'clf',
     difficulty: 2,
-    examFrequency: 'medium',
+    examFrequency: 'high',
     description: {
       en: 'Managed in-memory cache — Redis or Memcached for sub-ms data access.',
       ro: 'Cache in-memory managed — Redis sau Memcached pentru acces date sub-ms.',
@@ -286,6 +286,47 @@ export const databaseServices: Service[] = [
     connections: ['rds', 'dynamodb', 'vpc', 'cloudwatch'],
     docsUrl: 'https://docs.aws.amazon.com/elasticache/',
     visual: { color: 'hsl(280, 75%, 60%)', icon: 'zap' },
+    examDomains: ['design-performant', 'design-cost'],
+    howItWorks: [
+      { en: 'Your app checks the cache FIRST: a hit returns data in sub-milliseconds without touching the database.', ro: 'Aplicația verifică ÎNTÂI cache-ul: un hit returnează datele în sub-milisecunde fără să atingă baza de date.' },
+      { en: 'On a miss, the app reads from RDS/DynamoDB and writes the result into the cache (lazy loading).', ro: 'La un miss, aplicația citește din RDS/DynamoDB și scrie rezultatul în cache (lazy loading).' },
+      { en: 'Alternatively, every DB write also updates the cache (write-through) — no stale data, more writes.', ro: 'Alternativ, fiecare scriere în DB actualizează și cache-ul (write-through) — fără date stale, mai multe scrieri.' },
+      { en: 'Storing sessions in the cache (with TTL) makes the web tier stateless, so instances can scale freely.', ro: 'Stocarea sesiunilor în cache (cu TTL) face web tier-ul stateless, deci instanțele pot scala liber.' },
+    ],
+    keyFacts: [
+      { en: 'Managed in-memory cache: Redis or Memcached, sub-millisecond reads, offloads read-heavy databases.', ro: 'Cache in-memory managed: Redis sau Memcached, citiri sub-milisecundă, degrevează bazele de date cu multe citiri.' },
+      { en: 'Redis = the feature-rich choice: Multi-AZ auto-failover, read replicas, AOF persistence, backup/restore, sorted sets.', ro: 'Redis = alegerea bogată în funcții: Multi-AZ auto-failover, read replicas, persistență AOF, backup/restore, sorted sets.' },
+      { en: 'Memcached = the simple choice: multi-threaded, shards data across nodes, NO replication/persistence/failover.', ro: 'Memcached = alegerea simplă: multi-threaded, împarte datele pe noduri (sharding), FĂRĂ replicare/persistență/failover.' },
+      { en: 'Using it requires HEAVY application code changes — the cache is not transparent (unlike DAX for DynamoDB).', ro: 'Folosirea lui cere modificări SERIOASE de cod în aplicație — cache-ul nu e transparent (spre deosebire de DAX pentru DynamoDB).' },
+      { en: 'Caching patterns: lazy loading (stale possible), write-through (fresh, write cost), session store with TTL.', ro: 'Pattern-uri de caching: lazy loading (posibil stale), write-through (proaspăt, cost la scriere), session store cu TTL.' },
+    ],
+    keyNumbers: [
+      { label: { en: 'Read latency', ro: 'Latență la citire' }, value: { en: 'sub-millisecond', ro: 'sub-milisecundă' } },
+      { label: { en: 'Redis read replicas', ro: 'Read replicas Redis' }, value: { en: 'up to 5 per shard', ro: 'până la 5 per shard' } },
+      { label: { en: 'Engines', ro: 'Engine-uri' }, value: { en: '2 — Redis · Memcached', ro: '2 — Redis · Memcached' } },
+    ],
+    whenToUse: [
+      { en: 'Read-heavy workloads overwhelming RDS — cache hot queries and relieve the database.', ro: 'Workload-uri cu multe citiri care sufocă RDS — pui în cache query-urile fierbinți și degrevezi baza.' },
+      { en: 'Session store so the web/app tier becomes stateless and can autoscale.', ro: 'Session store ca web/app tier-ul să devină stateless și să poată autoscala.' },
+      { en: 'Gaming leaderboards / real-time rankings → Redis sorted sets keep order automatically.', ro: 'Leaderboard-uri de gaming / clasamente real-time → Redis sorted sets păstrează ordinea automat.' },
+    ],
+    whenNotToUse: [
+      { en: 'You need transparent caching for DynamoDB with zero code changes → DAX.', ro: 'Ai nevoie de caching transparent pentru DynamoDB fără modificări de cod → DAX.' },
+      { en: 'As the durable primary datastore — it is a cache; the source of truth stays in RDS/DynamoDB.', ro: 'Ca datastore primar durabil — e un cache; sursa de adevăr rămâne în RDS/DynamoDB.' },
+      { en: 'You cannot modify the application — ElastiCache always requires app-level integration.', ro: 'Nu poți modifica aplicația — ElastiCache cere mereu integrare la nivel de aplicație.' },
+    ],
+    examTraps: [
+      { en: 'THE exam split — Redis: HA (Multi-AZ auto-failover), replicas, persistence (AOF), backup/restore, sorted sets. Memcached: multi-threaded, sharding, none of the rest.', ro: 'Diferența DE examen — Redis: HA (Multi-AZ auto-failover), replici, persistență (AOF), backup/restore, sorted sets. Memcached: multi-threaded, sharding, nimic din rest.' },
+      { en: '"Leaderboard" in the question = Redis sorted sets. Automatic, unique, ordered.', ro: '„Leaderboard” în întrebare = Redis sorted sets. Automat, unic, ordonat.' },
+      { en: 'DynamoDB + "microsecond latency, no code changes" = DAX, NOT ElastiCache.', ro: 'DynamoDB + „latență de microsecunde, fără modificări de cod” = DAX, NU ElastiCache.' },
+      { en: 'Security: IAM authentication and Redis AUTH exist for Redis; Memcached uses SASL. IAM policies alone only cover the AWS API, not the data plane.', ro: 'Securitate: autentificarea IAM și Redis AUTH există pentru Redis; Memcached folosește SASL. Politicile IAM singure acoperă doar API-ul AWS, nu data plane-ul.' },
+      { en: 'Lazy loading can serve stale data; write-through cannot — but it adds latency to every write. Know which trade-off the scenario asks for.', ro: 'Lazy loading poate servi date stale; write-through nu — dar adaugă latență la fiecare scriere. Recunoaște ce compromis cere scenariul.' },
+    ],
+    retrievalQuestions: [
+      { q: { en: 'Which ElastiCache engine gives you Multi-AZ auto-failover, persistence and backups?', ro: 'Ce engine ElastiCache îți dă Multi-AZ auto-failover, persistență și backup-uri?' }, a: { en: 'Redis. Memcached has no replication, persistence or failover — it is a simple multi-threaded, sharded cache.', ro: 'Redis. Memcached nu are replicare, persistență sau failover — e un cache simplu multi-threaded, cu sharding.' } },
+      { q: { en: 'A gaming company needs a real-time leaderboard. Which feature answers this?', ro: 'O companie de gaming are nevoie de un leaderboard real-time. Ce funcționalitate răspunde la asta?' }, a: { en: 'Redis sorted sets — they guarantee uniqueness and keep elements ordered as they are inserted.', ro: 'Redis sorted sets — garantează unicitatea și păstrează elementele ordonate pe măsură ce sunt inserate.' } },
+      { q: { en: 'Lazy loading vs write-through — which can serve stale data and why?', ro: 'Lazy loading vs write-through — care poate servi date stale și de ce?' }, a: { en: 'Lazy loading: data enters the cache only on a miss, so cached copies can be outdated until they expire. Write-through updates the cache on every DB write, so it stays fresh.', ro: 'Lazy loading: datele intră în cache doar la miss, deci copiile pot fi învechite până expiră. Write-through actualizează cache-ul la fiecare scriere în DB, deci rămâne proaspăt.' } },
+    ],
   },
   {
     id: 'redshift',

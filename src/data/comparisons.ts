@@ -547,6 +547,281 @@ export const comparisons: Comparison[] = [
       },
     ],
   },
+  // ========================================================================
+  // ======================= SAA-C03 COMPARISONS ============================
+  // All entries below are tagged exams: ['saa'] — shown only on the SAA exam.
+  // ========================================================================
+
+  // ------------------------------------------------------------------------
+  // SAA 1. ALB vs NLB vs GWLB (Domain 3 performance + Domain 4 cost)
+  // ------------------------------------------------------------------------
+  {
+    id: 'saa-alb-nlb-gwlb',
+    title: { en: 'ALB vs NLB vs GWLB', ro: 'ALB vs NLB vs GWLB' },
+    tagline: {
+      en: 'Layer 7 smart routing · Layer 4 extreme performance · Layer 3 security-appliance fleet',
+      ro: 'Routing inteligent Layer 7 · Performanță extremă Layer 4 · Flotă de appliance-uri Layer 3',
+    },
+    serviceIds: ['alb', 'nlb', 'gwlb'],
+    columnLabels: {
+      alb: { en: 'ALB', ro: 'ALB' },
+      nlb: { en: 'NLB', ro: 'NLB' },
+      gwlb: { en: 'GWLB', ro: 'GWLB' },
+    },
+    examFrequency: 'high',
+    exams: ['saa'],
+    rows: [
+      {
+        feature: { en: 'OSI layer / protocols', ro: 'Nivel OSI / protocoale' },
+        cells: {
+          alb: { value: { en: 'Layer 7 — HTTP, HTTPS, WebSocket, gRPC', ro: 'Layer 7 — HTTP, HTTPS, WebSocket, gRPC' } },
+          nlb: { value: { en: 'Layer 4 — TCP, UDP, TLS', ro: 'Layer 4 — TCP, UDP, TLS' } },
+          gwlb: { value: { en: 'Layer 3 — IP packets (GENEVE, port 6081)', ro: 'Layer 3 — pachete IP (GENEVE, port 6081)' } },
+        },
+      },
+      {
+        feature: { en: 'Smart routing', ro: 'Routing inteligent' },
+        cells: {
+          alb: { value: { en: 'Path, host, header, query-string → target groups', ro: 'Path, host, header, query-string → target groups' }, hint: 'pass' },
+          nlb: { value: { en: 'None — forwards by listener port', ro: 'Nu — trimite după portul listener-ului' }, hint: 'fail' },
+          gwlb: { value: { en: 'None — transparent pass-through to appliances', ro: 'Nu — pass-through transparent către appliance-uri' }, hint: 'na' },
+        },
+      },
+      {
+        feature: { en: 'Performance', ro: 'Performanță' },
+        cells: {
+          alb: { value: { en: 'Good (adds a few ms of latency)', ro: 'Bună (adaugă câteva ms de latență)' } },
+          nlb: { value: { en: 'Millions of req/s, ultra-low latency', ro: 'Milioane de req/s, latență ultra-mică' }, hint: 'pass' },
+          gwlb: { value: { en: 'Depends on the appliance fleet behind it', ro: 'Depinde de flota de appliance-uri din spate' } },
+        },
+      },
+      {
+        feature: { en: 'Static IP', ro: 'IP static' },
+        cells: {
+          alb: { value: { en: 'No — fixed DNS name only', ro: 'Nu — doar nume DNS fix' }, hint: 'fail' },
+          nlb: { value: { en: 'One static IP per AZ + Elastic IP support', ro: 'Un IP static per AZ + suport Elastic IP' }, hint: 'pass' },
+          gwlb: { value: { en: 'N/A — reached via route-table entry', ro: 'N/A — accesat printr-o intrare în route table' }, hint: 'na' },
+        },
+      },
+      {
+        feature: { en: 'Targets', ro: 'Target-uri' },
+        cells: {
+          alb: { value: { en: 'EC2, ECS tasks, Lambda, private IPs', ro: 'EC2, task-uri ECS, Lambda, IP-uri private' } },
+          nlb: { value: { en: 'EC2, private IPs, ALB', ro: 'EC2, IP-uri private, ALB' } },
+          gwlb: { value: { en: 'Security appliances (EC2, private IPs)', ro: 'Appliance-uri de securitate (EC2, IP-uri private)' } },
+        },
+      },
+      {
+        feature: { en: 'Client IP seen by backend', ro: 'IP-ul clientului văzut de backend' },
+        cells: {
+          alb: { value: { en: 'Via X-Forwarded-For header', ro: 'Prin header-ul X-Forwarded-For' }, hint: 'partial' },
+          nlb: { value: { en: 'Preserved natively', ro: 'Păstrat nativ' }, hint: 'pass' },
+          gwlb: { value: { en: 'Unchanged — traffic inspected inline', ro: 'Neschimbat — traficul e inspectat inline' }, hint: 'pass' },
+        },
+      },
+      {
+        feature: { en: 'Cross-zone load balancing', ro: 'Cross-zone load balancing' },
+        cells: {
+          alb: { value: { en: 'ON by default, inter-AZ traffic free', ro: 'Activ implicit, trafic inter-AZ gratuit' }, hint: 'pass' },
+          nlb: { value: { en: 'OFF by default, inter-AZ traffic billed', ro: 'Oprit implicit, trafic inter-AZ plătit' }, hint: 'partial' },
+          gwlb: { value: { en: 'OFF by default, inter-AZ traffic billed', ro: 'Oprit implicit, trafic inter-AZ plătit' }, hint: 'partial' },
+        },
+      },
+      {
+        feature: { en: 'Typical exam scenario', ro: 'Scenariu tipic de examen' },
+        cells: {
+          alb: { value: { en: 'Microservices, containers, HTTP routing rules', ro: 'Microservicii, containere, reguli de routing HTTP' } },
+          nlb: { value: { en: 'Whitelisted fixed IPs, extreme perf, UDP/gaming', ro: 'IP-uri fixe pe whitelist, performanță extremă, UDP/gaming' } },
+          gwlb: { value: { en: '3rd-party firewall / IDS / IPS fleet', ro: 'Flotă de firewall / IDS / IPS third-party' } },
+        },
+      },
+    ],
+    rulesOfThumb: [
+      {
+        en: '**Decision rule:** HTTP + smart routing = **ALB** · static IP / millions of req/s / UDP = **NLB** · third-party security appliances / GENEVE 6081 = **GWLB**.',
+        ro: '**Regulă de decizie:** HTTP + routing inteligent = **ALB** · IP static / milioane req/s / UDP = **NLB** · appliance-uri de securitate third-party / GENEVE 6081 = **GWLB**.',
+      },
+      {
+        en: 'Need BOTH a static IP AND Layer-7 routing? Put an **NLB in front of an ALB** — an ALB is a valid NLB target.',
+        ro: 'Ai nevoie ȘI de IP static ȘI de routing Layer 7? Pune un **NLB în fața unui ALB** — ALB e un target valid pentru NLB.',
+      },
+      {
+        en: 'The word **GENEVE** (port 6081) in a question = GWLB, always.',
+        ro: 'Cuvântul **GENEVE** (port 6081) într-o întrebare = GWLB, întotdeauna.',
+      },
+    ],
+  },
+
+  // ------------------------------------------------------------------------
+  // SAA 2. Disaster Recovery strategies (Domain 2 — resilient, 26%)
+  // ------------------------------------------------------------------------
+  {
+    id: 'saa-dr-strategies',
+    title: { en: 'DR: Backup & Restore vs Pilot Light vs Warm Standby vs Multi-Site', ro: 'DR: Backup & Restore vs Pilot Light vs Warm Standby vs Multi-Site' },
+    tagline: {
+      en: 'The 4 disaster-recovery strategies, ordered by RTO/RPO and cost.',
+      ro: 'Cele 4 strategii de disaster recovery, ordonate după RTO/RPO și cost.',
+    },
+    serviceIds: ['backuprestore', 'pilotlight', 'warmstandby', 'multisite'],
+    columnLabels: {
+      backuprestore: { en: 'Backup & Restore', ro: 'Backup & Restore' },
+      pilotlight: { en: 'Pilot Light', ro: 'Pilot Light' },
+      warmstandby: { en: 'Warm Standby', ro: 'Warm Standby' },
+      multisite: { en: 'Multi-Site Active-Active', ro: 'Multi-Site Activ-Activ' },
+    },
+    examFrequency: 'high',
+    exams: ['saa'],
+    rows: [
+      {
+        feature: { en: 'RPO (data loss)', ro: 'RPO (pierdere de date)' },
+        cells: {
+          backuprestore: { value: { en: 'Hours — back to the last backup', ro: 'Ore — până la ultimul backup' }, hint: 'fail' },
+          pilotlight: { value: { en: 'Minutes — data replicated continuously', ro: 'Minute — datele se replică continuu' }, hint: 'partial' },
+          warmstandby: { value: { en: 'Seconds–minutes', ro: 'Secunde–minute' }, hint: 'pass' },
+          multisite: { value: { en: 'Near zero', ro: 'Aproape zero' }, hint: 'pass' },
+        },
+      },
+      {
+        feature: { en: 'RTO (downtime)', ro: 'RTO (downtime)' },
+        cells: {
+          backuprestore: { value: { en: 'Hours — restore + provision everything', ro: 'Ore — restore + provizionezi totul' }, hint: 'fail' },
+          pilotlight: { value: { en: 'Tens of minutes — start & scale servers', ro: 'Zeci de minute — pornești și scalezi serverele' }, hint: 'partial' },
+          warmstandby: { value: { en: 'Minutes — scale up a running stack', ro: 'Minute — scalezi un stack deja pornit' }, hint: 'pass' },
+          multisite: { value: { en: 'Near zero — traffic shifts instantly', ro: 'Aproape zero — traficul comută instant' }, hint: 'pass' },
+        },
+      },
+      {
+        feature: { en: 'What runs in the DR Region', ro: 'Ce rulează în regiunea de DR' },
+        cells: {
+          backuprestore: { value: { en: 'Nothing — only backups are stored', ro: 'Nimic — doar backup-urile sunt stocate' } },
+          pilotlight: { value: { en: 'Core only: data layer replicated, app servers OFF', ro: 'Doar nucleul: stratul de date replicat, serverele de aplicație OPRITE' } },
+          warmstandby: { value: { en: 'Full stack ON at minimum size', ro: 'Tot stack-ul PORNIT la dimensiune minimă' } },
+          multisite: { value: { en: 'Full production scale, actively serving traffic', ro: 'Scară de producție completă, servește trafic activ' } },
+        },
+      },
+      {
+        feature: { en: 'Cost', ro: 'Cost' },
+        cells: {
+          backuprestore: { value: { en: '$ (cheapest)', ro: '$ (cel mai ieftin)' }, hint: 'pass' },
+          pilotlight: { value: { en: '$$', ro: '$$' }, hint: 'partial' },
+          warmstandby: { value: { en: '$$$', ro: '$$$' }, hint: 'partial' },
+          multisite: { value: { en: '$$$$ (most expensive)', ro: '$$$$ (cel mai scump)' }, hint: 'fail' },
+        },
+      },
+      {
+        feature: { en: 'Failover actions', ro: 'Acțiuni la failover' },
+        cells: {
+          backuprestore: { value: { en: 'Restore backups, recreate infra (CloudFormation)', ro: 'Restore din backup, recreezi infrastructura (CloudFormation)' } },
+          pilotlight: { value: { en: 'Start app servers, scale out, point DNS', ro: 'Pornești serverele de aplicație, scalezi, comuți DNS-ul' } },
+          warmstandby: { value: { en: 'Scale ASG to production size, point DNS', ro: 'Scalezi ASG la dimensiune de producție, comuți DNS-ul' } },
+          multisite: { value: { en: 'None — Route 53 already routes to both sites', ro: 'Nimic — Route 53 rutează deja către ambele site-uri' } },
+        },
+      },
+      {
+        feature: { en: 'Typical AWS services', ro: 'Servicii AWS tipice' },
+        cells: {
+          backuprestore: { value: { en: 'AWS Backup, EBS/RDS snapshots, S3 CRR, Glacier', ro: 'AWS Backup, snapshot-uri EBS/RDS, S3 CRR, Glacier' } },
+          pilotlight: { value: { en: 'RDS cross-Region replica, AMIs, Route 53', ro: 'Replică RDS cross-Region, AMI-uri, Route 53' } },
+          warmstandby: { value: { en: 'ASG at min capacity, ELB, RDS standby, Route 53', ro: 'ASG la capacitate minimă, ELB, RDS standby, Route 53' } },
+          multisite: { value: { en: 'Aurora Global DB, DynamoDB Global Tables, Route 53', ro: 'Aurora Global DB, DynamoDB Global Tables, Route 53' } },
+        },
+      },
+    ],
+    rulesOfThumb: [
+      {
+        en: '**Order by RTO (slow→fast) = order by cost (cheap→expensive):** Backup & Restore → Pilot Light → Warm Standby → Multi-Site active-active.',
+        ro: '**Ordinea după RTO (lent→rapid) = ordinea după cost (ieftin→scump):** Backup & Restore → Pilot Light → Warm Standby → Multi-Site activ-activ.',
+      },
+      {
+        en: 'Pilot Light vs Warm Standby — the exam separates them by ONE question: are the app servers RUNNING? Pilot Light = data replicated, servers OFF. Warm Standby = everything ON but small.',
+        ro: 'Pilot Light vs Warm Standby — examenul le separă printr-O întrebare: rulează serverele de aplicație? Pilot Light = date replicate, servere OPRITE. Warm Standby = totul PORNIT dar mic.',
+      },
+      {
+        en: 'AWS Elastic Disaster Recovery (DRS) = continuous block-level replication of physical/virtual servers into AWS, failover in minutes — the managed way to implement Pilot Light for on-prem servers.',
+        ro: 'AWS Elastic Disaster Recovery (DRS) = replicare continuă la nivel de bloc a serverelor fizice/virtuale în AWS, failover în minute — varianta managed de Pilot Light pentru servere on-prem.',
+      },
+    ],
+  },
+
+  // ------------------------------------------------------------------------
+  // SAA 3. Gateway endpoint vs Interface endpoint (Domain 1 secure + Domain 4 cost)
+  // ------------------------------------------------------------------------
+  {
+    id: 'saa-vpc-endpoints',
+    title: { en: 'Gateway Endpoint vs Interface Endpoint', ro: 'Gateway Endpoint vs Interface Endpoint' },
+    tagline: {
+      en: 'Two ways to reach AWS services privately from a VPC — one free, one flexible.',
+      ro: 'Două moduri de a accesa serviciile AWS privat din VPC — unul gratuit, unul flexibil.',
+    },
+    serviceIds: ['gatewayendpoint', 'interfaceendpoint'],
+    columnLabels: {
+      gatewayendpoint: { en: 'Gateway Endpoint', ro: 'Gateway Endpoint' },
+      interfaceendpoint: { en: 'Interface Endpoint (PrivateLink)', ro: 'Interface Endpoint (PrivateLink)' },
+    },
+    examFrequency: 'high',
+    exams: ['saa'],
+    rows: [
+      {
+        feature: { en: 'Supported services', ro: 'Servicii suportate' },
+        cells: {
+          gatewayendpoint: { value: { en: 'S3 and DynamoDB ONLY', ro: 'DOAR S3 și DynamoDB' }, hint: 'partial' },
+          interfaceendpoint: { value: { en: 'Most AWS services (incl. S3), partner services', ro: 'Majoritatea serviciilor AWS (incl. S3), servicii partenere' }, hint: 'pass' },
+        },
+      },
+      {
+        feature: { en: 'How it works', ro: 'Cum funcționează' },
+        cells: {
+          gatewayendpoint: { value: { en: 'Route-table entry (prefix list) — no ENI', ro: 'Intrare în route table (prefix list) — fără ENI' } },
+          interfaceendpoint: { value: { en: 'ENI with a private IP inside your subnet', ro: 'ENI cu IP privat în subnetul tău' } },
+        },
+      },
+      {
+        feature: { en: 'Cost', ro: 'Cost' },
+        cells: {
+          gatewayendpoint: { value: { en: 'FREE', ro: 'GRATUIT' }, hint: 'pass' },
+          interfaceendpoint: { value: { en: '~$0.01/hour per AZ + per-GB processed', ro: '~$0.01/oră per AZ + per GB procesat' }, hint: 'partial' },
+        },
+      },
+      {
+        feature: { en: 'Access from on-premises (VPN/DX)', ro: 'Acces de pe on-premises (VPN/DX)' },
+        cells: {
+          gatewayendpoint: { value: { en: 'No', ro: 'Nu' }, hint: 'fail' },
+          interfaceendpoint: { value: { en: 'Yes', ro: 'Da' }, hint: 'pass' },
+        },
+      },
+      {
+        feature: { en: 'Access from peered VPC / other Region', ro: 'Acces din VPC peered / altă regiune' },
+        cells: {
+          gatewayendpoint: { value: { en: 'No — only from its own VPC', ro: 'Nu — doar din propriul VPC' }, hint: 'fail' },
+          interfaceendpoint: { value: { en: 'Yes', ro: 'Da' }, hint: 'pass' },
+        },
+      },
+      {
+        feature: { en: 'Security controls', ro: 'Controale de securitate' },
+        cells: {
+          gatewayendpoint: { value: { en: 'Endpoint policy', ro: 'Endpoint policy' } },
+          interfaceendpoint: { value: { en: 'Endpoint policy + security groups on the ENI', ro: 'Endpoint policy + security groups pe ENI' } },
+        },
+      },
+      {
+        feature: { en: 'DNS', ro: 'DNS' },
+        cells: {
+          gatewayendpoint: { value: { en: 'None — works at the routing level', ro: 'Nu are — funcționează la nivel de routing' }, hint: 'na' },
+          interfaceendpoint: { value: { en: 'Private DNS names for the service', ro: 'Nume DNS private pentru serviciu' }, hint: 'pass' },
+        },
+      },
+    ],
+    rulesOfThumb: [
+      {
+        en: '**Default exam answer for S3 / DynamoDB from inside the VPC = Gateway endpoint — it is FREE.** Pick an Interface endpoint for S3 only when access comes from on-premises, a peered VPC, or another Region.',
+        ro: '**Răspunsul implicit de examen pentru S3 / DynamoDB din interiorul VPC-ului = Gateway endpoint — e GRATUIT.** Alege Interface endpoint pentru S3 doar când accesul vine de pe on-premises, dintr-un VPC peered sau din altă regiune.',
+      },
+      {
+        en: 'Interface endpoint = PrivateLink = an ENI in your subnet. Gateway endpoint = a route-table target, not a network card.',
+        ro: 'Interface endpoint = PrivateLink = un ENI în subnetul tău. Gateway endpoint = un target în route table, nu o placă de rețea.',
+      },
+    ],
+  },
 ];
 
 export function getComparisonById(id: string): Comparison | undefined {

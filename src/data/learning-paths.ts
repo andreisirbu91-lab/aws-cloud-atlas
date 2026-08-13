@@ -179,6 +179,132 @@ export const learningPaths: LearningPath[] = [
       { kind: 'service', refId: 'marketplace' },
     ],
   },
+  // ========================================================================
+  // ======================= SAA-C03 LEARNING PATHS =========================
+  // All entries below are tagged exams: ['saa'] — shown only on the SAA exam.
+  // ========================================================================
+
+  // ------------------------------------------------------------------------
+  // SAA 1. Resilient Architectures (Domain 2 — 26%)
+  // ------------------------------------------------------------------------
+  {
+    id: 'saa-resilient-architectures',
+    title: { en: 'SAA: Resilient Architectures', ro: 'SAA: Arhitecturi Reziliente' },
+    tagline: {
+      en: 'HA, scaling, decoupling and the 4 DR strategies — Domain 2 (26% of the exam).',
+      ro: 'HA, scaling, decuplare și cele 4 strategii DR — Domeniul 2 (26% din examen).',
+    },
+    estimatedMinutes: 90,
+    difficulty: 'advanced',
+    exams: ['saa'],
+    prerequisites: ['foundations'],
+    steps: [
+      { kind: 'service', refId: 'autoscaling',
+        note: { en: 'Launch templates, scaling policies (target tracking / step / scheduled / predictive), cooldowns.', ro: 'Launch templates, politici de scaling (target tracking / step / scheduled / predictive), cooldowns.' } },
+      { kind: 'service', refId: 'elb',
+        note: { en: 'Health checks, sticky sessions, cross-zone balancing, connection draining.', ro: 'Health checks, sticky sessions, cross-zone balancing, connection draining.' } },
+      { kind: 'comparison', refId: 'saa-alb-nlb-gwlb',
+        note: { en: 'ALB vs NLB vs GWLB — a guaranteed exam decision.', ro: 'ALB vs NLB vs GWLB — decizie garantată la examen.' } },
+      { kind: 'service', refId: 'route53',
+        note: { en: 'Failover routing + health checks are the DNS half of every DR answer.', ro: 'Failover routing + health checks sunt jumătatea DNS a oricărui răspuns DR.' } },
+      { kind: 'service', refId: 'rds',
+        note: { en: 'Multi-AZ (HA, sync) vs read replicas (scaling, async). Never confuse them.', ro: 'Multi-AZ (HA, sincron) vs read replicas (scaling, asincron). Nu le confunda.' } },
+      { kind: 'service', refId: 'aurora',
+        note: { en: 'Global Database: RPO 1s, RTO < 1 min — the active-active building block.', ro: 'Global Database: RPO 1s, RTO < 1 min — piesa pentru activ-activ.' } },
+      { kind: 'service', refId: 'rdsproxy',
+        note: { en: 'Absorbs Lambda connection storms; reduces failover time by up to 66%.', ro: 'Absoarbe furtunile de conexiuni Lambda; reduce timpul de failover cu până la 66%.' } },
+      { kind: 'service', refId: 'sqs',
+        note: { en: 'Decoupling = resilience. Visibility timeout + DLQ + idempotency.', ro: 'Decuplarea = reziliență. Visibility timeout + DLQ + idempotență.' } },
+      { kind: 'service', refId: 'dynamodb',
+        note: { en: 'Global Tables (require Streams) = multi-Region active-active NoSQL.', ro: 'Global Tables (cer Streams) = NoSQL multi-regiune activ-activ.' } },
+      { kind: 'comparison', refId: 'saa-dr-strategies',
+        note: { en: 'The 4 DR strategies ranked by RTO/RPO/cost. Memorize the order.', ro: 'Cele 4 strategii DR ordonate după RTO/RPO/cost. Memorează ordinea.' } },
+      { kind: 'service', refId: 'awsbackup',
+        note: { en: 'Centralized backup + Vault Lock (WORM — even root cannot delete).', ro: 'Backup centralizat + Vault Lock (WORM — nici root nu poate șterge).' } },
+      { kind: 'service', refId: 'dms',
+        note: { en: 'Database migrations with CDC; source DB stays online.', ro: 'Migrări de baze de date cu CDC; sursa rămâne online.' } },
+    ],
+  },
+
+  // ------------------------------------------------------------------------
+  // SAA 2. Networking Deep Dive (Domains 1, 3, 4)
+  // ------------------------------------------------------------------------
+  {
+    id: 'saa-networking-deep-dive',
+    title: { en: 'SAA: Networking Deep Dive', ro: 'SAA: Networking în Profunzime' },
+    tagline: {
+      en: 'Private connectivity, hybrid links and edge — where Domains 1, 3 and 4 overlap.',
+      ro: 'Conectivitate privată, legături hibride și edge — unde se suprapun Domeniile 1, 3 și 4.',
+    },
+    estimatedMinutes: 75,
+    difficulty: 'advanced',
+    exams: ['saa'],
+    prerequisites: ['networking-essentials'],
+    steps: [
+      { kind: 'service', refId: 'vpc',
+        note: { en: 'Subnet/route/CIDR design is assumed knowledge for every SAA scenario.', ro: 'Designul de subnet/route/CIDR e cunoștință presupusă în orice scenariu SAA.' } },
+      { kind: 'service', refId: 'natgateway',
+        note: { en: 'Per-AZ placement vs shared — a recurring cost-optimization question.', ro: 'Plasare per-AZ vs partajat — întrebare recurentă de optimizare a costurilor.' } },
+      { kind: 'service', refId: 'transitgateway',
+        note: { en: 'Hub-and-spoke for many VPCs; replaces meshes of peering connections.', ro: 'Hub-and-spoke pentru multe VPC-uri; înlocuiește mesh-urile de peering.' } },
+      { kind: 'service', refId: 'privatelink',
+        note: { en: 'Expose a service to thousands of consumer VPCs without peering.', ro: 'Expui un serviciu către mii de VPC-uri consumatoare fără peering.' } },
+      { kind: 'comparison', refId: 'saa-vpc-endpoints',
+        note: { en: 'Gateway (free, S3/DynamoDB) vs Interface (ENI, PrivateLink). Cost trap!', ro: 'Gateway (gratuit, S3/DynamoDB) vs Interface (ENI, PrivateLink). Capcană de cost!' } },
+      { kind: 'service', refId: 'directconnect',
+        note: { en: 'Dedicated link, weeks to provision; Site-to-Site VPN as its backup.', ro: 'Legătură dedicată, săptămâni de provizionare; Site-to-Site VPN ca backup.' } },
+      { kind: 'service', refId: 'globalaccelerator',
+        note: { en: '2 static anycast IPs, TCP/UDP — vs CloudFront (caching, HTTP).', ro: '2 IP-uri statice anycast, TCP/UDP — vs CloudFront (caching, HTTP).' } },
+      { kind: 'service', refId: 'cloudfront',
+        note: { en: 'OAC to lock S3 origins; signed URLs/cookies for private content.', ro: 'OAC pentru a securiza originile S3; signed URLs/cookies pentru conținut privat.' } },
+      { kind: 'service', refId: 'networkfirewall',
+        note: { en: 'Stateful VPC-level inspection — beyond SG/NACL.', ro: 'Inspecție stateful la nivel de VPC — dincolo de SG/NACL.' } },
+      { kind: 'service', refId: 'waf',
+        note: { en: 'L7 rules (SQLi, XSS, rate limiting) on ALB / API GW / CloudFront.', ro: 'Reguli L7 (SQLi, XSS, rate limiting) pe ALB / API GW / CloudFront.' } },
+    ],
+  },
+
+  // ------------------------------------------------------------------------
+  // SAA 3. Storage & Data (Domain 3 — storage, ingestion, caching)
+  // ------------------------------------------------------------------------
+  {
+    id: 'saa-storage-data',
+    title: { en: 'SAA: Storage & Data', ro: 'SAA: Storage & Date' },
+    tagline: {
+      en: 'Pick the right storage, move data in, cache it fast — the heart of Domain 3.',
+      ro: 'Alegi storage-ul corect, aduci datele, le servești rapid din cache — inima Domeniului 3.',
+    },
+    estimatedMinutes: 90,
+    difficulty: 'advanced',
+    exams: ['saa'],
+    prerequisites: ['storage-deep-dive'],
+    steps: [
+      { kind: 'service', refId: 's3',
+        note: { en: 'Storage classes + min durations, per-prefix performance, replication.', ro: 'Clase de storage + durate minime, performanță per prefix, replicare.' } },
+      { kind: 'service', refId: 'ebs',
+        note: { en: 'gp3 vs io2 vs st1/sc1 — match IOPS/throughput caps to the workload.', ro: 'gp3 vs io2 vs st1/sc1 — potrivește limitele IOPS/throughput cu workload-ul.' } },
+      { kind: 'service', refId: 'efs',
+        note: { en: 'Performance modes (GP vs Max I/O) + throughput modes (Bursting / Provisioned / Elastic).', ro: 'Moduri de performanță (GP vs Max I/O) + moduri de throughput (Bursting / Provisioned / Elastic).' } },
+      { kind: 'service', refId: 'fsx',
+        note: { en: '4 flavors: Windows (SMB/AD), Lustre (HPC + S3), ONTAP, OpenZFS.', ro: '4 variante: Windows (SMB/AD), Lustre (HPC + S3), ONTAP, OpenZFS.' } },
+      { kind: 'comparison', refId: 'storage-ebs-efs-s3',
+        note: { en: 'Refresher — block vs file vs object, now with SAA eyes.', ro: 'Recapitulare — block vs file vs object, acum cu ochi de SAA.' } },
+      { kind: 'service', refId: 'storagegateway',
+        note: { en: 'File vs Volume (cached/stored) vs Tape — the hybrid-storage question.', ro: 'File vs Volume (cached/stored) vs Tape — întrebarea de storage hibrid.' } },
+      { kind: 'service', refId: 'datasync',
+        note: { en: 'Scheduled online sync (NFS/SMB/HDFS → S3/EFS/FSx), preserves metadata.', ro: 'Sincronizare online programată (NFS/SMB/HDFS → S3/EFS/FSx), păstrează metadatele.' } },
+      { kind: 'service', refId: 'transferfamily',
+        note: { en: 'Managed SFTP/FTPS/FTP/AS2 in front of S3 or EFS.', ro: 'SFTP/FTPS/FTP/AS2 managed în fața S3 sau EFS.' } },
+      { kind: 'service', refId: 'snow',
+        note: { en: 'Offline migration: > 1 week over the network → ship a Snowball Edge.', ro: 'Migrare offline: > 1 săptămână pe rețea → trimiți un Snowball Edge.' } },
+      { kind: 'service', refId: 'elasticache',
+        note: { en: 'Redis vs Memcached feature split + lazy loading vs write-through.', ro: 'Diferențele Redis vs Memcached + lazy loading vs write-through.' } },
+      { kind: 'service', refId: 'kinesis',
+        note: { en: 'Real-time streams: shards, capacity modes, replay.', ro: 'Stream-uri real-time: shard-uri, moduri de capacitate, replay.' } },
+      { kind: 'service', refId: 'firehose',
+        note: { en: 'Near-real-time delivery to S3/Redshift/OpenSearch — zero admin, vs Kinesis.', ro: 'Livrare near-real-time către S3/Redshift/OpenSearch — zero administrare, vs Kinesis.' } },
+    ],
+  },
 ];
 
 /** Find a learning path by id. */
