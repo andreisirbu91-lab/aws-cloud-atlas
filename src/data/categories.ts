@@ -97,6 +97,7 @@ export const categories: Category[] = [
       'athena', 'quicksight', 'kinesis', 'glue', 'emr', 'sagemaker', 'rekognition',
       'comprehend', 'lex', 'polly', 'translate', 'transcribe', 'textract',
       'kendra', 'bedrock', 'personalize', 'opensearch', 'msk',
+      'firehose', 'lakeformation', 'managedflink',
     ],
   },
   {
